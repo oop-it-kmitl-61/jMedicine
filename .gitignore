@@ -1,4 +1,4 @@
-lt application files
+# built application files
 *.apk
 *.ap_
 
@@ -33,4 +33,3 @@ proguard/
 .gradle/
 build/
 bin/
-hs_err_pid*
