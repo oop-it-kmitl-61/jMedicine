@@ -23,7 +23,9 @@ public class GUI {
   private JPanel panelTitle, panelLoop, panelLoopInfo1, panelLoopInfo2;
   private JLabel space, labelToday, labelTitle01, labelTitle02, labelTitle03, labelTitle04, labelTitle05, labelTitle06;
   private GridBagConstraints gbc;
+  private JButton buttons[];
   private Dimension windowSize, minSize;
+  private Color mainBlue;
 
   public GUI(Dimension windowSize) {
     this.windowSize = windowSize;
@@ -31,6 +33,9 @@ public class GUI {
   }
 
   public void init() {
+
+    //Colors
+    mainBlue = new Color(20, 101, 155);
 
     // Labels
     DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
@@ -52,7 +57,7 @@ public class GUI {
     }
 
     // Buttons
-    JButton buttons[] = {
+    buttons = new JButton[] {
         new JButton("ภาพรวม"),
         new JButton("ยาทั้งหมด"),
         new JButton("นัดแพทย์"),
@@ -79,9 +84,10 @@ public class GUI {
     panelLoopInfo2 = new JPanel();
 
     // Set Layout
-    panelLeft.setBorder(BorderFactory.createEmptyBorder(20, 5, 5, 5));
+    panelLeft.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 0));
+    panelLeft.setBackground(mainBlue);
     panelTitle.setLayout(new BorderLayout());
-    panelRight.setBorder(BorderFactory.createEmptyBorder(25, 5, 10, 5));
+    panelRight.setBorder(BorderFactory.createEmptyBorder(25, 20, 10, 15));
     panelLoop.setLayout(new BoxLayout(panelLoop, BoxLayout.PAGE_AXIS));
     panelLoop.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 5));
     panelLoopInfo1.setLayout(new BoxLayout(panelLoopInfo1, BoxLayout.PAGE_AXIS));
@@ -100,25 +106,36 @@ public class GUI {
     gbc = new GridBagConstraints();
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.anchor = GridBagConstraints.NORTHWEST;
-    gbc.ipady = 20;
-    gbc.ipadx = 10;
+    gbc.ipady = 14;
+    gbc.ipadx = 20;
     gbc.weightx = 0.0;
     gbc.weighty = 1;
     gbc.gridwidth = 8;
     gbc.gridx = 0;
 
+    int tempCount = 0;
     for(JButton button: buttons){
+      button.setHorizontalAlignment(SwingConstants.LEFT);
+      paintButton();
+      if (tempCount == 0) {
+        paintCurrentTabButton(button);
+      }
       button.addActionListener(new ActionListener() {
         // Switch between sub panels
         @Override
         public void actionPerformed(ActionEvent e) {
           CardLayout cl = (CardLayout)(panelRight.getLayout());
           cl.show(panelRight, e.getActionCommand());
+          paintButton();
+          if (e.getActionCommand() == button.getText()) {
+            paintCurrentTabButton(button);
+          }
         }
       });
       gbc.gridy = buttonY;
       buttonY++;
       panelLeft.add(button, gbc);
+      tempCount++;
     }
 
     gbc.weighty = 1000;
@@ -209,6 +226,21 @@ public class GUI {
     mainFrame.setSize(this.windowSize);
     mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     mainFrame.setVisible(true);
+  }
+
+  public void paintButton() {
+    for(JButton button: buttons) {
+      button.setBorderPainted(false);
+      button.setBackground(mainBlue);
+      button.setOpaque(false);
+      button.setForeground(Color.WHITE);
+    }
+  }
+
+  public void paintCurrentTabButton(JButton button) {
+    button.setBackground(Color.WHITE);
+    button.setOpaque(true);
+    button.setForeground(Color.BLACK);
   }
 
 }
