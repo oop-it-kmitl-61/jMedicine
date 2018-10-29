@@ -20,7 +20,7 @@ public class GUI {
   private JFrame mainFrame;
   private JPanel panelMain, panelLeft, panelRight;
   private JPanel panelSub01, panelSub02, panelSub03, panelSub04, panelSub05, panelSub06;
-  private JPanel panelTitle, panelLoop, panelLoopInfo1, panelLoopInfo2;
+  private JPanel panelTitle, panelLoop, cardLoop;
   private JLabel space, labelToday, labelTitle01, labelTitle02, labelTitle03, labelTitle04, labelTitle05, labelTitle06;
   private GridBagConstraints gbc;
   private JButton buttons[];
@@ -79,27 +79,12 @@ public class GUI {
     panelSub06 = new JPanel(new BorderLayout());
     // Panels for panelSub01
     panelTitle = new JPanel(new BorderLayout());
-    panelLoop = new JPanel();
-    panelLoopInfo1 = new JPanel();
-    panelLoopInfo2 = new JPanel();
 
     // Set Layout
     panelLeft.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 0));
     panelLeft.setBackground(mainBlue);
     panelTitle.setLayout(new BorderLayout());
     panelRight.setBorder(BorderFactory.createEmptyBorder(25, 20, 10, 15));
-    panelLoop.setLayout(new BoxLayout(panelLoop, BoxLayout.PAGE_AXIS));
-    panelLoop.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 5));
-    panelLoopInfo1.setLayout(new BoxLayout(panelLoopInfo1, BoxLayout.PAGE_AXIS));
-    panelLoopInfo1.setBorder(new CompoundBorder(
-        BorderFactory.createEmptyBorder(5, 0, 20, 0),
-        new RoundedBorder(10)
-    ));
-    panelLoopInfo2.setLayout(new BoxLayout(panelLoopInfo2, BoxLayout.PAGE_AXIS));
-    panelLoopInfo2.setBorder(new CompoundBorder(
-        BorderFactory.createEmptyBorder(5, 0, 20, 0),
-        new RoundedBorder(10)
-        ));
 
     // Left navigation
     int buttonY = 0;
@@ -143,52 +128,47 @@ public class GUI {
 
     // TODO: panelSub01
     panelTitle.add(labelToday);
-
-    JLabel labelTime01 = new JLabel("12.30 น. (อีก 1 ชั่วโมง)");
-    JLabel labelMed01 = new JLabel("Prednisolone (ยาแก้อักเสบ)");
-    JLabel labelWhen01 = new JLabel("หลังอาหาร 1 เม็ด");
-    labelTime01.setAlignmentX(Component.CENTER_ALIGNMENT);
-    labelMed01.setAlignmentX(Component.CENTER_ALIGNMENT);
-    labelWhen01.setAlignmentX(Component.CENTER_ALIGNMENT);
-    labelTime01.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-    labelTime01.setFont(new Font(labelTime01.getFont().getName(), Font.BOLD, 15));
-    panelLoopInfo1.add(labelTime01);
-    panelLoopInfo1.add(labelMed01);
-    panelLoopInfo1.add(labelWhen01);
-    panelLoopInfo1.add(Box.createHorizontalGlue());
-
-    JLabel labelTime02 = new JLabel("18.30 น. (อีก 7 ชั่วโมง)");
-    JLabel labelMed02 = new JLabel("Prednisolone (ยาแก้อักเสบ)");
-    JLabel labelWhen02 = new JLabel("หลังอาหาร 1 เม็ด");
-    labelTime02.setAlignmentX(Component.CENTER_ALIGNMENT);
-    labelMed02.setAlignmentX(Component.CENTER_ALIGNMENT);
-    labelWhen02.setAlignmentX(Component.CENTER_ALIGNMENT);
-    labelTime02.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-    labelTime02.setFont(new Font(labelTime02.getFont().getName(), Font.BOLD, 15));
-    panelLoopInfo2.add(labelTime02);
-    panelLoopInfo2.add(labelMed02);
-    panelLoopInfo2.add(labelWhen02);
-    panelLoopInfo2.add(Box.createHorizontalGlue());
-
-    panelLoop.add(panelLoopInfo1);
-    panelLoop.add(panelLoopInfo2);
-
+    panelLoop = newPanelLoop();
+    // Make Loop
+    cardLoop = makeOverviewCard("12.30 น. (อีก 1 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
+    panelLoop.add(cardLoop);
+    cardLoop = makeOverviewCard("18.30 น. (อีก 7 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
+    panelLoop.add(cardLoop);
+    // End Make Loop
     panelSub01.add(panelTitle, BorderLayout.NORTH);
     panelSub01.add(panelLoop);
 
     // TODO: panelSub02
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(labelTitle02);
+    panelLoop = newPanelLoop();
+    // Make Loop
+    cardLoop = makeDetailCard("Prednisolone (ยาแก้อักเสบ)", "เหลืออยู่ 2 เม็ด หมดอายุ 31/12/2560");
+    panelLoop.add(cardLoop);
+    cardLoop = makeDetailCard("CPM (ยาแก้แพ้)", "เหลืออยู่ 20 เม็ด หมดอายุ 20/11/2561");
+    panelLoop.add(cardLoop);
+    // End Make Loop
+    panelSub02.add(cardLoop);
     panelSub02.add(panelTitle, BorderLayout.NORTH);
 
     // TODO: panelSub03
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(labelTitle03);
+    panelLoop = newPanelLoop();
+    // Make Loop
+    cardLoop = makeDetailCard("1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
+    panelLoop.add(cardLoop);
+    panelSub03.add(cardLoop);
     panelSub03.add(panelTitle, BorderLayout.NORTH);
 
     // TODO: panelSub04
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(labelTitle04);
+    panelLoop = newPanelLoop();
+    // Make Loop
+    cardLoop = makeDetailCard("นพ.เก่ง จัง", "แผนกหู คอ จมูก โรงพยาบาลบำรุงราษฎร์");
+    panelLoop.add(cardLoop);
+    panelSub04.add(cardLoop);
     panelSub04.add(panelTitle, BorderLayout.NORTH);
 
     // TODO: panelSub05
@@ -241,6 +221,50 @@ public class GUI {
     button.setBackground(Color.WHITE);
     button.setOpaque(true);
     button.setForeground(Color.BLACK);
+  }
+
+  public JPanel makeOverviewCard(String time, String medName, String dose) {
+    JPanel panelLoopInfo = new JPanel();
+    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.PAGE_AXIS));
+    panelLoopInfo.setBorder(new CompoundBorder(
+        BorderFactory.createEmptyBorder(5, 0, 20, 0),
+        new RoundedBorder(10)
+    ));
+    JLabel labelTime = new JLabel(time);
+    JLabel labelMed = new JLabel(medName);
+    JLabel labelAmount = new JLabel(dose);
+    labelTime.setAlignmentX(Component.CENTER_ALIGNMENT);
+    labelMed.setAlignmentX(Component.CENTER_ALIGNMENT);
+    labelAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
+    labelTime.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+    labelTime.setFont(new Font(labelTime.getFont().getName(), Font.BOLD, 15));
+    panelLoopInfo.add(labelTime);
+    panelLoopInfo.add(labelMed);
+    panelLoopInfo.add(labelAmount);
+    panelLoopInfo.add(Box.createHorizontalGlue());
+    return panelLoopInfo;
+  }
+
+  // TODO: Example parameters will be replaced with data from DB
+  public JPanel makeDetailCard(String example01, String example02) {
+    JPanel panelLoopInfo = new JPanel();
+    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.PAGE_AXIS));
+    panelLoopInfo.setBorder(BorderFactory.createEmptyBorder(5, 0, 20, 0));
+    JLabel labelMed = new JLabel(example01);
+    JLabel labelShortInfo = new JLabel(example02);
+    labelMed.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+    labelMed.setFont(new Font(labelMed.getFont().getName(), Font.BOLD, 15));
+    panelLoopInfo.add(labelMed);
+    panelLoopInfo.add(labelShortInfo);
+    panelLoopInfo.add(Box.createHorizontalGlue());
+    return panelLoopInfo;
+  }
+
+  public JPanel newPanelLoop() {
+    JPanel panelLoop = new JPanel();
+    panelLoop.setLayout(new BoxLayout(panelLoop, BoxLayout.PAGE_AXIS));
+    panelLoop.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 5));
+    return panelLoop;
   }
 
 }
