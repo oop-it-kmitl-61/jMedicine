@@ -37,45 +37,15 @@ public class GUI implements ActionListener {
   public GUI(Dimension windowSize) {
     this.windowSize = windowSize;
     this.minSize = new Dimension(640, 480);
+    this.mainBlue = new Color(20, 101, 155);
   }
 
   public void init() {
-
-    //Colors
-    mainBlue = new Color(20, 101, 155);
-
-    // Labels
-    DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
-    Date date = new Date();
-    String today = dateFormat.format(date);
-    labelToday = new JLabel(today);
-    labelTitle01 = new JLabel("ภาพรวม");
-    labelTitle02 = new JLabel("ยาทั้งหมด");
-    labelTitle03 = new JLabel("นัดแพทย์");
-    labelTitle04 = new JLabel("แพทย์");
-    labelTitle05 = new JLabel("โรงพยาบาลใกล้เคียง");
-    labelTitle06 = new JLabel("การตั้งค่า");
-    JLabel titles[] = {labelToday, labelTitle01, labelTitle02, labelTitle03, labelTitle04, labelTitle05, labelTitle06};
-
-    // Set font size for title
-    for (JLabel title: titles) {
-      makeLabelTitle(title);
-    }
-
-    // Buttons
-    buttons = new JButton[] {
-        new JButton("ภาพรวม"),
-        new JButton("ยาทั้งหมด"),
-        new JButton("นัดแพทย์"),
-        new JButton("แพทย์"),
-        new JButton("โรงพยาบาลใกล้เคียง"),
-        new JButton("การตั้งค่า"),
-    };
-
     // Main Panels
     panelMain = new JPanel(new BorderLayout());
     panelLeft = new JPanel(new GridBagLayout());
     panelRight = new JPanel(new CardLayout());
+
     // Panels that will be switched inside the right panel
     panelSub01 = new JPanel(new BorderLayout());
     panelSub02 = new JPanel(new BorderLayout());
@@ -83,100 +53,23 @@ public class GUI implements ActionListener {
     panelSub04 = new JPanel(new BorderLayout());
     panelSub05 = new JPanel(new BorderLayout());
     panelSub06 = new JPanel(new BorderLayout());
-    // Panels for panelSub01
-    panelTitle = new JPanel(new BorderLayout());
 
     // Set Layout
     setPadding(panelLeft, 20, 0, 5, 0);
     setPadding(panelRight, 25, 20, 10, 20);
     panelLeft.setBackground(mainBlue);
-    panelTitle.setLayout(new BorderLayout());
 
     // Left navigation
     makeLeftNavigation();
 
-    // TODO: panelSub01
-    panelTitle.add(labelToday);
-    panelLoop = newPanelLoop();
-    // Make Loop
-    cardLoop = makeOverviewCard("12.30 น. (อีก 1 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
-    panelLoop.add(cardLoop);
-    cardLoop = makeOverviewCard("18.30 น. (อีก 7 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
-    panelLoop.add(cardLoop);
-    // End Make Loop
-    panelSub01.add(panelTitle, BorderLayout.NORTH);
-    panelSub01.add(panelLoop);
-
-    // TODO: panelSub02
-    panelTitle = new JPanel(new BorderLayout());
-    panelLoop = newPanelLoop();
-    panelLoop.add(makeNewButton("เพิ่มยาใหม่"));
-    // Make Loop
-    cardLoop = makeDetailCard("medicine", "Prednisolone (ยาแก้อักเสบ)", "เหลืออยู่ 2 เม็ด หมดอายุ 31/12/2560");
-    panelLoop.add(cardLoop);
-    cardLoop = makeDetailCard("medicine", "CPM (ยาแก้แพ้)", "เหลืออยู่ 20 เม็ด หมดอายุ 20/11/2561");
-    panelLoop.add(cardLoop);
-    // End Make Loop
-    panelTitle.add(labelTitle02);
-    panelSub02.add(panelTitle, BorderLayout.NORTH);
-    panelSub02.add(panelLoop);
-
-
-    // TODO: panelSub03
-    panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(labelTitle03);
-    panelLoop = newPanelLoop();
-    panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
-    // Make Loop
-    cardLoop = makeDetailCard("appointment", "1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
-    panelLoop.add(cardLoop);
-    // End Make Loop
-    panelSub03.add(panelLoop);
-    panelSub03.add(panelTitle, BorderLayout.NORTH);
-
-    // TODO: panelSub04
-    panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(labelTitle04);
-    panelLoop = newPanelLoop();
-    panelLoop.add(makeNewButton("เพิ่มแพทย์ใหม่"));
-    // Make Loop
-    cardLoop = makeDetailCard("doctor", "นพ.เก่ง จัง", "แผนกหู คอ จมูก โรงพยาบาลบำรุงราษฎร์");
-    panelLoop.add(cardLoop);
-    // End Make Loop
-    panelSub04.add(panelLoop);
-    panelSub04.add(panelTitle, BorderLayout.NORTH);
-
-    // TODO: panelSub05
-    panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(labelTitle05);
-
-//    MapViewOptions options = new MapViewOptions();
-//    options.importPlaces();
-//    final Maps mapView = new Maps(options);
-
-    panelSub05.add(panelTitle, BorderLayout.NORTH);
-//    panelSub05.add(mapView);
-
-    // TODO: panelSub06
-    panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(labelTitle06);
-    JPanel panelBox = new JPanel();
-    panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.PAGE_AXIS));
-    setPadding(panelBox, 20, 0);
-    JLabel labelUserName = new JLabel(user.getUserName());
-    makeLabelTitle(labelUserName);
-    panelBox.add(new JLabel("ผู้ใช้งานปัจจุบัน"));
-    panelBox.add(labelUserName);
-    panelSub06.add(panelTitle, BorderLayout.NORTH);
-    panelSub06.add(panelBox);
-
     // Add all subs to the right panel
-    panelRight.add(panelSub01, "ภาพรวม");
-    panelRight.add(panelSub02, "ยาทั้งหมด");
-    panelRight.add(panelSub03, "นัดแพทย์");
-    panelRight.add(panelSub04, "แพทย์");
-    panelRight.add(panelSub05, "โรงพยาบาลใกล้เคียง");
-    panelRight.add(panelSub06, "การตั้งค่า");
+    panelRight.add(overview(), "ภาพรวม");
+    panelRight.add(medicines(), "ยาทั้งหมด");
+    panelRight.add(appointments(), "นัดแพทย์");
+    panelRight.add(doctors(), "แพทย์");
+    panelRight.add(nearbyHospitals(), "โรงพยาบาลใกล้เคียง");
+    panelRight.add(settings(), "การตั้งค่า");
+    panelRight.add(addMedicine(), "เพิ่มยาใหม่");
 
     // Add to main panel
     panelMain.add(panelLeft, BorderLayout.WEST);
@@ -190,86 +83,128 @@ public class GUI implements ActionListener {
     frameMain.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
   }
 
-  public void makeLabelTitle(JLabel label) {
-    label.setFont(new Font(label.getFont().getName(), Font.BOLD, 24));
+  public JPanel overview() {
+    labelTitle01 = new JLabel("ภาพรวม");
+    panelTitle = new JPanel(new BorderLayout());
+    DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+    Date date = new Date();
+    String today = dateFormat.format(date);
+    labelToday = makeLabelTitle(today);
+    panelTitle.add(labelToday);
+    panelLoop = newPanelLoop();
+    // Make Loop
+    cardLoop = makeOverviewCard("12.30 น. (อีก 1 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
+    panelLoop.add(cardLoop);
+    cardLoop = makeOverviewCard("18.30 น. (อีก 7 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
+    panelLoop.add(cardLoop);
+    // End Make Loop
+    panelSub01.add(panelTitle, BorderLayout.NORTH);
+    panelSub01.add(panelLoop);
+
+    return panelSub01;
   }
 
-  public void makeLabelBold(JLabel label) {
-    label.setFont(new Font(label.getFont().getName(), Font.BOLD, 15));
+  public JPanel medicines() {
+    labelTitle02 = makeLabelTitle("ยาทั้งหมด");
+    panelTitle = new JPanel(new BorderLayout());
+    panelLoop = newPanelLoop();
+    panelLoop.add(makeNewButton("เพิ่มยาใหม่"));
+    // Make Loop
+    cardLoop = makeDetailCard("medicine", "Prednisolone (ยาแก้อักเสบ)", "เหลืออยู่ 2 เม็ด หมดอายุ 31/12/2560");
+    panelLoop.add(cardLoop);
+    cardLoop = makeDetailCard("medicine", "CPM (ยาแก้แพ้)", "เหลืออยู่ 20 เม็ด หมดอายุ 20/11/2561");
+    panelLoop.add(cardLoop);
+    // End Make Loop
+    panelTitle.add(labelTitle02);
+    panelSub02.add(panelTitle, BorderLayout.NORTH);
+    panelSub02.add(panelLoop);
+
+    return  panelSub02;
   }
 
-  public void makeLabelCenter(JLabel label) {
-    label.setAlignmentX(Component.CENTER_ALIGNMENT);
+  public JPanel appointments() {
+    labelTitle03 = makeLabelTitle("นัดแพทย์");
+    panelTitle = new JPanel(new BorderLayout());
+    panelTitle.add(labelTitle03);
+    panelLoop = newPanelLoop();
+    panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
+    // Make Loop
+    cardLoop = makeDetailCard("appointment", "1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
+    panelLoop.add(cardLoop);
+    // End Make Loop
+    panelSub03.add(panelLoop);
+    panelSub03.add(panelTitle, BorderLayout.NORTH);
+
+    return panelSub03;
   }
 
-  public void setPadding(JLabel object, int top, int right, int bottom, int left) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+  public JPanel doctors() {
+    labelTitle04 = makeLabelTitle("แพทย์");
+    panelTitle = new JPanel(new BorderLayout());
+    panelTitle.add(labelTitle04);
+    panelLoop = newPanelLoop();
+    panelLoop.add(makeNewButton("เพิ่มแพทย์ใหม่"));
+    // Make Loop
+    cardLoop = makeDetailCard("doctor", "นพ.เก่ง จัง", "แผนกหู คอ จมูก โรงพยาบาลบำรุงราษฎร์");
+    panelLoop.add(cardLoop);
+    // End Make Loop
+    panelSub04.add(panelLoop);
+    panelSub04.add(panelTitle, BorderLayout.NORTH);
+
+    return panelSub04;
   }
 
-  public void setPadding(JLabel object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  public JPanel nearbyHospitals() {
+    labelTitle05 = makeLabelTitle("โรงพยาบาลใกล้เคียง");
+    panelTitle = new JPanel(new BorderLayout());
+    panelTitle.add(labelTitle05);
+
+//    MapViewOptions options = new MapViewOptions();
+//    options.importPlaces();
+//    final Maps mapView = new Maps(options);
+
+    panelSub05.add(panelTitle, BorderLayout.NORTH);
+//    panelSub05.add(mapView);
+
+    return panelSub05;
   }
 
-  public void setPadding(JLabel object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  public JPanel settings() {
+    labelTitle06 = makeLabelTitle("การตั้งค่า");
+    panelTitle = new JPanel(new BorderLayout());
+    panelTitle.add(labelTitle06);
+    JPanel panelBox = new JPanel();
+    panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.PAGE_AXIS));
+    setPadding(panelBox, 20, 0);
+    JLabel labelUserName = makeLabelTitle(user.getUserName());
+    panelBox.add(new JLabel("ผู้ใช้งานปัจจุบัน"));
+    panelBox.add(labelUserName);
+    panelSub06.add(panelTitle, BorderLayout.NORTH);
+    panelSub06.add(panelBox);
+
+    return panelSub06;
   }
 
-  public void setPadding(JLabel object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
-  }
+  public JPanel addMedicine() {
+    JPanel panelInline = new JPanel(new FlowLayout());
+    JPanel panelAddMedicine = new JPanel();
+    panelAddMedicine.setLayout(new BoxLayout(panelAddMedicine, BoxLayout.PAGE_AXIS));
+    setPadding(panelAddMedicine, 80, 0, 40, 0);
 
-  public void setPadding(JTextField object, int top, int right, int bottom, int left) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
-  }
+    panelTitle = new JPanel(new BorderLayout());
+    JLabel labelTitle = makeLabelTitle("เพิ่มยาใหม่");
+    panelTitle.add(labelTitle);
 
-  public void setPadding(JTextField object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
-  }
+    panelInline.add(labelTitle);
+    panelAddMedicine.add(panelInline);
+    panelAddMedicine.add(addMedGUI());
 
-  public void setPadding(JTextField object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
-  }
-
-  public void setPadding(JTextField object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
-  }
-
-  public void setPadding(JButton object, int top, int right, int bottom, int left) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
-  }
-
-  public void setPadding(JButton object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
-  }
-
-  public void setPadding(JButton object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
-  }
-
-  public void setPadding(JButton object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
-  }
-
-  public void setPadding(JPanel object, int top, int right, int bottom, int left) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
-  }
-
-  public void setPadding(JPanel object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
-  }
-
-  public void setPadding(JPanel object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
-  }
-
-  public void setPadding(JPanel object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+    return panelAddMedicine;
   }
 
   public void initWelcome() {
     frameWelcome = new JFrame("jMedicine: ตั้งค่าครั้งแรก");
     JLabel space = new JLabel();
-    JLabel labelWelcome = new JLabel("ยินดีต้อนรับ");
     JLabel labelWelcomeSub = new JLabel("กรอกชื่อของคุณเพื่อเริ่ม");
     tfUserName = new JTextField(20);
     JButton btnNext = new JButton("ถัดไป");
@@ -279,7 +214,7 @@ public class GUI implements ActionListener {
     JPanel panelInline = new JPanel(new FlowLayout());
 
     // Welcome Panel
-    makeLabelTitle(labelWelcome);
+    JLabel labelWelcome = makeLabelTitle("ยินดีต้อนรับ");
     makeLabelCenter(labelWelcome);
     makeLabelCenter(labelWelcomeSub);
 
@@ -314,8 +249,7 @@ public class GUI implements ActionListener {
     panelYourName.add(space, gbc);
 
     // FirstMed Panel
-    JLabel labelTitle = new JLabel("เพิ่มยาตัวแรกของคุณ (กดบันทึกข้ามไปก่อนได้เลย)");
-    makeLabelTitle(labelTitle);
+    JLabel labelTitle = makeLabelTitle("เพิ่มยาตัวแรกของคุณ (กดบันทึกข้ามไปก่อนได้เลย)");
     setPadding(labelTitle, 0, 0, 30);
 
     panelFirstMed.setLayout(new BoxLayout(panelFirstMed, BoxLayout.PAGE_AXIS));
@@ -352,6 +286,15 @@ public class GUI implements ActionListener {
   }
 
   public void makeLeftNavigation() {
+    buttons = new JButton[] {
+        new JButton("ภาพรวม"),
+        new JButton("ยาทั้งหมด"),
+        new JButton("นัดแพทย์"),
+        new JButton("แพทย์"),
+        new JButton("โรงพยาบาลใกล้เคียง"),
+        new JButton("การตั้งค่า"),
+    };
+
     int buttonY = 0;
     JLabel space = new JLabel();
     GridBagConstraints gbc = new GridBagConstraints();
@@ -417,7 +360,8 @@ public class GUI implements ActionListener {
 
   public JPanel makeNewButton(String btnName) {
     JPanel panelLoopInfo = new JPanel();
-    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.PAGE_AXIS));
+    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
+    setPadding(panelLoopInfo, 5, 0, 20, 0);
 
     JButton btnNew = new JButton(btnName);
     try {
@@ -426,10 +370,17 @@ public class GUI implements ActionListener {
     } catch (Exception ex) {
       System.out.println(ex);
     }
+    btnNew.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        cl.show(panelRight, e.getActionCommand());
+      }
+    });
     btnNew.setOpaque(false);
     btnNew.setContentAreaFilled(false);
     btnNew.setBorderPainted(false);
-    setPadding(btnNew, 10, 0);
+    btnNew.setAlignmentX(0);
     panelLoopInfo.add(Box.createHorizontalGlue());
     panelLoopInfo.add(btnNew);
 
@@ -505,7 +456,7 @@ public class GUI implements ActionListener {
     JTextField tfAmount = new JTextField(2);
     JTextField tfTotalMeds = new JTextField(2);
     JTextField tfMedEXP = new JTextField(10);
-    JButton btnSave = new JButton("บันทึก");
+    JButton btnSave = new JButton("บันทึกยา");
     ButtonGroup rdGroup = new ButtonGroup();
 
     String[] medType = medUtil.getMedType();
@@ -599,9 +550,15 @@ public class GUI implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     String btnCommand = e.getActionCommand();
-    if (btnCommand.equals("บันทึก")) {
-      frameWelcome.setVisible(false);
-      frameMain.setVisible(true);
+    if (btnCommand.equals("บันทึกยา")) {
+      if (frameWelcome == null) {
+        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        cl.show(panelRight, "ยาทั้งหมด");
+      } else {
+        frameWelcome.setVisible(false);
+        frameMain.setVisible(true);
+        frameWelcome = null;
+      }
     } else if (btnCommand.equals("ถัดไป")) {
       CardLayout cl = (CardLayout)(panelWelcome.getLayout());
       cl.show(panelWelcome, e.getActionCommand());
@@ -614,5 +571,83 @@ public class GUI implements ActionListener {
       user = new User(username);
       init();
     }
+  }
+
+  public JLabel makeLabelTitle(String labelText) {
+    JLabel label = new JLabel(labelText);
+    label.setFont(new Font(label.getFont().getName(), Font.BOLD, 24));
+    return label;
+  }
+
+  public void makeLabelBold(JLabel label) {
+    label.setFont(new Font(label.getFont().getName(), Font.BOLD, 15));
+  }
+
+  public void makeLabelCenter(JLabel label) {
+    label.setAlignmentX(Component.CENTER_ALIGNMENT);
+  }
+
+  public void setPadding(JLabel object, int top, int right, int bottom, int left) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+  }
+
+  public void setPadding(JLabel object, int top, int right, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  }
+
+  public void setPadding(JLabel object, int top, int right) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  }
+
+  public void setPadding(JLabel object, int top) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  }
+
+  public void setPadding(JTextField object, int top, int right, int bottom, int left) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+  }
+
+  public void setPadding(JTextField object, int top, int right, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  }
+
+  public void setPadding(JTextField object, int top, int right) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  }
+
+  public void setPadding(JTextField object, int top) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  }
+
+  public void setPadding(JButton object, int top, int right, int bottom, int left) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+  }
+
+  public void setPadding(JButton object, int top, int right, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  }
+
+  public void setPadding(JButton object, int top, int right) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  }
+
+  public void setPadding(JButton object, int top) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  }
+
+  public void setPadding(JPanel object, int top, int right, int bottom, int left) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+  }
+
+  public void setPadding(JPanel object, int top, int right, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  }
+
+  public void setPadding(JPanel object, int top, int right) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  }
+
+  public void setPadding(JPanel object, int top) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
   }
 }
