@@ -8,11 +8,16 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 
@@ -105,12 +110,11 @@ public class GUI implements ActionListener {
     // TODO: panelSub02
     panelTitle = new JPanel(new BorderLayout());
     panelLoop = newPanelLoop();
+    panelLoop.add(makeNewButton("เพิ่มยาใหม่"));
     // Make Loop
-    cardLoop = makeDetailCard("เพิ่มยาใหม่", "");
+    cardLoop = makeDetailCard("medicine", "Prednisolone (ยาแก้อักเสบ)", "เหลืออยู่ 2 เม็ด หมดอายุ 31/12/2560");
     panelLoop.add(cardLoop);
-    cardLoop = makeDetailCard("Prednisolone (ยาแก้อักเสบ)", "เหลืออยู่ 2 เม็ด หมดอายุ 31/12/2560");
-    panelLoop.add(cardLoop);
-    cardLoop = makeDetailCard("CPM (ยาแก้แพ้)", "เหลืออยู่ 20 เม็ด หมดอายุ 20/11/2561");
+    cardLoop = makeDetailCard("medicine", "CPM (ยาแก้แพ้)", "เหลืออยู่ 20 เม็ด หมดอายุ 20/11/2561");
     panelLoop.add(cardLoop);
     // End Make Loop
     panelTitle.add(labelTitle02);
@@ -122,10 +126,9 @@ public class GUI implements ActionListener {
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(labelTitle03);
     panelLoop = newPanelLoop();
+    panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
     // Make Loop
-    cardLoop = makeDetailCard("เพิ่มนัดใหม่", "");
-    panelLoop.add(cardLoop);
-    cardLoop = makeDetailCard("1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
+    cardLoop = makeDetailCard("appointment", "1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
     panelLoop.add(cardLoop);
     // End Make Loop
     panelSub03.add(panelLoop);
@@ -135,10 +138,9 @@ public class GUI implements ActionListener {
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(labelTitle04);
     panelLoop = newPanelLoop();
+    panelLoop.add(makeNewButton("เพิ่มแพทย์ใหม่"));
     // Make Loop
-    cardLoop = makeDetailCard("เพิ่มแพทย์ใหม่", "");
-    panelLoop.add(cardLoop);
-    cardLoop = makeDetailCard("นพ.เก่ง จัง", "แผนกหู คอ จมูก โรงพยาบาลบำรุงราษฎร์");
+    cardLoop = makeDetailCard("doctor", "นพ.เก่ง จัง", "แผนกหู คอ จมูก โรงพยาบาลบำรุงราษฎร์");
     panelLoop.add(cardLoop);
     // End Make Loop
     panelSub04.add(panelLoop);
@@ -312,7 +314,7 @@ public class GUI implements ActionListener {
     panelYourName.add(space, gbc);
 
     // FirstMed Panel
-    JLabel labelTitle = new JLabel("เพิ่มยาตัวแรกของคุณ");
+    JLabel labelTitle = new JLabel("เพิ่มยาตัวแรกของคุณ (กดบันทึกข้ามไปก่อนได้เลย)");
     makeLabelTitle(labelTitle);
     setPadding(labelTitle, 0, 0, 30);
 
@@ -413,22 +415,81 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
-  // TODO: Example parameters will be replaced with data from DB
-  public JPanel makeDetailCard(String example01, String example02) {
+  public JPanel makeNewButton(String btnName) {
     JPanel panelLoopInfo = new JPanel();
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.PAGE_AXIS));
-    setPadding(panelLoopInfo, 5, 0, 20, 0);
-    JLabel labelMed = new JLabel(example01);
+
+    JButton btnNew = new JButton(btnName);
+    try {
+      Image img = ImageIO.read(new File("src/main/img/add.png"));
+      btnNew.setIcon(new ImageIcon(img));
+    } catch (Exception ex) {
+      System.out.println(ex);
+    }
+    btnNew.setOpaque(false);
+    btnNew.setContentAreaFilled(false);
+    btnNew.setBorderPainted(false);
+    setPadding(btnNew, 10, 0);
+    panelLoopInfo.add(Box.createHorizontalGlue());
+    panelLoopInfo.add(btnNew);
+
+    return panelLoopInfo;
+  }
+
+  // TODO: Example parameters will be replaced with data from DB
+  public JPanel makeDetailCard(String type, String example01, String example02) {
+    String imgURL = "";
+    switch (type) {
+      case "medicine":
+        imgURL = "tablet.png";
+        break;
+      case "appointment":
+        imgURL = "calendar.png";
+        break;
+      case "doctor":
+        imgURL = "doctor.png";
+        break;
+    }
+
+    JLabel labelTitle = new JLabel(example01);
     JLabel labelShortInfo = new JLabel(example02);
-    setPadding(labelMed, 5, 0, 5, 0);
-    makeLabelBold(labelMed);
-    panelLoopInfo.add(labelMed);
-    panelLoopInfo.add(labelShortInfo);
+    JLabel labelPic = new JLabel();
+    JPanel panelLoopInfo = new JPanel();
+    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
+    setPadding(panelLoopInfo, 5, 0, 20, 0);
+
+    JPanel panelPic = new JPanel();
+    panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
+
+    JPanel panelInfo = new JPanel();
+    panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
+
+    try {
+      Image img = ImageIO.read(new File("src/main/img/"+imgURL));
+      labelPic.setIcon(new ImageIcon(img));
+    } catch (Exception ex) {
+      System.out.println(ex);
+
+    }
+
+    panelPic.add(labelPic);
+    panelInfo.add(labelTitle);
+    panelInfo.add(labelShortInfo);
+
+    setPadding(labelTitle, 5, 0, 5, 0);
+    makeLabelBold(labelTitle);
+
+    setPadding(labelPic, 5, 10, 0, 0);
+
+    panelLoopInfo.add(panelPic);
+    panelLoopInfo.add(panelInfo);
     panelLoopInfo.add(Box.createHorizontalGlue());
     return panelLoopInfo;
   }
 
   public JPanel addMedGUI() {
+    MedicineUtil medUtil = new MedicineUtil();
+
     String medUnit = "เม็ด";
     JPanel panelAddMed = new JPanel();
     JLabel labelMedName = new JLabel("ชื่อยา");
@@ -445,17 +506,28 @@ public class GUI implements ActionListener {
     JTextField tfTotalMeds = new JTextField(2);
     JTextField tfMedEXP = new JTextField(10);
     JButton btnSave = new JButton("บันทึก");
-    JCheckBox chMorning = new JCheckBox("เช้า");
-    JCheckBox chAfternoon = new JCheckBox("กลางวัน");
-    JCheckBox chEvening = new JCheckBox("เย็น");
-    JCheckBox chBed = new JCheckBox("ก่อนนอน");
-    JRadioButton rdBefore = new JRadioButton("ก่อนอาหาร");
-    JRadioButton rdAfter = new JRadioButton("หลังอาหาร");
-    JRadioButton rdSame = new JRadioButton("พร้อมอาหาร/หลังอาหารทันที");
-    String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "ยาแบบฉีด"};
-    String[] medColor = {"ขาว", "ใส", "น้ำเงิน", "เขียว", "เหลือง", "ชมพู", "ส้ม", "น้ำตาล", "ไม่ระบุ"};
+    ButtonGroup rdGroup = new ButtonGroup();
+
+    String[] medType = medUtil.getMedType();
+    String[] medColor = medUtil.getMedColor();
+    String[] medTime = medUtil.getMedTime();
+    String[] medAmountStr = medUtil.getMedAmountStr();
+    ArrayList<JCheckBox> chTime = new ArrayList<>();
+    ArrayList<JRadioButton> rdAmountStr = new ArrayList<>();
+
     JComboBox cbMedType = new JComboBox(medType);
     JComboBox cbMedColor = new JComboBox(medColor);
+
+    for (String time : medTime) {
+      chTime.add(new JCheckBox(time));
+    }
+
+    for (String amountStr : medAmountStr) {
+      JRadioButton rdItem = new JRadioButton(amountStr);
+      rdAmountStr.add(rdItem);
+      rdGroup.add(rdItem);
+    }
+
     btnSave.addActionListener(this);
     panelAddMed.setLayout(new BoxLayout(panelAddMed, BoxLayout.PAGE_AXIS));
     setPadding(panelAddMed, 0, 0, 40);
@@ -482,17 +554,25 @@ public class GUI implements ActionListener {
     setPadding(panelBorder, 10, 20);
     panelBorder.add(labelTime, BorderLayout.NORTH);
     panelInline = new JPanel(new FlowLayout());
-    panelInline.add(chMorning);
-    panelInline.add(chAfternoon);
-    panelInline.add(chEvening);
+    Iterator<JCheckBox> chIterator = chTime.iterator();
+    while (chIterator.hasNext()) {
+      panelInline.add(chIterator.next());
+    }
     panelBorder.add(panelInline, BorderLayout.WEST);
+    panelInline = new JPanel(new FlowLayout());
+    Iterator<JRadioButton> rdIterator = rdAmountStr.iterator();
+    while (rdIterator.hasNext()) {
+      panelInline.add(rdIterator.next());
+    }
+    panelInline.setPreferredSize(new Dimension(100, panelInline.getHeight()));
+    panelBorder.add(panelInline, BorderLayout.CENTER);
+    panelInline = new JPanel(new FlowLayout());
+    panelInline.add(labelAmount);
+    panelInline.add(tfAmount);
+    panelInline.add(new JLabel(medUnit));
+    panelBorder.add(panelInline, BorderLayout.EAST);
     JPanel panelBox = new JPanel();
     panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.PAGE_AXIS));
-    panelInline = new JPanel(new FlowLayout());
-    panelInline.add(rdBefore);
-    panelInline.add(rdAfter);
-    panelInline.add(rdSame);
-    panelBox.add(panelInline);
     panelInline = new JPanel(new FlowLayout());
     panelInline.add(labelTotalMeds);
     panelInline.add(tfTotalMeds);
@@ -502,12 +582,7 @@ public class GUI implements ActionListener {
     panelInline.add(labelEXP);
     panelInline.add(tfMedEXP);
     panelBox.add(panelInline);
-    panelBorder.add(panelBox, BorderLayout.CENTER);
-    panelInline = new JPanel(new FlowLayout());
-    panelInline.add(labelAmount);
-    panelInline.add(tfAmount);
-    panelInline.add(new JLabel(medUnit));
-    panelBorder.add(panelInline, BorderLayout.EAST);
+    panelBorder.add(panelBox, BorderLayout.SOUTH);
     panelAddMed.add(panelBorder);
     panelAddMed.add(btnSave);
 
