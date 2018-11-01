@@ -28,11 +28,11 @@ proguard/
 *.iws
 .idea/
 
-#Gradle
+# Gradle
 .gradletasknamecache
 .gradle/
 build/
 bin/
 
-#MacOS
+# MacOS
 .DS_Store
