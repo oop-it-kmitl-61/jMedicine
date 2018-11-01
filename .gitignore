@@ -33,3 +33,6 @@ proguard/
 .gradle/
 build/
 bin/
+
+#MacOS
+.DS_Store
