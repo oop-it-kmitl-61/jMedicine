@@ -105,13 +105,17 @@ public class GUI implements ActionListener {
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeLabelTitle("ยาทั้งหมด"));
 
+    ArrayList<Medicine> userMedicines = user.getUserMedicines();
+
     panelLoop = newPanelLoop();
     panelLoop.add(makeNewButton("เพิ่มยาใหม่"));
     // Make Loop
-    cardLoop = makeDetailCard("medicine", "Prednisolone (ยาแก้อักเสบ)", "เหลืออยู่ 2 เม็ด หมดอายุ 31/12/2560");
-    panelLoop.add(cardLoop);
-    cardLoop = makeDetailCard("medicine", "CPM (ยาแก้แพ้)", "เหลืออยู่ 20 เม็ด หมดอายุ 20/11/2561");
-    panelLoop.add(cardLoop);
+    Iterator<Medicine> iterator = userMedicines.iterator();
+    while (iterator.hasNext()) {
+      Medicine medCurrent = iterator.next();
+      cardLoop = makeMedCard(medCurrent);
+      panelLoop.add(cardLoop);
+    }
     // End Make Loop
 
     panelSub02.add(panelTitle, BorderLayout.NORTH);
@@ -204,6 +208,33 @@ public class GUI implements ActionListener {
     return panelAddMedicine;
   }
 
+  public JPanel viewMedicine(Medicine medicine) {
+    String medName = medicine.getMedName();
+    JPanel panelView = new JPanel(new BorderLayout());
+    JPanel panelSub = new JPanel();
+    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    JLabel labelTitle = makeLabelTitle("< "+medName);
+    makeLabelClickable(labelTitle, "ยาทั้งหมด");
+
+    panelTitle = new JPanel(new BorderLayout());
+    panelTitle.add(labelTitle);
+    setPadding(panelTitle, 0, 0, 20);
+
+    panelSub.add(new JLabel("ชื่อยา: " + medName));
+    panelSub.add(new JLabel("คำอธิบาย: " + medicine.getMedDescription()));
+    panelSub.add(new JLabel("เวลาที่ต้องทาน: " + medicine.getMedTime() + " " + medicine.getMedDoseStr()));
+    panelSub.add(new JLabel("ขนาดรับประทาน: " + medicine.getMedDose() + " " + medicine.getMedUnit()));
+    panelSub.add(new JLabel("วันที่เพิ่มยา: " + medicine.getDateAdded()));
+    panelSub.add(new JLabel("จำนวนยาเริ่มต้น: " + medicine.getMedRemaining()));
+    panelSub.add(new JLabel("จำนวนยาที่เหลือ: " + medicine.getMedRemaining()));
+    panelSub.add(new JLabel("วันหมดอายุ: " + medicine.getMedEXP()));
+
+    panelView.add(panelTitle, BorderLayout.NORTH);
+    panelView.add(panelSub);
+
+    return panelView;
+  }
+
   public void initWelcome() {
     frameWelcome = new JFrame("jMedicine: ตั้งค่าครั้งแรก");
     JLabel space = new JLabel();
@@ -250,8 +281,12 @@ public class GUI implements ActionListener {
     panelYourName.add(space, gbc);
 
     // FirstMed Panel
-    JLabel labelTitle = makeLabelTitle("เพิ่มยาตัวแรกของคุณ (กดบันทึกข้ามไปก่อนได้เลย)");
+    JLabel labelTitle = makeLabelTitle("เพิ่มยาตัวแรกของคุณ");
+    JButton btnSkip = new JButton("ข้ามขั้นตอนนี้");
     setPadding(labelTitle, 0, 0, 30);
+
+    btnSkip.addActionListener(this);
+    btnSkip.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     panelFirstMed.setLayout(new BoxLayout(panelFirstMed, BoxLayout.PAGE_AXIS));
     setPadding(panelFirstMed, 80, 0, 40, 0);
@@ -260,6 +295,7 @@ public class GUI implements ActionListener {
     panelInline.add(labelTitle);
     panelFirstMed.add(panelInline);
     panelFirstMed.add(addMedGUI());
+    panelFirstMed.add(btnSkip);
 
     panelWelcome.add(panelYourName);
     panelWelcome.add(panelFirstMed, "ถัดไป");
@@ -414,13 +450,83 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
-  // TODO: Example parameters will be replaced with data from DB
-  public JPanel makeDetailCard(String type, String example01, String example02) {
+  public JPanel makeMedCard(Medicine medicine) {
+    String imgURL = "";
+    boolean urlFinished = false;
+    switch (medicine.getMedType()) {
+      case "tablet":
+        imgURL += "tablet-";
+        break;
+      case "capsule":
+        imgURL += "capsule.png";
+        urlFinished = true;
+        break;
+      case "liquid":
+        imgURL += "liquid-";
+        break;
+      case "inject":
+        imgURL += "inject.png";
+        urlFinished = true;
+        break;
+    }
+
+    if (!urlFinished) {
+      imgURL += medicine.getMedColor();
+      imgURL += ".png";
+    }
+
+    String medTitle = medicine.getMedName()+" ("+medicine.getMedDescription()+")";
+    String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+medicine.getMedEXP();
+    JLabel labelTitle = new JLabel(medTitle);
+    JLabel labelShortInfo = new JLabel(medShortInfo);
+    JLabel labelPic = new JLabel();
+    JPanel panelLoopInfo = new JPanel();
+    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
+    setPadding(panelLoopInfo, 5, 0, 20, 0);
+
+    JPanel panelPic = new JPanel();
+    panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
+
+    JPanel panelInfo = new JPanel();
+    panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
+
+    try {
+      Image img = ImageIO.read(new File("src/main/img/"+imgURL));
+      labelPic.setIcon(new ImageIcon(img));
+    } catch (Exception ex) {
+      System.out.println(ex);
+
+    }
+
+    panelPic.add(labelPic);
+    panelInfo.add(labelTitle);
+    panelInfo.add(labelShortInfo);
+
+    setPadding(labelTitle, 5, 0, 5, 0);
+    makeLabelBold(labelTitle);
+
+    setPadding(labelPic, 5, 10, 0, 0);
+
+    panelLoopInfo.add(panelPic);
+    panelLoopInfo.add(panelInfo);
+    panelLoopInfo.add(Box.createHorizontalGlue());
+
+    panelLoopInfo.addMouseListener(new MouseAdapter()
+    {
+      public void mouseClicked(MouseEvent e)
+      {
+        panelRight.add(viewMedicine(medicine), medicine.getMedName());
+        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        cl.show(panelRight, medicine.getMedName());
+      }
+    });
+
+    return panelLoopInfo;
+  }
+
+  public JPanel makeDetailCard(String type, String title, String shortInfo) {
     String imgURL = "";
     switch (type) {
-      case "medicine":
-        imgURL = "tablet.png";
-        break;
       case "appointment":
         imgURL = "calendar.png";
         break;
@@ -429,12 +535,20 @@ public class GUI implements ActionListener {
         break;
     }
 
-    JLabel labelTitle = new JLabel(example01);
-    JLabel labelShortInfo = new JLabel(example02);
+    JLabel labelTitle = new JLabel(title);
+    JLabel labelShortInfo = new JLabel(shortInfo);
     JLabel labelPic = new JLabel();
     JPanel panelLoopInfo = new JPanel();
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
     setPadding(panelLoopInfo, 5, 0, 20, 0);
+    labelTitle.addMouseListener(new MouseAdapter()
+    {
+      public void mouseClicked(MouseEvent e)
+      {
+        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        cl.show(panelRight, "ดูยา");
+      }
+    });
 
     JPanel panelPic = new JPanel();
     panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
@@ -578,7 +692,7 @@ public class GUI implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     String btnCommand = e.getActionCommand();
-    if (btnCommand.equals("บันทึกยา")) {
+    if (btnCommand.equals("บันทึกยา") || btnCommand.equals("ข้ามขั้นตอนนี้")) {
       if (frameWelcome == null) {
         CardLayout cl = (CardLayout)(panelRight.getLayout());
         cl.show(panelRight, "ยาทั้งหมด");
@@ -597,8 +711,20 @@ public class GUI implements ActionListener {
         username = tfUserName.getText();
       }
       user = new User(username);
+      initSampleMedicine();
       init();
     }
+  }
+
+  public void initSampleMedicine() {
+    ArrayList<String> sampleMedTime = new ArrayList<>();
+    sampleMedTime.add("morning");
+    sampleMedTime.add("afternoon");
+    sampleMedTime.add("evening");
+    ArrayList<String> sampleMedDoseStr = new ArrayList<>();
+    sampleMedDoseStr.add("หลังอาหาร");
+    Medicine prednisolone = new Medicine("Prednisolone", "tablet", "white", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 20, "31/12/2018");
+    user.addUserMedicine(prednisolone);
   }
 
   public JLabel makeLabelTitle(String labelText) {

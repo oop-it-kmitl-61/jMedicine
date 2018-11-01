@@ -1,13 +1,16 @@
+import java.util.ArrayList;
+
 public class User {
   private String userName = "(ไม่ได้ตั้งชื่อ)";
   private String userGender;
   private String userAge;
   private String userWeight;
   private String userHeight;
-
+  private ArrayList<Medicine> userMedicines;
 
   public User(String userName) {
     this.userName = userName;
+    this.userMedicines = new ArrayList<>();
   }
 
   public User(String userName, String userGender, String userAge, String userWeight,
@@ -57,5 +60,13 @@ public class User {
 
   public void setUserHeight(String userHeight) {
     this.userHeight = userHeight;
+  }
+
+  public ArrayList<Medicine> getUserMedicines() {
+    return userMedicines;
+  }
+
+  public void addUserMedicine(Medicine medicine) {
+    this.userMedicines.add(medicine);
   }
 }
