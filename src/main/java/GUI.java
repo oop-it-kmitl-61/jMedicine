@@ -34,14 +34,22 @@ public class GUI implements ActionListener {
   private Dimension windowSize, minSize;
   private Color mainBlue;
   private User user;
+  private ArrayList<Medicine> userMedicines;
+  private ArrayList<Doctor> userDoctors;
+  private MedicineUtil medUtil;
 
   public GUI(Dimension windowSize) {
+    this.medUtil = new MedicineUtil();
     this.windowSize = windowSize;
     this.minSize = new Dimension(640, 480);
     this.mainBlue = new Color(20, 101, 155);
   }
 
   public void init() {
+
+    userMedicines = user.getUserMedicines();
+    userDoctors = user.getUserDoctors();
+
     // Main Panels
     panelMain = new JPanel(new BorderLayout());
     panelLeft = new JPanel(new GridBagLayout());
@@ -68,6 +76,7 @@ public class GUI implements ActionListener {
     panelRight.add(nearbyHospitals(), "โรงพยาบาลใกล้เคียง");
     panelRight.add(settings(), "การตั้งค่า");
     panelRight.add(addMedicine(), "เพิ่มยาใหม่");
+    panelRight.add(addDoctor(), "เพิ่มแพทย์ใหม่");
 
     // Add to main panel
     panelMain.add(panelLeft, BorderLayout.WEST);
@@ -109,14 +118,19 @@ public class GUI implements ActionListener {
 
     panelLoop = newPanelLoop();
     panelLoop.add(makeNewButton("เพิ่มยาใหม่"));
-    // Make Loop
-    Iterator<Medicine> iterator = userMedicines.iterator();
-    while (iterator.hasNext()) {
-      Medicine medCurrent = iterator.next();
-      cardLoop = makeMedCard(medCurrent);
-      panelLoop.add(cardLoop);
+
+    if (userMedicines.isEmpty()) {
+
+    } else {
+      // Make Loop
+      Iterator<Medicine> iterator = userMedicines.iterator();
+      while (iterator.hasNext()) {
+        Medicine medCurrent = iterator.next();
+        cardLoop = makeMedCard(medCurrent);
+        panelLoop.add(cardLoop);
+      }
+      // End Make Loop
     }
-    // End Make Loop
 
     panelSub02.add(panelTitle, BorderLayout.NORTH);
     panelSub02.add(panelLoop);
@@ -131,7 +145,7 @@ public class GUI implements ActionListener {
     panelLoop = newPanelLoop();
     panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
     // Make Loop
-    cardLoop = makeDetailCard("appointment", "1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
+    cardLoop = makeAppointmentCard("1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
     panelLoop.add(cardLoop);
     // End Make Loop
     panelSub03.add(panelLoop);
@@ -144,12 +158,24 @@ public class GUI implements ActionListener {
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeLabelTitle("แพทย์"));
 
+    ArrayList<Doctor> userDoctors = user.getUserDoctors();
+
     panelLoop = newPanelLoop();
     panelLoop.add(makeNewButton("เพิ่มแพทย์ใหม่"));
-    // Make Loop
-    cardLoop = makeDetailCard("doctor", "นพ.เก่ง จัง", "แผนกหู คอ จมูก โรงพยาบาลบำรุงราษฎร์");
-    panelLoop.add(cardLoop);
-    // End Make Loop
+
+    if (userDoctors.isEmpty()) {
+
+    } else {
+      // Make Loop
+      Iterator<Doctor> iterator = userDoctors.iterator();
+      while (iterator.hasNext()) {
+        Doctor doctorCurrent = iterator.next();
+        cardLoop = makeDoctorCard(doctorCurrent);
+        panelLoop.add(cardLoop);
+      }
+      // End Make Loop
+    }
+
     panelSub04.add(panelLoop);
     panelSub04.add(panelTitle, BorderLayout.NORTH);
 
@@ -210,16 +236,19 @@ public class GUI implements ActionListener {
 
   public JPanel viewMedicine(Medicine medicine) {
     String medName = medicine.getMedName();
+    JLabel labelPic = medUtil.getMedIcon(medicine);
     JPanel panelView = new JPanel(new BorderLayout());
     JPanel panelSub = new JPanel();
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
     JLabel labelTitle = makeLabelTitle("< "+medName);
     makeLabelClickable(labelTitle, "ยาทั้งหมด");
+    setPadding(labelPic, 0, 0, 10);
 
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(labelTitle);
     setPadding(panelTitle, 0, 0, 20);
 
+    panelSub.add(labelPic);
     panelSub.add(new JLabel("ชื่อยา: " + medName));
     panelSub.add(new JLabel("คำอธิบาย: " + medicine.getMedDescription()));
     panelSub.add(new JLabel("เวลาที่ต้องทาน: " + medicine.getMedTime() + " " + medicine.getMedDoseStr()));
@@ -228,6 +257,63 @@ public class GUI implements ActionListener {
     panelSub.add(new JLabel("จำนวนยาเริ่มต้น: " + medicine.getMedRemaining()));
     panelSub.add(new JLabel("จำนวนยาที่เหลือ: " + medicine.getMedRemaining()));
     panelSub.add(new JLabel("วันหมดอายุ: " + medicine.getMedEXP()));
+
+    panelView.add(panelTitle, BorderLayout.NORTH);
+    panelView.add(panelSub);
+
+    return panelView;
+  }
+
+  public JPanel addDoctor() {
+    JPanel panelAddDoctor = new JPanel();
+    JPanel panelSub = new JPanel();
+    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    JLabel labelTitle = makeLabelTitle("< เพิ่มแพทย์ใหม่");
+    makeLabelClickable(labelTitle, "แพทย์");
+    panelTitle = new JPanel(new BorderLayout());
+    panelTitle.add(labelTitle);
+    setPadding(panelTitle, 0, 0, 20);
+
+    JTextField tfDoctorName = new JTextField();
+    JTextField tfDoctorWard = new JTextField();
+    JTextField tfDoctorHospital = new JTextField();
+    String[] prefixes = {"นพ.", "พญ.", "ศ.นพ", "ผศ.นพ"};
+    JComboBox<String> cbPrefix = new JComboBox<>(prefixes);
+    //TODO: ทำให้เพิ่มวันและเวลาที่แพทย์เข้าตรวจได้
+    //แนวคิด: ทำ JCheckBox ให้ครบทุกวัน (จันทร์-เสาร์) ให้ติ๊กเลือก ถ้าติ๊กช่องไหนก็ใส่เวลาลง textfield ของวันนั้นเข้าไปด้วย
+
+    panelSub.add(new JLabel("คำนำหน้า"));
+    panelSub.add(cbPrefix);
+    panelSub.add(new JLabel("ชื่อ-สกุล"));
+    panelSub.add(tfDoctorName);
+    panelSub.add(new JLabel("แผนก"));
+    panelSub.add(tfDoctorWard);
+    panelSub.add(new JLabel("ชื่อสถานพยาบาล"));
+    panelSub.add(tfDoctorHospital);
+
+    panelAddDoctor.add(panelTitle, BorderLayout.NORTH);
+    panelAddDoctor.add(panelSub);
+
+    return panelAddDoctor;
+  }
+
+  public JPanel viewDoctor(Doctor doctor) {
+    String doctorName = doctor.getPrefix() + " " + doctor.getName();
+    JPanel panelView = new JPanel(new BorderLayout());
+    JPanel panelSub = new JPanel();
+    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    JLabel labelTitle = makeLabelTitle("< "+doctorName);
+    makeLabelClickable(labelTitle, "แพทย์");
+
+    panelTitle = new JPanel(new BorderLayout());
+    panelTitle.add(labelTitle);
+    setPadding(panelTitle, 0, 0, 20);
+
+
+    panelSub.add(new JLabel("ชื่อแพทย์: " + doctorName));
+    panelSub.add(new JLabel("แผนก: " + doctor.getWard()));
+    panelSub.add(new JLabel("โรงพยาบาล: " + doctor.getHospital()));
+    panelSub.add(new JLabel("เวลาเข้าตรวจ: " + doctor.getWorkTime()));
 
     panelView.add(panelTitle, BorderLayout.NORTH);
     panelView.add(panelSub);
@@ -451,35 +537,11 @@ public class GUI implements ActionListener {
   }
 
   public JPanel makeMedCard(Medicine medicine) {
-    String imgURL = "";
-    boolean urlFinished = false;
-    switch (medicine.getMedType()) {
-      case "tablet":
-        imgURL += "tablet-";
-        break;
-      case "capsule":
-        imgURL += "capsule.png";
-        urlFinished = true;
-        break;
-      case "liquid":
-        imgURL += "liquid-";
-        break;
-      case "inject":
-        imgURL += "inject.png";
-        urlFinished = true;
-        break;
-    }
-
-    if (!urlFinished) {
-      imgURL += medicine.getMedColor();
-      imgURL += ".png";
-    }
-
     String medTitle = medicine.getMedName()+" ("+medicine.getMedDescription()+")";
     String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+medicine.getMedEXP();
     JLabel labelTitle = new JLabel(medTitle);
     JLabel labelShortInfo = new JLabel(medShortInfo);
-    JLabel labelPic = new JLabel();
+    JLabel labelPic = medUtil.getMedIcon(medicine);
     JPanel panelLoopInfo = new JPanel();
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
     setPadding(panelLoopInfo, 5, 0, 20, 0);
@@ -489,14 +551,6 @@ public class GUI implements ActionListener {
 
     JPanel panelInfo = new JPanel();
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
-
-    try {
-      Image img = ImageIO.read(new File("src/main/img/"+imgURL));
-      labelPic.setIcon(new ImageIcon(img));
-    } catch (Exception ex) {
-      System.out.println(ex);
-
-    }
 
     panelPic.add(labelPic);
     panelInfo.add(labelTitle);
@@ -524,31 +578,15 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
-  public JPanel makeDetailCard(String type, String title, String shortInfo) {
-    String imgURL = "";
-    switch (type) {
-      case "appointment":
-        imgURL = "calendar.png";
-        break;
-      case "doctor":
-        imgURL = "doctor.png";
-        break;
-    }
-
-    JLabel labelTitle = new JLabel(title);
-    JLabel labelShortInfo = new JLabel(shortInfo);
+  public JPanel makeDoctorCard(Doctor doctor) {
+    String doctorName = doctor.getPrefix() + " " + doctor.getName();
+    JLabel labelTitle = new JLabel(doctorName);
+    String doctorShortInfo = "แผนก " + doctor.getWard() + " โรงพยาบาล" + doctor.getHospital();
+    JLabel labelShortInfo = new JLabel(doctorShortInfo);
     JLabel labelPic = new JLabel();
     JPanel panelLoopInfo = new JPanel();
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
     setPadding(panelLoopInfo, 5, 0, 20, 0);
-    labelTitle.addMouseListener(new MouseAdapter()
-    {
-      public void mouseClicked(MouseEvent e)
-      {
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
-        cl.show(panelRight, "ดูยา");
-      }
-    });
 
     JPanel panelPic = new JPanel();
     panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
@@ -557,11 +595,57 @@ public class GUI implements ActionListener {
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
 
     try {
-      Image img = ImageIO.read(new File("src/main/img/"+imgURL));
+      Image img = ImageIO.read(new File("src/main/img/doctor.png"));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ex) {
       System.out.println(ex);
+    }
 
+    panelPic.add(labelPic);
+    panelInfo.add(labelTitle);
+    panelInfo.add(labelShortInfo);
+
+    setPadding(labelTitle, 5, 0, 5, 0);
+    makeLabelBold(labelTitle);
+
+    setPadding(labelPic, 5, 10, 0, 0);
+
+    panelLoopInfo.add(panelPic);
+    panelLoopInfo.add(panelInfo);
+    panelLoopInfo.add(Box.createHorizontalGlue());
+
+    panelLoopInfo.addMouseListener(new MouseAdapter()
+    {
+      public void mouseClicked(MouseEvent e)
+      {
+        panelRight.add(viewDoctor(doctor), doctor.getName());
+        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        cl.show(panelRight, doctor.getName());
+      }
+    });
+
+    return panelLoopInfo;
+  }
+
+  public JPanel makeAppointmentCard(String title, String shortInfo) {
+    JLabel labelTitle = new JLabel(title);
+    JLabel labelShortInfo = new JLabel(shortInfo);
+    JLabel labelPic = new JLabel();
+    JPanel panelLoopInfo = new JPanel();
+    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
+    setPadding(panelLoopInfo, 5, 0, 20, 0);
+
+    JPanel panelPic = new JPanel();
+    panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
+
+    JPanel panelInfo = new JPanel();
+    panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
+
+    try {
+      Image img = ImageIO.read(new File("src/main/img/calendar.png"));
+      labelPic.setIcon(new ImageIcon(img));
+    } catch (Exception ex) {
+      System.out.println(ex);
     }
 
     panelPic.add(labelPic);
@@ -580,8 +664,6 @@ public class GUI implements ActionListener {
   }
 
   public JPanel addMedGUI() {
-    MedicineUtil medUtil = new MedicineUtil();
-
     String medUnit = "เม็ด";
     JPanel panelAddMed = new JPanel();
     JTextField tfMedName = new JTextField(10);
@@ -595,7 +677,7 @@ public class GUI implements ActionListener {
     String[] medType = medUtil.getMedType();
     String[] medColor = medUtil.getMedColor();
     String[] medTime = medUtil.getMedTime();
-    String[] medAmountStr = medUtil.getMedAmountStr();
+    String[] medDoseStr = medUtil.getMedDoseStr();
     ArrayList<JCheckBox> chTime = new ArrayList<>();
     ArrayList<JRadioButton> rdAmountStr = new ArrayList<>();
 
@@ -606,7 +688,7 @@ public class GUI implements ActionListener {
       chTime.add(new JCheckBox(time));
     }
 
-    for (String amountStr : medAmountStr) {
+    for (String amountStr : medDoseStr) {
       JRadioButton rdItem = new JRadioButton(amountStr);
       rdAmountStr.add(rdItem);
       rdGroup.add(rdItem);
@@ -711,20 +793,49 @@ public class GUI implements ActionListener {
         username = tfUserName.getText();
       }
       user = new User(username);
-      initSampleMedicine();
+      initSampleDoctor();
+      initSampleMedicine01();
+      initSampleMedicine02();
+      initSampleMedicine03();
       init();
     }
   }
 
-  public void initSampleMedicine() {
+  public void initSampleMedicine01() {
     ArrayList<String> sampleMedTime = new ArrayList<>();
-    sampleMedTime.add("morning");
-    sampleMedTime.add("afternoon");
-    sampleMedTime.add("evening");
+    sampleMedTime.add("เช้า");
+    sampleMedTime.add("กลางวัน");
+    sampleMedTime.add("เย็น");
     ArrayList<String> sampleMedDoseStr = new ArrayList<>();
     sampleMedDoseStr.add("หลังอาหาร");
     Medicine prednisolone = new Medicine("Prednisolone", "tablet", "white", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 20, "31/12/2018");
     user.addUserMedicine(prednisolone);
+  }
+
+  public void initSampleMedicine02() {
+    ArrayList<String> sampleMedTime = new ArrayList<>();
+    sampleMedTime.add("ก่อนนอน");
+    ArrayList<String> sampleMedDoseStr = new ArrayList<>();
+    sampleMedDoseStr.add("");
+    Medicine chlopheniramine = new Medicine("Chlopheniramine", "tablet", "yellow", "ยาแก้แพ้", sampleMedTime, sampleMedDoseStr, 1, 50, "21/12/2019");
+    user.addUserMedicine(chlopheniramine);
+  }
+
+  public void initSampleMedicine03() {
+    ArrayList<String> sampleMedTime = new ArrayList<>();
+    sampleMedTime.add("เช้า");
+    ArrayList<String> sampleMedDoseStr = new ArrayList<>();
+    sampleMedDoseStr.add("หลังอาหาร");
+    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 7, "28/02/2019");
+    user.addUserMedicine(amoxicillin);
+  }
+
+  public void initSampleDoctor() {
+    ArrayList<String> workTime = new ArrayList<String>();
+    workTime.add("วันพุธ เวลา 09.00 น. - 16.00 น.");
+    workTime.add("วันพฤหัสบดี เวลา 09.00 น. - 16.00 น.");
+    Doctor doctor = new Doctor("นพ.", "เก่ง จัง", "หู คอ จมูก", "บำรุงราษฎร์", workTime);
+    user.addUserDoctor(doctor);
   }
 
   public JLabel makeLabelTitle(String labelText) {

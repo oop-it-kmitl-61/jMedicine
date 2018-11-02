@@ -7,10 +7,12 @@ public class User {
   private String userWeight;
   private String userHeight;
   private ArrayList<Medicine> userMedicines;
+  private ArrayList<Doctor> userDoctors;
 
   public User(String userName) {
     this.userName = userName;
     this.userMedicines = new ArrayList<>();
+    this.userDoctors = new ArrayList<>();
   }
 
   public User(String userName, String userGender, String userAge, String userWeight,
@@ -66,7 +68,15 @@ public class User {
     return userMedicines;
   }
 
+  public ArrayList<Doctor> getUserDoctors() {
+    return userDoctors;
+  }
+
   public void addUserMedicine(Medicine medicine) {
     this.userMedicines.add(medicine);
+  }
+
+  public void addUserDoctor(Doctor doctor) {
+    this.userDoctors.add(doctor);
   }
 }
