@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class Doctor {
+
   private String prefix;
   private String name;
   private String ward;

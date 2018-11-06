@@ -5,8 +5,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class MedicineUtil {
+
   private String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "ยาแบบฉีด"};
-  private String[] medColor = {"ขาว", "ใส", "น้ำเงิน", "เขียว", "เหลือง", "ชมพู", "ส้ม", "น้ำตาล", "ไม่ระบุ"};
+  private String[] medColor = {"ขาว", "ใส", "น้ำเงิน", "เขียว", "เหลือง", "ชมพู", "ส้ม", "น้ำตาล",
+      "ไม่ระบุ"};
   private String[] medTime = {"เช้า", "กลางวัน", "เย็น", "ก่อนนอน"};
   private String[] medDoseStr = {"ก่อนอาหาร", "หลังอาหาร", "พร้อมอาหาร/หลังอาหารทันที"};
 
@@ -53,7 +55,7 @@ public class MedicineUtil {
     }
 
     try {
-      Image img = ImageIO.read(new File("src/main/img/"+imgURL));
+      Image img = ImageIO.read(new File("src/main/img/" + imgURL));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ex) {
       ex.printStackTrace();

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Medicine {
+
   private String medName;
   private String medType;
   private String medColor;

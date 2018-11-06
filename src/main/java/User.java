@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class User {
+
   private String userName = "(ไม่ได้ตั้งชื่อ)";
   private String userGender;
   private String userAge;
