@@ -1,4 +1,4 @@
-// import com.teamdev.jxmaps.MapViewOptions;
+package main;// import com.teamdev.jxmaps.MapViewOptions;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
