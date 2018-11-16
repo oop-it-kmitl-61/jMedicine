@@ -1,4 +1,10 @@
-package main;// import com.teamdev.jxmaps.MapViewOptions;
+package main;
+import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.PermissionHandler;
+import com.teamdev.jxbrowser.chromium.PermissionRequest;
+import com.teamdev.jxbrowser.chromium.PermissionStatus;
+import com.teamdev.jxbrowser.chromium.PermissionType;
+import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -46,6 +52,14 @@ public class GUI implements ActionListener {
     this.windowSize = windowSize;
     this.minSize = new Dimension(800, 600);
     this.mainBlue = new Color(20, 101, 155);
+    //Load font
+    try {
+      GraphicsEnvironment ge =
+          GraphicsEnvironment.getLocalGraphicsEnvironment();
+      ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/main/font/THSarabunNew.ttf")));
+    } catch (IOException | FontFormatException ex) {
+      ex.printStackTrace();
+    }
   }
 
   public void init() {
@@ -192,14 +206,20 @@ public class GUI implements ActionListener {
   public JPanel nearbyHospitals() {
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeTitleLabel("โรงพยาบาลใกล้เคียง"));
+    double[] location = Maps.getLocation();
 
-//    MapViewOptions options = new MapViewOptions();
-//    options.importPlaces();
-//    final Maps mapView = new Maps(options);
+    Browser browser = new Browser();
+    BrowserView view = new BrowserView(browser);
+    browser.setPermissionHandler(new PermissionHandler() {
+      @Override
+      public PermissionStatus onRequestPermission(PermissionRequest request) {
+        return PermissionStatus.GRANTED;
+      }
+    });
+    browser.loadURL("https://www.google.co.th/maps/search/hospitals/@"+location[0]+","+location[1]+",12z");
 
     panelSub05.add(panelTitle, BorderLayout.NORTH);
-    panelSub05.setBackground(Color.WHITE);
-//    panelSub05.add(mapView);
+    panelSub05.add(view);
 
     return panelSub05;
   }
@@ -342,15 +362,6 @@ public class GUI implements ActionListener {
   }
 
   public void initWelcome() {
-
-    try {
-      GraphicsEnvironment ge =
-          GraphicsEnvironment.getLocalGraphicsEnvironment();
-      ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/main/font/THSarabunNew.ttf")));
-    } catch (IOException | FontFormatException ex) {
-      ex.printStackTrace();
-    }
-
     frameWelcome = new JFrame("jMedicine: ตั้งค่าครั้งแรก");
     JLabel space = new JLabel();
     JLabel labelWelcomeSub = makeLabel("เข้าสู่ระบบเพื่อ Sync ข้อมูลของคุณทุกที่ ทุกเวลา");

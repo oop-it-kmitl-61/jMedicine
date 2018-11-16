@@ -1,43 +1,61 @@
-//import com.teamdev.jxmaps.GeocoderCallback;
-//import com.teamdev.jxmaps.GeocoderRequest;
-//import com.teamdev.jxmaps.GeocoderResult;
-//import com.teamdev.jxmaps.GeocoderStatus;
-//import com.teamdev.jxmaps.InfoWindow;
-//import com.teamdev.jxmaps.Map;
-//import com.teamdev.jxmaps.MapReadyHandler;
-//import com.teamdev.jxmaps.MapStatus;
-//import com.teamdev.jxmaps.MapViewOptions;
-//import com.teamdev.jxmaps.Marker;
-//import com.teamdev.jxmaps.swing.MapView;
-//
-//public class Maps extends MapView {
-//  public Maps(MapViewOptions options) {
-//    super(options);
-//    setOnMapReadyHandler(new MapReadyHandler() {
-//      @Override
-//      public void onMapReady(MapStatus status) {
-//        if (status == MapStatus.MAP_STATUS_OK) {
-//          final Map map = getMap();
-//          map.setZoom(5.0);
-//          GeocoderRequest request = new GeocoderRequest(map);
-//          request.setAddress("Bangkok, TH");
-//
-//          getServices().getGeocoder().geocode(request, new GeocoderCallback(map) {
-//            @Override
-//            public void onComplete(GeocoderResult[] result, GeocoderStatus status) {
-//              if (status == GeocoderStatus.OK) {
-////                map.setCenter(result[0].getGeometry().getLocation());
-////                Marker marker = new Marker(map);
-////                marker.setPosition(result[0].getGeometry().getLocation());
-////
-////                final InfoWindow window = new InfoWindow(map);
-////                window.setContent("Hello, World!");
-////                window.open(map, marker);
-//              }
-//            }
-//          });
-//        }
-//      }
-//    });
-//  }
-//}
+package main;
+
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.CityResponse;
+import com.maxmind.geoip2.record.Location;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+
+public class Maps {
+
+  public static double[] getLocation() {
+    double[] result = null;
+
+    //Get IP Address
+    String systemipaddress = "";
+    try {
+      URL url_name = new URL("http://bot.whatismyipaddress.com");
+      BufferedReader sc =
+          new BufferedReader(new InputStreamReader(url_name.openStream()));
+      systemipaddress = sc.readLine().trim();
+    }
+    catch (Exception e) {
+      systemipaddress = "Cannot Execute Properly";
+    }
+
+    //Get lat, lng
+    File database = new File("src/main/mapdb/GeoLite2-City.mmdb");
+    DatabaseReader reader = null;
+    try {
+      reader = new DatabaseReader.Builder(database).build();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    InetAddress ipAddress = null;
+    try {
+      ipAddress = InetAddress.getByName(systemipaddress);
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    }
+
+    CityResponse response = null;
+    try {
+      response = reader.city(ipAddress);
+      Location location = response.getLocation();
+      result = new double[] {location.getLatitude(), location.getLongitude()};
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (GeoIp2Exception e) {
+      e.printStackTrace();
+    }
+
+    return result;
+  }
+}
