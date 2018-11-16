@@ -32,7 +32,7 @@ public class GUI implements ActionListener {
   private JPanel panelWelcome, panelYourName, panelFirstMed;
   private JPanel panelSub01, panelSub02, panelSub03, panelSub04, panelSub05, panelSub06;
   private JPanel panelTitle, panelLoop, cardLoop;
-  private JTextField tfUserName, tfPassword;
+  private JTextField tfUserName, tfPassword, tfConfirmPassword;
   private JButton buttons[];
   private Dimension windowSize, minSize;
   private Color mainBlue;
@@ -408,6 +408,37 @@ public class GUI implements ActionListener {
     gbc.weighty = 300;
     panelYourName.add(space, gbc);
 
+    // Sign Up Panel
+    JPanel panelSignUp = new JPanel();
+    panelSignUp.setLayout(new BoxLayout(panelSignUp, BoxLayout.PAGE_AXIS));
+    labelUsername = makeLabel("Username");
+    labelPassword = makeLabel("Password");
+    tfUserName = new JTextField(20);
+    tfPassword = new JTextField(20);
+    tfConfirmPassword = new JTextField(20);
+    JButton btnSignUp = makeButton("ลงทะเบียน");
+    JPanel panelSub = new JPanel();
+    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    JButton btnTitle = makeBackButton("ลงทะเบียน", "ยังไม่ได้เข้าสู่ระบบ");
+
+    panelTitle = new JPanel(new BorderLayout());
+    panelTitle.add(btnTitle);
+    panelTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+    setPadding(panelTitle, 0, 0, 20);
+    setPadding(panelSub, 0, 45, 200, 25);
+    setPadding(btnSignUp, 20, 0, 0, 0);
+
+    panelSub.add(labelUsername);
+    panelSub.add(tfUserName);
+    panelSub.add(labelPassword);
+    panelSub.add(tfPassword);
+    panelSub.add(makeLabel("กรอก Password อีกครั้ง"));
+    panelSub.add(tfConfirmPassword);
+    panelSub.add(btnSignUp);
+
+    panelSignUp.add(panelTitle, BorderLayout.NORTH);
+    panelSignUp.add(panelSub);
+
     // FirstMed Panel
     JLabel labelTitle = makeTitleLabel("เพิ่มยาตัวแรกของคุณ");
     JButton btnSkip = makeButton("ข้ามขั้นตอนนี้");
@@ -425,8 +456,9 @@ public class GUI implements ActionListener {
     panelFirstMed.add(addMedGUI());
     panelFirstMed.add(btnSkip);
 
-    panelWelcome.add(panelYourName);
+    panelWelcome.add(panelYourName, "ยังไม่ได้เข้าสู่ระบบ");
     panelWelcome.add(panelFirstMed, "เพิ่มยาตัวแรก");
+    panelWelcome.add(panelSignUp, "ลงทะเบียน");
 
     frameWelcome.add(panelWelcome);
     frameWelcome.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -528,8 +560,13 @@ public class GUI implements ActionListener {
     {
       public void mouseClicked(MouseEvent e)
       {
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
-        cl.show(panelRight, href);
+        if (href.equals("ลงทะเบียน")) {
+          CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+          cl.show(panelWelcome, "ลงทะเบียน");
+        } else {
+          CardLayout cl = (CardLayout)(panelRight.getLayout());
+          cl.show(panelRight, href);
+        }
       }
     });
   }
@@ -550,8 +587,13 @@ public class GUI implements ActionListener {
     button.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
-        cl.show(panelRight, backTo);
+        if (backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
+          CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+          cl.show(panelWelcome, "ยังไม่ได้เข้าสู่ระบบ");
+        } else {
+          CardLayout cl = (CardLayout)(panelRight.getLayout());
+          cl.show(panelRight, backTo);
+        }
       }
     });
     return button;
