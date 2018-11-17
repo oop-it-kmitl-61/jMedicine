@@ -26,7 +26,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -35,7 +34,7 @@ import javax.swing.border.CompoundBorder;
  * GUI class creates all graphic user interface, all in javax.swing.
  * Use a constructor to new a GUI.
  *
- * @param windowSize a Dimension class consists of width and height
+ * @param windowSize a Dimension class consists of width and height.
  */
 
 public class GUI implements ActionListener {
@@ -50,8 +49,6 @@ public class GUI implements ActionListener {
   private Dimension windowSize, minSize;
   private Color mainBlue;
   private User user;
-  private ArrayList<Medicine> userMedicines;
-  private ArrayList<Doctor> userDoctors;
   private MedicineUtil medUtil;
 
   public GUI(Dimension windowSize) {
@@ -70,11 +67,7 @@ public class GUI implements ActionListener {
   }
 
   public void init() {
-    /** Creates the main frame including left navigation and 6 sub panels on the right */
-
-    // Obtain medicines and doctors information
-    userMedicines = user.getUserMedicines();
-    userDoctors = user.getUserDoctors();
+    /* Creates the main frame including left navigation and 6 sub panels on the right */
 
     // Init main panels
     JPanel panelMain = new JPanel(new BorderLayout());
@@ -117,9 +110,9 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelOverview() {
-    /**
-     * Creates GUI of overview panel, displaying a summary of upcoming events,
-     * including medication reminders and doctor appointments.
+    /*
+      Creates GUI of overview panel, displaying a summary of upcoming events,
+      including medication reminders and doctor appointments.
      */
 
     // Init title panel displaying title label
@@ -146,11 +139,11 @@ public class GUI implements ActionListener {
     return panelSub01;
   }
 
-  public JPanel panelAllMedicines() {
-    /**
-     * Creates GUI displaying all medicines that user has had input.
-     * All medicines will be displayed in a card with a medicine icon,
-     * a name and a short summary.
+  private JPanel panelAllMedicines() {
+    /*
+      Creates GUI displaying all medicines that user has had input.
+      All medicines will be displayed in a card with a medicine icon,
+      a name and a short summary.
      */
 
     // Init title panel displaying title label
@@ -183,10 +176,10 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelAllAppointments() {
-    /**
-     * Creates GUI displaying all appointments that user has had input.
-     * All appointments will be displayed in a card with a default icon,
-     * a date and a short summary.
+    /*
+      Creates GUI displaying all appointments that user has had input.
+      All appointments will be displayed in a card with a default icon,
+      a date and a short summary.
      */
 
     // Init title panel displaying title label
@@ -211,10 +204,10 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelAllDoctors() {
-    /**
-     * Creates GUI displaying all doctors that user has had input.
-     * All doctors will be displayed in a card with a default icon,
-     * a name and a short summary.
+    /*
+      Creates GUI displaying all doctors that user has had input.
+      All doctors will be displayed in a card with a default icon,
+      a name and a short summary.
      */
 
     // Init title panel displaying title label
@@ -232,9 +225,7 @@ public class GUI implements ActionListener {
       // TODO: What to show if user has never added a single doctor?
     } else {
       // Make Loop
-      Iterator<Doctor> iterator = userDoctors.iterator();
-      while (iterator.hasNext()) {
-        Doctor doctorCurrent = iterator.next();
+      for (Doctor doctorCurrent : userDoctors) {
         cardLoop = makeDoctorCard(doctorCurrent);
         panelLoop.add(cardLoop);
       }
@@ -250,9 +241,9 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelNearbyHospitals() {
-    /**
-     * Creates GUI displaying Google Maps that is showing the current position
-     * of the user, fetched from a public IP address, queried nearby hospitals.
+    /*
+      Creates GUI displaying Google Maps that is showing the current position
+      of the user, fetched from a public IP address, queried nearby hospitals.
      */
 
     // Init title panel displaying title label
@@ -284,9 +275,7 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelSettings() {
-    /**
-     * Creates GUI displaying user's settings
-     */
+    /* Creates GUI displaying user's settings */
 
     // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
@@ -314,9 +303,7 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelAddMedicine() {
-    /**
-     * Creates outer GUI when user add a new medicine from all medicines page.
-     */
+    /* Creates outer GUI when user add a new medicine from all medicines page. */
 
     // Init title panel displaying a button that can be clicked to go back
     JPanel panelAddMedicine = new JPanel(new BorderLayout());
@@ -338,9 +325,7 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelViewMedicine(Medicine medicine) {
-    /**
-     * Creates GUI displaying all information of a single medicine
-     */
+    /* Creates GUI displaying all information of a single medicine */
 
     String medName = medicine.getMedName();
     JLabel labelPic = medUtil.getMedIcon(medicine);
@@ -385,9 +370,7 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelAddDoctor() {
-    /**
-     * Creates GUI of the form for adding a new doctor.
-     */
+    /* Creates GUI of the form for adding a new doctor. */
     JPanel panelAddDoctor = new JPanel();
     JPanel panelSub = new JPanel();
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
@@ -420,9 +403,7 @@ public class GUI implements ActionListener {
   }
 
   private JPanel panelViewDoctor(Doctor doctor) {
-    /**
-     * Creates GUI displaying all information of a single doctor.
-     */
+    /* Creates GUI displaying all information of a single doctor. */
     String doctorName = doctor.getPrefix() + " " + doctor.getName();
     JPanel panelView = new JPanel(new BorderLayout());
     JPanel panelSub = new JPanel();
@@ -452,9 +433,9 @@ public class GUI implements ActionListener {
   }
 
   public void initWelcome() {
-    /**
-     * Creates a very first GUI. This GUI will be displayed if the program is being
-     * run for the first time or the user is not logged in.
+    /*
+      Creates a very first GUI. This GUI will be displayed if the program is being
+      run for the first time or the user is not logged in.
      */
 
     frameWelcome = new JFrame("jMedicine: ตั้งค่าครั้งแรก");
@@ -624,16 +605,13 @@ public class GUI implements ActionListener {
       if (tempCount == 0) {
         paintCurrentTabButton(button);
       }
-      button.addActionListener(new ActionListener() {
-        // Switch between sub panels
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          CardLayout cl = (CardLayout)(panelRight.getLayout());
-          cl.show(panelRight, e.getActionCommand());
-          paintButton();
-          if (e.getActionCommand().equals(button.getText())) {
-            paintCurrentTabButton(button);
-          }
+      // Switch between sub panels
+      button.addActionListener(e -> {
+        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        cl.show(panelRight, e.getActionCommand());
+        paintButton();
+        if (e.getActionCommand().equals(button.getText())) {
+          paintCurrentTabButton(button);
         }
       });
       gbc.gridy = buttonY;
@@ -699,22 +677,17 @@ public class GUI implements ActionListener {
     try {
       Image img = ImageIO.read(new File("src/main/img/back.png"));
       button.setIcon(new ImageIcon(img));
-    } catch (Exception ex) {
-      System.out.println(ex);
-    }
+    } catch (Exception ignored) { }
     button.setOpaque(false);
     button.setContentAreaFilled(false);
     button.setBorderPainted(false);
-    button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
-          CardLayout cl = (CardLayout)(panelWelcome.getLayout());
-          cl.show(panelWelcome, "ยังไม่ได้เข้าสู่ระบบ");
-        } else {
-          CardLayout cl = (CardLayout)(panelRight.getLayout());
-          cl.show(panelRight, backTo);
-        }
+    button.addActionListener(e -> {
+      if (backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
+        CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+        cl.show(panelWelcome, "ยังไม่ได้เข้าสู่ระบบ");
+      } else {
+        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        cl.show(panelRight, backTo);
       }
     });
     return button;
@@ -730,18 +703,13 @@ public class GUI implements ActionListener {
     try {
       Image img = ImageIO.read(new File("src/main/img/add.png"));
       btnNew.setIcon(new ImageIcon(img));
-    } catch (Exception ex) {
-      System.out.println(ex);
-    }
+    } catch (Exception ignored) { }
     btnNew.setAlignmentX(Component.LEFT_ALIGNMENT);
     btnNew.setHorizontalAlignment(SwingConstants.LEFT);
     btnNew.setFont(new Font("TH Sarabun New", Font.BOLD, 28));
-    btnNew.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
-        cl.show(panelRight, e.getActionCommand());
-      }
+    btnNew.addActionListener(e -> {
+      CardLayout cl = (CardLayout)(panelRight.getLayout());
+      cl.show(panelRight, e.getActionCommand());
     });
     btnNew.setOpaque(false);
     btnNew.setContentAreaFilled(false);
@@ -813,9 +781,7 @@ public class GUI implements ActionListener {
     try {
       Image img = ImageIO.read(new File("src/main/img/doctor.png"));
       labelPic.setIcon(new ImageIcon(img));
-    } catch (Exception ex) {
-      System.out.println(ex);
-    }
+    } catch (Exception ignored) { }
 
     panelPic.add(labelPic);
     panelInfo.add(labelTitle);
@@ -859,9 +825,7 @@ public class GUI implements ActionListener {
     try {
       Image img = ImageIO.read(new File("src/main/img/calendar.png"));
       labelPic.setIcon(new ImageIcon(img));
-    } catch (Exception ex) {
-      System.out.println(ex);
-    }
+    } catch (Exception ignored) { }
 
     panelPic.add(labelPic);
     panelInfo.add(labelTitle);
