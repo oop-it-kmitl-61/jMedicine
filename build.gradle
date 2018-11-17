@@ -28,9 +28,18 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url = 'http://maven.teamdev.com/repository/products' }
+}
+
+ext {
+    jxBrowserVersion = '6.22'
 }
 
 dependencies {
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+    compile "com.teamdev.jxbrowser:jxbrowser-cross-platform:${jxBrowserVersion}"
+    compile files("$rootDir/license.jar")
+    compile 'com.maxmind.geoip2:geoip2:2.12.0'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

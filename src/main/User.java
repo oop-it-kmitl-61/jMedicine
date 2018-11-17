@@ -2,6 +2,11 @@ package main;
 
 import java.util.ArrayList;
 
+/**
+ * Stores user information.
+ * Use a constructor to new a user.
+ */
+
 public class User {
 
   private String userName = "(ไม่ได้ตั้งชื่อ)";
