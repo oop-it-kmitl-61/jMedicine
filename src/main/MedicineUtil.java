@@ -6,8 +6,11 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-public class MedicineUtil {
+/**
+ * Helps displaying an attribute of a medicine.
+ */
 
+public class MedicineUtil {
   private String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "ยาแบบฉีด"};
   private String[] medColor = {"ขาว", "ใส", "น้ำเงิน", "เขียว", "เหลือง", "ชมพู", "ส้ม", "น้ำตาล",
       "ไม่ระบุ"};

@@ -12,6 +12,9 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+/**
+ * Gets latitude and longitude by a public IP address.
+ */
 public class Maps {
 
   public static double[] getLocation() {

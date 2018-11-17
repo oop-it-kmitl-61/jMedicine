@@ -6,8 +6,11 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import javax.swing.border.Border;
 
-public class RoundedBorder implements Border {
+/**
+ * Helps GUI class to make a better border.
+ */
 
+public class RoundedBorder implements Border {
   private int radius;
 
   RoundedBorder(int radius) {

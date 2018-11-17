@@ -33,6 +33,9 @@ import javax.swing.border.CompoundBorder;
 
 /**
  * GUI class creates all graphic user interface, all in javax.swing.
+ * Use a constructor to new a GUI.
+ *
+ * @param windowSize a Dimension class consists of width and height
  */
 
 public class GUI implements ActionListener {
@@ -289,12 +292,19 @@ public class GUI implements ActionListener {
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeTitleLabel("การตั้งค่า"));
 
+    JLabel labelSignOut = makeLabel("ออกจากระบบ");
+    labelSignOut.setForeground(Color.RED);
+    setPadding(labelSignOut, 0, 0, 20);
+    makeLabelClickable(labelSignOut, "ยังไม่ได้เข้าสู่ระบบ");
+
     JPanel panelBox = new JPanel();
     panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.PAGE_AXIS));
     setPadding(panelBox, 20, 0);
     JLabel labelUserName = makeTitleLabel(user.getUserName());
     panelBox.add(makeLabel("ผู้ใช้งานปัจจุบัน"));
     panelBox.add(labelUserName);
+    panelBox.add(labelSignOut);
+    panelBox.add(makeCheckBox("เปิดการแจ้งเตือน (macOS เท่านั้น)", true));
 
     // Add all sub panels into the main panel
     panelSub06.add(panelTitle, BorderLayout.NORTH);
@@ -386,9 +396,9 @@ public class GUI implements ActionListener {
     panelTitle.add(btnBack);
     setPadding(panelTitle, 0, 0, 20);
 
-    JTextField tfDoctorName = new JTextField();
-    JTextField tfDoctorWard = new JTextField();
-    JTextField tfDoctorHospital = new JTextField();
+    JTextField tfDoctorName = makeTextField();
+    JTextField tfDoctorWard = makeTextField();
+    JTextField tfDoctorHospital = makeTextField();
     String[] prefixes = {"นพ.", "พญ.", "ศ.นพ", "ผศ.นพ"};
     JComboBox cbPrefix = makeComboBox(prefixes);
     //TODO: ทำให้เพิ่มวันและเวลาที่แพทย์เข้าตรวจได้
@@ -454,12 +464,13 @@ public class GUI implements ActionListener {
     JLabel labelUsername = makeLabel("Username");
     JLabel labelPassword = makeLabel("Password");
     makeLabelClickable(labelRegister, "ลงทะเบียน");
-    tfUserName = new JTextField(20);
-    JTextField tfPassword = new JTextField(20);
+    tfUserName = makeTextField(20);
+    JTextField tfPassword = makeTextField(20);
     JButton btnSignIn = makeButton("เข้าสู่ระบบ");
     panelWelcome = new JPanel(new CardLayout());
     JPanel panelYourName = new JPanel(new GridBagLayout());
     JPanel panelFirstMed = new JPanel();
+    setPadding(labelRegister, 20, 60);
 
     // Welcome Panel
     JLabel labelWelcome = makeTitleLabel("ยินดีต้อนรับ");
@@ -509,9 +520,9 @@ public class GUI implements ActionListener {
     panelSignUp.setLayout(new BoxLayout(panelSignUp, BoxLayout.PAGE_AXIS));
     labelUsername = makeLabel("Username");
     labelPassword = makeLabel("Password");
-    tfUserName = new JTextField(20);
-    tfPassword = new JTextField(20);
-    JTextField tfConfirmPassword = new JTextField(20);
+    tfUserName = makeTextField(20);
+    tfPassword = makeTextField(20);
+    JTextField tfConfirmPassword = makeTextField(20);
     JButton btnSignUp = makeButton("ลงทะเบียน");
     JPanel panelSub = new JPanel();
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
@@ -664,9 +675,14 @@ public class GUI implements ActionListener {
     {
       public void mouseClicked(MouseEvent e)
       {
-        if (href.equals("ลงทะเบียน")) {
+        if (href.equals("ลงทะเบียน") || href.equals("ยังไม่ได้เข้าสู่ระบบ") ) {
+          frameWelcome.setVisible(true);
           CardLayout cl = (CardLayout)(panelWelcome.getLayout());
-          cl.show(panelWelcome, "ลงทะเบียน");
+          cl.show(panelWelcome, href);
+          try {
+            frameMain.setVisible(false);
+          } catch (NullPointerException ignored) {
+          }
         } else {
           CardLayout cl = (CardLayout)(panelRight.getLayout());
           cl.show(panelRight, href);
@@ -864,11 +880,11 @@ public class GUI implements ActionListener {
     /* Creates GUI of the form for adding a new medicine. */
     String medUnit = "เม็ด";
     JPanel panelAddMed = new JPanel();
-    JTextField tfMedName = new JTextField(10);
-    JTextField tfMedDescription = new JTextField(20);
-    JTextField tfAmount = new JTextField(2);
-    JTextField tfTotalMeds = new JTextField(2);
-    JTextField tfMedEXP = new JTextField(10);
+    JTextField tfMedName = makeTextField(10);
+    JTextField tfMedDescription = makeTextField(20);
+    JTextField tfAmount = makeTextField(2);
+    JTextField tfTotalMeds = makeTextField(2);
+    JTextField tfMedEXP = makeTextField(10);
     JButton btnSave = makeButton("บันทึกยา");
     ButtonGroup rdGroup = new ButtonGroup();
 
@@ -1034,9 +1050,22 @@ public class GUI implements ActionListener {
     user.addUserDoctor(doctor);
   }
 
+  private JTextField makeTextField(int columns) {
+    JTextField textField = new JTextField(columns);
+    textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    return textField;
+  }
+
+  private JTextField makeTextField() {
+    JTextField textField = new JTextField();
+    textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    return textField;
+  }
+
   private JComboBox makeComboBox(String[] comboBoxItems) {
     JComboBox comboBox = new JComboBox(comboBoxItems);
     comboBox.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    comboBox.setBackground(Color.WHITE);
     return comboBox;
   }
 
@@ -1044,6 +1073,13 @@ public class GUI implements ActionListener {
     JRadioButton radioButton = new JRadioButton(radioButtonText);
     radioButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     return radioButton;
+  }
+
+  private JCheckBox makeCheckBox(String checkBoxText, boolean isChecked) {
+    JCheckBox checkBox = new JCheckBox(checkBoxText);
+    checkBox.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    checkBox.setSelected(isChecked);
+    return checkBox;
   }
 
   private JCheckBox makeCheckBox(String checkBoxText) {
