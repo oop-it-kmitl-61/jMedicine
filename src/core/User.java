@@ -87,4 +87,17 @@ public class User {
   public void addUserDoctor(Doctor doctor) {
     this.userDoctors.add(doctor);
   }
+
+  @Override
+  public String toString() {
+    return "User{" +
+        "userName='" + userName + '\'' +
+        ", userGender='" + userGender + '\'' +
+        ", userAge='" + userAge + '\'' +
+        ", userWeight='" + userWeight + '\'' +
+        ", userHeight='" + userHeight + '\'' +
+        ", userMedicines=" + userMedicines +
+        ", userDoctors=" + userDoctors +
+        '}';
+  }
 }
