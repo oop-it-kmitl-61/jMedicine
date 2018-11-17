@@ -1,4 +1,8 @@
 package main;// import com.teamdev.jxmaps.MapViewOptions;
+import core.Doctor;
+import core.Medicine;
+import core.MedicineUtil;
+import core.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;

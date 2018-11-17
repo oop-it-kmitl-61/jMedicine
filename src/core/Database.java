@@ -1,4 +1,4 @@
-package main;
+package core;
 
 import java.sql.*;
 import java.util.Properties;
