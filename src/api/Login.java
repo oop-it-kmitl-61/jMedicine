@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
 public class Login {
 
   private Connection connection;
@@ -19,7 +20,7 @@ public class Login {
   }
 
   public User doSignIn(String username, String password)
-      throws NoSuchAlgorithmException, SQLException {
+      throws NoSuchAlgorithmException, SQLException, LoginException {
     password = sha256(password);
 
     String SQLCommand = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -29,14 +30,15 @@ public class Login {
     pStatement.setString(2, password);
 
     ResultSet result = pStatement.executeQuery();
-    
+
     if (result.next()) {
       return new User(result.getString("title") + result.getString("firstname") + " " + result
           .getString("lastname"), result.getString("gender"), String.valueOf(result.getInt("age")),
-          String.valueOf(result.getFloat("weight")), String.valueOf(result.getFloat("height")));
+          String.valueOf(result.getFloat("weight")),
+          String.valueOf(result.getFloat("height")), result.getString("id"));
     }
 
-    return new User("", "", "", "", "");
+    throw new LoginException("Login failed");
   }
 
   public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
