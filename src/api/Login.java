@@ -6,6 +6,8 @@ import core.Database;
 import core.User;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Login {
@@ -13,15 +15,33 @@ public class Login {
   private Connection connection;
 
   public Login() throws SQLException {
-    Connection connection = Database.getConnection();
+    connection = Database.getConnection();
   }
 
-  public User doSignIn(String username, String password) throws NoSuchAlgorithmException {
+  public User doSignIn(String username, String password)
+      throws NoSuchAlgorithmException, SQLException {
     password = sha256(password);
 
-    return new User("Hello", "male", "112", "120", "120");
+    String SQLCommand = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setString(1, username);
+    pStatement.setString(2, password);
+
+    ResultSet result = pStatement.executeQuery();
+    
+    if (result.next()) {
+      return new User(result.getString("title") + result.getString("firstname") + " " + result
+          .getString("lastname"), result.getString("gender"), String.valueOf(result.getInt("age")),
+          String.valueOf(result.getFloat("weight")), String.valueOf(result.getFloat("height")));
+    }
+
+    return new User("", "", "", "", "");
   }
 
-
+  public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
+    Login l = new Login();
+    System.out.println(l.doSignIn("wiput", "123456"));
+  }
 
 }
