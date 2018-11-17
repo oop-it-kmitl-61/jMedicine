@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class User {
 
+  private String userId;
   private String userName = "(ไม่ได้ตั้งชื่อ)";
   private String userGender;
   private String userAge;
@@ -19,12 +20,21 @@ public class User {
   }
 
   public User(String userName, String userGender, String userAge, String userWeight,
-      String userHeight) {
+      String userHeight, String userId) {
     this.userName = userName;
     this.userGender = userGender;
     this.userAge = userAge;
     this.userWeight = userWeight;
     this.userHeight = userHeight;
+    this.userId = userId;
+  }
+
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
   }
 
   public String getUserName() {
