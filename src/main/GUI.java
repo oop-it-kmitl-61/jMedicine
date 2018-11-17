@@ -37,11 +37,12 @@ import javax.swing.border.CompoundBorder;
 
 public class GUI implements ActionListener {
   private JFrame frameWelcome, frameMain;
-  private JPanel panelMain, panelLeft, panelRight;
-  private JPanel panelWelcome, panelYourName, panelFirstMed;
+  private JPanel panelLeft;
+  private JPanel panelRight;
+  private JPanel panelWelcome;
   private JPanel panelSub01, panelSub02, panelSub03, panelSub04, panelSub05, panelSub06;
   private JPanel panelTitle, panelLoop, cardLoop;
-  private JTextField tfUserName, tfPassword, tfConfirmPassword;
+  private JTextField tfUserName;
   private JButton buttons[];
   private Dimension windowSize, minSize;
   private Color mainBlue;
@@ -73,7 +74,7 @@ public class GUI implements ActionListener {
     userDoctors = user.getUserDoctors();
 
     // Init main panels
-    panelMain = new JPanel(new BorderLayout());
+    JPanel panelMain = new JPanel(new BorderLayout());
     panelLeft = new JPanel(new GridBagLayout());
     panelRight = new JPanel(new CardLayout());
     setPadding(panelLeft, 20, 0, 5, 0);
@@ -112,7 +113,7 @@ public class GUI implements ActionListener {
     frameMain.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
   }
 
-  public JPanel panelOverview() {
+  private JPanel panelOverview() {
     /**
      * Creates GUI of overview panel, displaying a summary of upcoming events,
      * including medication reminders and doctor appointments.
@@ -164,9 +165,7 @@ public class GUI implements ActionListener {
       // TODO: What to show if the user has never added a single medicine?
     } else {
       // Make Loop
-      Iterator<Medicine> iterator = userMedicines.iterator();
-      while (iterator.hasNext()) {
-        Medicine medCurrent = iterator.next();
+      for (Medicine medCurrent : userMedicines) {
         cardLoop = makeMedCard(medCurrent);
         panelLoop.add(cardLoop);
       }
@@ -180,7 +179,7 @@ public class GUI implements ActionListener {
     return  panelSub02;
   }
 
-  public JPanel panelAllAppointments() {
+  private JPanel panelAllAppointments() {
     /**
      * Creates GUI displaying all appointments that user has had input.
      * All appointments will be displayed in a card with a default icon,
@@ -208,7 +207,7 @@ public class GUI implements ActionListener {
     return panelSub03;
   }
 
-  public JPanel panelAllDoctors() {
+  private JPanel panelAllDoctors() {
     /**
      * Creates GUI displaying all doctors that user has had input.
      * All doctors will be displayed in a card with a default icon,
@@ -247,7 +246,7 @@ public class GUI implements ActionListener {
     return panelSub04;
   }
 
-  public JPanel panelNearbyHospitals() {
+  private JPanel panelNearbyHospitals() {
     /**
      * Creates GUI displaying Google Maps that is showing the current position
      * of the user, fetched from a public IP address, queried nearby hospitals.
@@ -281,7 +280,7 @@ public class GUI implements ActionListener {
     return panelSub05;
   }
 
-  public JPanel panelSettings() {
+  private JPanel panelSettings() {
     /**
      * Creates GUI displaying user's settings
      */
@@ -304,7 +303,7 @@ public class GUI implements ActionListener {
     return panelSub06;
   }
 
-  public JPanel panelAddMedicine() {
+  private JPanel panelAddMedicine() {
     /**
      * Creates outer GUI when user add a new medicine from all medicines page.
      */
@@ -328,7 +327,7 @@ public class GUI implements ActionListener {
     return panelAddMedicine;
   }
 
-  public JPanel panelViewMedicine(Medicine medicine) {
+  private JPanel panelViewMedicine(Medicine medicine) {
     /**
      * Creates GUI displaying all information of a single medicine
      */
@@ -350,13 +349,13 @@ public class GUI implements ActionListener {
     // MedTime is an ArrayList, convert it into a printable format.
     StringBuilder sbMedTime = new StringBuilder();
     for (String medTime : medicine.getMedTime()) {
-      sbMedTime.append(medTime + " ");
+      sbMedTime.append(medTime).append(" ");
     }
 
     // DoseStr is an ArrayList, convert it into a printable format.
     StringBuilder sbDoseStr = new StringBuilder();
     for (String dose : medicine.getMedDoseStr()) {
-      sbDoseStr.append(dose + " ");
+      sbDoseStr.append(dose).append(" ");
     }
 
     panelSub.add(labelPic);
@@ -375,7 +374,7 @@ public class GUI implements ActionListener {
     return panelView;
   }
 
-  public JPanel panelAddDoctor() {
+  private JPanel panelAddDoctor() {
     /**
      * Creates GUI of the form for adding a new doctor.
      */
@@ -391,7 +390,7 @@ public class GUI implements ActionListener {
     JTextField tfDoctorWard = new JTextField();
     JTextField tfDoctorHospital = new JTextField();
     String[] prefixes = {"นพ.", "พญ.", "ศ.นพ", "ผศ.นพ"};
-    JComboBox<String> cbPrefix = makeComboBox(prefixes);
+    JComboBox cbPrefix = makeComboBox(prefixes);
     //TODO: ทำให้เพิ่มวันและเวลาที่แพทย์เข้าตรวจได้
     //แนวคิด: ทำ JCheckBox ให้ครบทุกวัน (จันทร์-เสาร์) ให้ติ๊กเลือก ถ้าติ๊กช่องไหนก็ใส่เวลาลง textfield ของวันนั้นเข้าไปด้วย
 
@@ -410,7 +409,7 @@ public class GUI implements ActionListener {
     return panelAddDoctor;
   }
 
-  public JPanel panelViewDoctor(Doctor doctor) {
+  private JPanel panelViewDoctor(Doctor doctor) {
     /**
      * Creates GUI displaying all information of a single doctor.
      */
@@ -456,11 +455,11 @@ public class GUI implements ActionListener {
     JLabel labelPassword = makeLabel("Password");
     makeLabelClickable(labelRegister, "ลงทะเบียน");
     tfUserName = new JTextField(20);
-    tfPassword = new JTextField(20);
+    JTextField tfPassword = new JTextField(20);
     JButton btnSignIn = makeButton("เข้าสู่ระบบ");
     panelWelcome = new JPanel(new CardLayout());
-    panelYourName = new JPanel(new GridBagLayout());
-    panelFirstMed = new JPanel();
+    JPanel panelYourName = new JPanel(new GridBagLayout());
+    JPanel panelFirstMed = new JPanel();
 
     // Welcome Panel
     JLabel labelWelcome = makeTitleLabel("ยินดีต้อนรับ");
@@ -512,7 +511,7 @@ public class GUI implements ActionListener {
     labelPassword = makeLabel("Password");
     tfUserName = new JTextField(20);
     tfPassword = new JTextField(20);
-    tfConfirmPassword = new JTextField(20);
+    JTextField tfConfirmPassword = new JTextField(20);
     JButton btnSignUp = makeButton("ลงทะเบียน");
     JPanel panelSub = new JPanel();
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
@@ -564,8 +563,8 @@ public class GUI implements ActionListener {
     frameWelcome.setVisible(true);
   }
 
-  public void paintButton() {
-    /** Handles color painting on the left navigation. */
+  private void paintButton() {
+    /* Handles color painting on the left navigation. */
     for(JButton button: buttons) {
       button.setBorderPainted(false);
       button.setBackground(mainBlue);
@@ -574,18 +573,18 @@ public class GUI implements ActionListener {
     }
   }
 
-  public void paintCurrentTabButton(JButton button) {
-    /**
-     * Handles color painting on the left navigation. The current tab
-     * will be painted in white.
+  private void paintCurrentTabButton(JButton button) {
+    /*
+      Handles color painting on the left navigation. The current tab
+      will be painted in white.
      */
     button.setBackground(Color.WHITE);
     button.setOpaque(true);
     button.setForeground(Color.BLACK);
   }
 
-  public void makeLeftNavigation() {
-    /** Creates GUI of the left navigation. */
+  private void makeLeftNavigation() {
+    /* Creates GUI of the left navigation. */
     buttons = new JButton[] {
         makeButton("ภาพรวม"),
         makeButton("ยาทั้งหมด"),
@@ -621,7 +620,7 @@ public class GUI implements ActionListener {
           CardLayout cl = (CardLayout)(panelRight.getLayout());
           cl.show(panelRight, e.getActionCommand());
           paintButton();
-          if (e.getActionCommand() == button.getText()) {
+          if (e.getActionCommand().equals(button.getText())) {
             paintCurrentTabButton(button);
           }
         }
@@ -637,8 +636,8 @@ public class GUI implements ActionListener {
     panelLeft.setBackground(mainBlue);
   }
 
-  public JPanel makeOverviewCard(String time, String medName, String dose) {
-    /** Creates a card that will be used on the Overview panel only. */
+  private JPanel makeOverviewCard(String time, String medName, String dose) {
+    /* Creates a card that will be used on the Overview panel only. */
     JPanel panelLoopInfo = new JPanel();
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.PAGE_AXIS));
     panelLoopInfo.setBorder(new CompoundBorder(
@@ -659,8 +658,8 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
-  public void makeLabelClickable(JLabel label, String href) {
-    /** Works like <a> */
+  private void makeLabelClickable(JLabel label, String href) {
+    /* Works like <a> */
     label.addMouseListener(new MouseAdapter()
     {
       public void mouseClicked(MouseEvent e)
@@ -676,8 +675,8 @@ public class GUI implements ActionListener {
     });
   }
 
-  public JButton makeBackButton(String buttonText, String backTo) {
-    /** Creates a button that will be used on the nested page. */
+  private JButton makeBackButton(String buttonText, String backTo) {
+    /* Creates a button that will be used on the nested page. */
     JButton button = new JButton(buttonText);
     button.setFont(new Font("TH Sarabun New", Font.BOLD, 42));
     button.setHorizontalAlignment(SwingConstants.LEFT);
@@ -705,8 +704,8 @@ public class GUI implements ActionListener {
     return button;
   }
 
-  public JPanel makeNewButton(String btnName) {
-    /** Creates a new button. */
+  private JPanel makeNewButton(String btnName) {
+    /* Creates a new button. */
     JPanel panelLoopInfo = new JPanel();
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
     setPadding(panelLoopInfo, 5, 0, 20, -16);
@@ -737,8 +736,8 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
-  public JPanel makeMedCard(Medicine medicine) {
-    /** Creates a card that will be used on the All medicines panel only. */
+  private JPanel makeMedCard(Medicine medicine) {
+    /* Creates a card that will be used on the All medicines panel only. */
     String medTitle = medicine.getMedName()+" ("+medicine.getMedDescription()+")";
     String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+medicine.getMedEXP();
     JLabel labelTitle = makeBoldLabel(medTitle);
@@ -778,8 +777,8 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
-  public JPanel makeDoctorCard(Doctor doctor) {
-    /** Creates a card that will be used on the All doctors panel only. */
+  private JPanel makeDoctorCard(Doctor doctor) {
+    /* Creates a card that will be used on the All doctors panel only. */
     String doctorName = doctor.getPrefix() + " " + doctor.getName();
     JLabel labelTitle = makeBoldLabel(doctorName);
     String doctorShortInfo = "แผนก " + doctor.getWard() + " โรงพยาบาล" + doctor.getHospital();
@@ -826,8 +825,8 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
-  public JPanel makeAppointmentCard(String title, String shortInfo) {
-    /** Creates a card that will be used on the All appointments panel only. */
+  private JPanel makeAppointmentCard(String title, String shortInfo) {
+    /* Creates a card that will be used on the All appointments panel only. */
     JLabel labelTitle = makeBoldLabel(title);
     JLabel labelShortInfo = makeLabel(shortInfo);
     JLabel labelPic = new JLabel();
@@ -861,8 +860,8 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
-  public JPanel addMedGUI() {
-    /** Creates GUI of the form for adding a new medicine. */
+  private JPanel addMedGUI() {
+    /* Creates GUI of the form for adding a new medicine. */
     String medUnit = "เม็ด";
     JPanel panelAddMed = new JPanel();
     JTextField tfMedName = new JTextField(10);
@@ -922,17 +921,15 @@ public class GUI implements ActionListener {
 
     // WEST
     panelInline = new JPanel(new FlowLayout());
-    Iterator<JCheckBox> chIterator = chTime.iterator();
-    while (chIterator.hasNext()) {
-      panelInline.add(chIterator.next());
+    for (JCheckBox aChTime : chTime) {
+      panelInline.add(aChTime);
     }
     panelBorder.add(panelInline, BorderLayout.WEST);
 
     // EAST
     panelInline = new JPanel(new FlowLayout());
-    Iterator<JRadioButton> rdIterator = rdAmountStr.iterator();
-    while (rdIterator.hasNext()) {
-      panelInline.add(rdIterator.next());
+    for (JRadioButton aRdAmountStr : rdAmountStr) {
+      panelInline.add(aRdAmountStr);
     }
     panelInline.setPreferredSize(new Dimension(100, panelInline.getHeight()));
     panelBorder.add(panelInline, BorderLayout.CENTER);
@@ -963,7 +960,7 @@ public class GUI implements ActionListener {
     return panelAddMed;
   }
 
-  public JPanel newPanelLoop() {
+  private JPanel newPanelLoop() {
     JPanel panelLoop = new JPanel();
     panelLoop.setLayout(new BoxLayout(panelLoop, BoxLayout.PAGE_AXIS));
     setPadding(panelLoop, 20, 0, 5, 5);
@@ -1000,7 +997,7 @@ public class GUI implements ActionListener {
     }
   }
 
-  public void initSampleMedicine01() {
+  private void initSampleMedicine01() {
     ArrayList<String> sampleMedTime = new ArrayList<>();
     sampleMedTime.add("เช้า");
     sampleMedTime.add("กลางวัน");
@@ -1011,7 +1008,7 @@ public class GUI implements ActionListener {
     user.addUserMedicine(prednisolone);
   }
 
-  public void initSampleMedicine02() {
+  private void initSampleMedicine02() {
     ArrayList<String> sampleMedTime = new ArrayList<>();
     sampleMedTime.add("ก่อนนอน");
     ArrayList<String> sampleMedDoseStr = new ArrayList<>();
@@ -1020,7 +1017,7 @@ public class GUI implements ActionListener {
     user.addUserMedicine(chlopheniramine);
   }
 
-  public void initSampleMedicine03() {
+  private void initSampleMedicine03() {
     ArrayList<String> sampleMedTime = new ArrayList<>();
     sampleMedTime.add("เช้า");
     ArrayList<String> sampleMedDoseStr = new ArrayList<>();
@@ -1029,7 +1026,7 @@ public class GUI implements ActionListener {
     user.addUserMedicine(amoxicillin);
   }
 
-  public void initSampleDoctor() {
+  private void initSampleDoctor() {
     ArrayList<String> workTime = new ArrayList<String>();
     workTime.add("วันพุธ เวลา 09.00 น. - 16.00 น.");
     workTime.add("วันพฤหัสบดี เวลา 09.00 น. - 16.00 น.");
@@ -1037,117 +1034,117 @@ public class GUI implements ActionListener {
     user.addUserDoctor(doctor);
   }
 
-  public JComboBox makeComboBox(String[] comboBoxItems) {
+  private JComboBox makeComboBox(String[] comboBoxItems) {
     JComboBox comboBox = new JComboBox(comboBoxItems);
     comboBox.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     return comboBox;
   }
 
-  public JRadioButton makeRadioButton(String radioButtonText) {
+  private JRadioButton makeRadioButton(String radioButtonText) {
     JRadioButton radioButton = new JRadioButton(radioButtonText);
     radioButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     return radioButton;
   }
 
-  public JCheckBox makeCheckBox(String checkBoxText) {
+  private JCheckBox makeCheckBox(String checkBoxText) {
     JCheckBox checkBox = new JCheckBox(checkBoxText);
     checkBox.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     return checkBox;
   }
 
-  public JButton makeButton(String buttonText) {
+  private JButton makeButton(String buttonText) {
     JButton button = new JButton(buttonText);
     button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
     return button;
   }
 
-  public JLabel makeTitleLabel(String labelText) {
+  private JLabel makeTitleLabel(String labelText) {
     JLabel label = new JLabel(labelText);
     label.setFont(new Font("TH Sarabun New", Font.BOLD, 42));
     return label;
   }
 
-  public JLabel makeBoldLabel(String labelText) {
+  private JLabel makeBoldLabel(String labelText) {
     JLabel label = new JLabel(labelText);
     label.setFont(new Font("TH Sarabun New", Font.BOLD, 26));
     return label;
   }
 
-  public JLabel makeLabel(String labelText) {
+  private JLabel makeLabel(String labelText) {
     JLabel label = new JLabel(labelText);
     label.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     return label;
   }
 
-  public void makeLabelLeft(JLabel label) {
+  private void makeLabelLeft(JLabel label) {
     label.setAlignmentX(Component.LEFT_ALIGNMENT);
   }
 
-  public void makeLabelCenter(JLabel label) {
+  private void makeLabelCenter(JLabel label) {
     label.setAlignmentX(Component.CENTER_ALIGNMENT);
   }
 
-  public void setPadding(JLabel object, int top, int right, int bottom, int left) {
+  private void setPadding(JLabel object, int top, int right, int bottom, int left) {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  public void setPadding(JLabel object, int top, int right, int bottom) {
+  private void setPadding(JLabel object, int top, int right, int bottom) {
     object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
   }
 
-  public void setPadding(JLabel object, int top, int right) {
+  private void setPadding(JLabel object, int top, int right) {
     object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
   }
 
-  public void setPadding(JLabel object, int top) {
+  private void setPadding(JLabel object, int top) {
     object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
   }
 
-  public void setPadding(JTextField object, int top, int right, int bottom, int left) {
+  private void setPadding(JTextField object, int top, int right, int bottom, int left) {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  public void setPadding(JTextField object, int top, int right, int bottom) {
+  private void setPadding(JTextField object, int top, int right, int bottom) {
     object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
   }
 
-  public void setPadding(JTextField object, int top, int right) {
+  private void setPadding(JTextField object, int top, int right) {
     object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
   }
 
-  public void setPadding(JTextField object, int top) {
+  private void setPadding(JTextField object, int top) {
     object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
   }
 
-  public void setPadding(JButton object, int top, int right, int bottom, int left) {
+  private void setPadding(JButton object, int top, int right, int bottom, int left) {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  public void setPadding(JButton object, int top, int right, int bottom) {
+  private void setPadding(JButton object, int top, int right, int bottom) {
     object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
   }
 
-  public void setPadding(JButton object, int top, int right) {
+  private void setPadding(JButton object, int top, int right) {
     object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
   }
 
-  public void setPadding(JButton object, int top) {
+  private void setPadding(JButton object, int top) {
     object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
   }
 
-  public void setPadding(JPanel object, int top, int right, int bottom, int left) {
+  private void setPadding(JPanel object, int top, int right, int bottom, int left) {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  public void setPadding(JPanel object, int top, int right, int bottom) {
+  private void setPadding(JPanel object, int top, int right, int bottom) {
     object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
   }
 
-  public void setPadding(JPanel object, int top, int right) {
+  private void setPadding(JPanel object, int top, int right) {
     object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
   }
 
-  public void setPadding(JPanel object, int top) {
+  private void setPadding(JPanel object, int top) {
     object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
   }
 }
