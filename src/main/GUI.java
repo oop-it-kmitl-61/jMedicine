@@ -3,7 +3,6 @@ import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionHandler;
 import com.teamdev.jxbrowser.chromium.PermissionRequest;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
-import com.teamdev.jxbrowser.chromium.PermissionType;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -32,6 +31,10 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 
+/**
+ * GUI class creates all graphic user interface, all in javax.swing.
+ */
+
 public class GUI implements ActionListener {
   private JFrame frameWelcome, frameMain;
   private JPanel panelMain, panelLeft, panelRight;
@@ -52,7 +55,7 @@ public class GUI implements ActionListener {
     this.windowSize = windowSize;
     this.minSize = new Dimension(800, 600);
     this.mainBlue = new Color(20, 101, 155);
-    //Load font
+    // Load font
     try {
       GraphicsEnvironment ge =
           GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -63,18 +66,20 @@ public class GUI implements ActionListener {
   }
 
   public void init() {
+    /** Creates the main frame including left navigation and 6 sub panels on the right */
 
+    // Obtain medicines and doctors information
     userMedicines = user.getUserMedicines();
     userDoctors = user.getUserDoctors();
 
-    // Main Panels
+    // Init main panels
     panelMain = new JPanel(new BorderLayout());
     panelLeft = new JPanel(new GridBagLayout());
     panelRight = new JPanel(new CardLayout());
     setPadding(panelLeft, 20, 0, 5, 0);
     setPadding(panelRight, 25, 20, 10, 20);
 
-    // Panels that will be switched inside the right panel
+    // Init panels that will be switched inside the right panel
     panelSub01 = new JPanel(new BorderLayout());
     panelSub02 = new JPanel(new BorderLayout());
     panelSub03 = new JPanel(new BorderLayout());
@@ -82,24 +87,24 @@ public class GUI implements ActionListener {
     panelSub05 = new JPanel(new BorderLayout());
     panelSub06 = new JPanel(new BorderLayout());
 
-    // Left navigation
+    // Make left navigation
     makeLeftNavigation();
 
-    // Add all subs to the right panel
-    panelRight.add(overview(), "ภาพรวม");
-    panelRight.add(medicines(), "ยาทั้งหมด");
-    panelRight.add(appointments(), "นัดแพทย์");
-    panelRight.add(doctors(), "แพทย์");
-    panelRight.add(nearbyHospitals(), "โรงพยาบาลใกล้เคียง");
-    panelRight.add(settings(), "การตั้งค่า");
-    panelRight.add(addMedicine(), "เพิ่มยาใหม่");
-    panelRight.add(addDoctor(), "เพิ่มแพทย์ใหม่");
+    // Add all sub panels into the right panel
+    panelRight.add(panelOverview(), "ภาพรวม");
+    panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
+    panelRight.add(panelAllAppointments(), "นัดแพทย์");
+    panelRight.add(panelAllDoctors(), "แพทย์");
+    panelRight.add(panelNearbyHospitals(), "โรงพยาบาลใกล้เคียง");
+    panelRight.add(panelSettings(), "การตั้งค่า");
+    panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
+    panelRight.add(panelAddDoctor(), "เพิ่มแพทย์ใหม่");
 
-    // Add to main panel
+    // Add left navigation and right panel into the main panel
     panelMain.add(panelLeft, BorderLayout.WEST);
     panelMain.add(panelRight, BorderLayout.CENTER);
 
-    // Frame
+    // Init main frame
     frameMain = new JFrame("jMedicine");
     frameMain.add(panelMain);
     frameMain.setMinimumSize(this.minSize);
@@ -107,38 +112,56 @@ public class GUI implements ActionListener {
     frameMain.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
   }
 
-  public JPanel overview() {
+  public JPanel panelOverview() {
+    /**
+     * Creates GUI of overview panel, displaying a summary of upcoming events,
+     * including medication reminders and doctor appointments.
+     */
+
+    // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
     DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
     Date date = new Date();
     String today = dateFormat.format(date);
     panelTitle.add(makeTitleLabel(today));
 
+    // Init card loop
     panelLoop = newPanelLoop();
-    // Make Loop
+    // TODO: Fetch these upcoming events from the database
+    // Sample loop
     cardLoop = makeOverviewCard("12.30 น. (อีก 1 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
     panelLoop.add(cardLoop);
     cardLoop = makeOverviewCard("18.30 น. (อีก 7 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
     panelLoop.add(cardLoop);
-    // End Make Loop
+    // End sample loop
+
+    // Add all panels into the main panel
     panelSub01.add(panelTitle, BorderLayout.NORTH);
     panelSub01.add(panelLoop);
-    panelSub01.setBackground(Color.WHITE);
 
     return panelSub01;
   }
 
-  public JPanel medicines() {
+  public JPanel panelAllMedicines() {
+    /**
+     * Creates GUI displaying all medicines that user has had input.
+     * All medicines will be displayed in a card with a medicine icon,
+     * a name and a short summary.
+     */
+
+    // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeTitleLabel("ยาทั้งหมด"));
 
+    // Fetch all medicines from the records
     ArrayList<Medicine> userMedicines = user.getUserMedicines();
 
+    // Init panel loop
     panelLoop = newPanelLoop();
     panelLoop.add(makeNewButton("เพิ่มยาใหม่"));
 
     if (userMedicines.isEmpty()) {
-
+      // TODO: What to show if the user has never added a single medicine?
     } else {
       // Make Loop
       Iterator<Medicine> iterator = userMedicines.iterator();
@@ -150,23 +173,34 @@ public class GUI implements ActionListener {
       // End Make Loop
     }
 
+    // Add all panels into the main panel
     panelSub02.add(panelTitle, BorderLayout.NORTH);
     panelSub02.add(panelLoop);
-    panelSub02.setBackground(Color.WHITE);
 
     return  panelSub02;
   }
 
-  public JPanel appointments() {
+  public JPanel panelAllAppointments() {
+    /**
+     * Creates GUI displaying all appointments that user has had input.
+     * All appointments will be displayed in a card with a default icon,
+     * a date and a short summary.
+     */
+
+    // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeTitleLabel("นัดแพทย์"));
 
+    // Init panel loop
     panelLoop = newPanelLoop();
     panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
-    // Make Loop
+    // TODO: Fetch all appointments from the database
+    // Sample loop
     cardLoop = makeAppointmentCard("1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
     panelLoop.add(cardLoop);
-    // End Make Loop
+    // End sample loop
+
+    // Add all panels into the main panel
     panelSub03.add(panelLoop);
     panelSub03.add(panelTitle, BorderLayout.NORTH);
     panelSub03.setBackground(Color.WHITE);
@@ -174,17 +208,26 @@ public class GUI implements ActionListener {
     return panelSub03;
   }
 
-  public JPanel doctors() {
+  public JPanel panelAllDoctors() {
+    /**
+     * Creates GUI displaying all doctors that user has had input.
+     * All doctors will be displayed in a card with a default icon,
+     * a name and a short summary.
+     */
+
+    // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeTitleLabel("แพทย์"));
 
+    // Fetch all doctors
     ArrayList<Doctor> userDoctors = user.getUserDoctors();
 
+    // Init panel loop
     panelLoop = newPanelLoop();
     panelLoop.add(makeNewButton("เพิ่มแพทย์ใหม่"));
 
     if (userDoctors.isEmpty()) {
-
+      // TODO: What to show if user has never added a single doctor?
     } else {
       // Make Loop
       Iterator<Doctor> iterator = userDoctors.iterator();
@@ -196,6 +239,7 @@ public class GUI implements ActionListener {
       // End Make Loop
     }
 
+    // Add all panels into the main panel
     panelSub04.add(panelLoop);
     panelSub04.add(panelTitle, BorderLayout.NORTH);
     panelSub04.setBackground(Color.WHITE);
@@ -203,28 +247,46 @@ public class GUI implements ActionListener {
     return panelSub04;
   }
 
-  public JPanel nearbyHospitals() {
+  public JPanel panelNearbyHospitals() {
+    /**
+     * Creates GUI displaying Google Maps that is showing the current position
+     * of the user, fetched from a public IP address, queried nearby hospitals.
+     */
+
+    // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeTitleLabel("โรงพยาบาลใกล้เคียง"));
+
+    // Fetch current location into an array of double,
+    // containing latitude and longitude.
     double[] location = Maps.getLocation();
 
+    // Init web browser
     Browser browser = new Browser();
     BrowserView view = new BrowserView(browser);
+    // Try to grant the geolocation permission
     browser.setPermissionHandler(new PermissionHandler() {
       @Override
       public PermissionStatus onRequestPermission(PermissionRequest request) {
         return PermissionStatus.GRANTED;
       }
     });
+    // Load URL that query the hospital around the current position
     browser.loadURL("https://www.google.co.th/maps/search/hospitals/@"+location[0]+","+location[1]+",12z");
 
+    // Add all sub panels into the main panel
     panelSub05.add(panelTitle, BorderLayout.NORTH);
     panelSub05.add(view);
 
     return panelSub05;
   }
 
-  public JPanel settings() {
+  public JPanel panelSettings() {
+    /**
+     * Creates GUI displaying user's settings
+     */
+
+    // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeTitleLabel("การตั้งค่า"));
 
@@ -234,14 +296,20 @@ public class GUI implements ActionListener {
     JLabel labelUserName = makeTitleLabel(user.getUserName());
     panelBox.add(makeLabel("ผู้ใช้งานปัจจุบัน"));
     panelBox.add(labelUserName);
+
+    // Add all sub panels into the main panel
     panelSub06.add(panelTitle, BorderLayout.NORTH);
     panelSub06.add(panelBox);
-    panelSub06.setBackground(Color.WHITE);
 
     return panelSub06;
   }
 
-  public JPanel addMedicine() {
+  public JPanel panelAddMedicine() {
+    /**
+     * Creates outer GUI when user add a new medicine from all medicines page.
+     */
+
+    // Init title panel displaying a button that can be clicked to go back
     JPanel panelAddMedicine = new JPanel(new BorderLayout());
     JButton btnBack = makeBackButton("เพิ่มยาใหม่", "ยาทั้งหมด");
     panelTitle = new JPanel(new BorderLayout());
@@ -260,7 +328,11 @@ public class GUI implements ActionListener {
     return panelAddMedicine;
   }
 
-  public JPanel viewMedicine(Medicine medicine) {
+  public JPanel panelViewMedicine(Medicine medicine) {
+    /**
+     * Creates GUI displaying all information of a single medicine
+     */
+
     String medName = medicine.getMedName();
     JLabel labelPic = medUtil.getMedIcon(medicine);
     JPanel panelView = new JPanel(new BorderLayout());
@@ -275,11 +347,13 @@ public class GUI implements ActionListener {
     setPadding(panelTitle, 0, 0, 20);
     setPadding(panelSub, 0, 0, 0, 45);
 
+    // MedTime is an ArrayList, convert it into a printable format.
     StringBuilder sbMedTime = new StringBuilder();
     for (String medTime : medicine.getMedTime()) {
       sbMedTime.append(medTime + " ");
     }
 
+    // DoseStr is an ArrayList, convert it into a printable format.
     StringBuilder sbDoseStr = new StringBuilder();
     for (String dose : medicine.getMedDoseStr()) {
       sbDoseStr.append(dose + " ");
@@ -301,7 +375,10 @@ public class GUI implements ActionListener {
     return panelView;
   }
 
-  public JPanel addDoctor() {
+  public JPanel panelAddDoctor() {
+    /**
+     * Creates GUI of the form for adding a new doctor.
+     */
     JPanel panelAddDoctor = new JPanel();
     JPanel panelSub = new JPanel();
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
@@ -333,7 +410,10 @@ public class GUI implements ActionListener {
     return panelAddDoctor;
   }
 
-  public JPanel viewDoctor(Doctor doctor) {
+  public JPanel panelViewDoctor(Doctor doctor) {
+    /**
+     * Creates GUI displaying all information of a single doctor.
+     */
     String doctorName = doctor.getPrefix() + " " + doctor.getName();
     JPanel panelView = new JPanel(new BorderLayout());
     JPanel panelSub = new JPanel();
@@ -349,6 +429,7 @@ public class GUI implements ActionListener {
     panelSub.add(makeLabel("โรงพยาบาล: " + doctor.getHospital()));
     panelSub.add(makeLabel("เวลาเข้าตรวจ:"));
 
+    // WorkTime is an ArrayList, convert it to a printable format
     for (String workTime:doctor.getWorkTime()) {
       JLabel labelWorkTime = makeLabel(workTime);
       setPadding(labelWorkTime, 0, 20);
@@ -362,6 +443,11 @@ public class GUI implements ActionListener {
   }
 
   public void initWelcome() {
+    /**
+     * Creates a very first GUI. This GUI will be displayed if the program is being
+     * run for the first time or the user is not logged in.
+     */
+
     frameWelcome = new JFrame("jMedicine: ตั้งค่าครั้งแรก");
     JLabel space = new JLabel();
     JLabel labelWelcomeSub = makeLabel("เข้าสู่ระบบเพื่อ Sync ข้อมูลของคุณทุกที่ ทุกเวลา");
@@ -479,6 +565,7 @@ public class GUI implements ActionListener {
   }
 
   public void paintButton() {
+    /** Handles color painting on the left navigation. */
     for(JButton button: buttons) {
       button.setBorderPainted(false);
       button.setBackground(mainBlue);
@@ -488,12 +575,17 @@ public class GUI implements ActionListener {
   }
 
   public void paintCurrentTabButton(JButton button) {
+    /**
+     * Handles color painting on the left navigation. The current tab
+     * will be painted in white.
+     */
     button.setBackground(Color.WHITE);
     button.setOpaque(true);
     button.setForeground(Color.BLACK);
   }
 
   public void makeLeftNavigation() {
+    /** Creates GUI of the left navigation. */
     buttons = new JButton[] {
         makeButton("ภาพรวม"),
         makeButton("ยาทั้งหมด"),
@@ -546,6 +638,7 @@ public class GUI implements ActionListener {
   }
 
   public JPanel makeOverviewCard(String time, String medName, String dose) {
+    /** Creates a card that will be used on the Overview panel only. */
     JPanel panelLoopInfo = new JPanel();
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.PAGE_AXIS));
     panelLoopInfo.setBorder(new CompoundBorder(
@@ -567,6 +660,7 @@ public class GUI implements ActionListener {
   }
 
   public void makeLabelClickable(JLabel label, String href) {
+    /** Works like <a> */
     label.addMouseListener(new MouseAdapter()
     {
       public void mouseClicked(MouseEvent e)
@@ -583,6 +677,7 @@ public class GUI implements ActionListener {
   }
 
   public JButton makeBackButton(String buttonText, String backTo) {
+    /** Creates a button that will be used on the nested page. */
     JButton button = new JButton(buttonText);
     button.setFont(new Font("TH Sarabun New", Font.BOLD, 42));
     button.setHorizontalAlignment(SwingConstants.LEFT);
@@ -611,6 +706,7 @@ public class GUI implements ActionListener {
   }
 
   public JPanel makeNewButton(String btnName) {
+    /** Creates a new button. */
     JPanel panelLoopInfo = new JPanel();
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
     setPadding(panelLoopInfo, 5, 0, 20, -16);
@@ -642,6 +738,7 @@ public class GUI implements ActionListener {
   }
 
   public JPanel makeMedCard(Medicine medicine) {
+    /** Creates a card that will be used on the All medicines panel only. */
     String medTitle = medicine.getMedName()+" ("+medicine.getMedDescription()+")";
     String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+medicine.getMedEXP();
     JLabel labelTitle = makeBoldLabel(medTitle);
@@ -672,7 +769,7 @@ public class GUI implements ActionListener {
     {
       public void mouseClicked(MouseEvent e)
       {
-        panelRight.add(viewMedicine(medicine), medicine.getMedName());
+        panelRight.add(panelViewMedicine(medicine), medicine.getMedName());
         CardLayout cl = (CardLayout)(panelRight.getLayout());
         cl.show(panelRight, medicine.getMedName());
       }
@@ -682,6 +779,7 @@ public class GUI implements ActionListener {
   }
 
   public JPanel makeDoctorCard(Doctor doctor) {
+    /** Creates a card that will be used on the All doctors panel only. */
     String doctorName = doctor.getPrefix() + " " + doctor.getName();
     JLabel labelTitle = makeBoldLabel(doctorName);
     String doctorShortInfo = "แผนก " + doctor.getWard() + " โรงพยาบาล" + doctor.getHospital();
@@ -719,7 +817,7 @@ public class GUI implements ActionListener {
     {
       public void mouseClicked(MouseEvent e)
       {
-        panelRight.add(viewDoctor(doctor), doctor.getName());
+        panelRight.add(panelViewDoctor(doctor), doctor.getName());
         CardLayout cl = (CardLayout)(panelRight.getLayout());
         cl.show(panelRight, doctor.getName());
       }
@@ -729,6 +827,7 @@ public class GUI implements ActionListener {
   }
 
   public JPanel makeAppointmentCard(String title, String shortInfo) {
+    /** Creates a card that will be used on the All appointments panel only. */
     JLabel labelTitle = makeBoldLabel(title);
     JLabel labelShortInfo = makeLabel(shortInfo);
     JLabel labelPic = new JLabel();
@@ -763,6 +862,7 @@ public class GUI implements ActionListener {
   }
 
   public JPanel addMedGUI() {
+    /** Creates GUI of the form for adding a new medicine. */
     String medUnit = "เม็ด";
     JPanel panelAddMed = new JPanel();
     JTextField tfMedName = new JTextField(10);
