@@ -1,4 +1,14 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+    }
+}
+
 plugins {
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
     id 'java'
 }
 
@@ -16,11 +26,15 @@ sourceSets {
     }
 }
 
-jar {
+shadowJar {
+    configurations = [project.configurations.compile]
+
     manifest {
         attributes 'Main-Class': 'main.Main'
+        attributes 'Class-Path': 'license.jar'
     }
 }
+
 
 version '1.0'
 
@@ -28,6 +42,7 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    jcenter()
     maven { url = 'http://maven.teamdev.com/repository/products' }
 }
 
