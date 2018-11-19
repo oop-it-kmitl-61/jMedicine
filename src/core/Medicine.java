@@ -19,6 +19,36 @@ public class Medicine {
   private Date dateAdded;
   private String medUnit;
 
+  public Medicine(String medName, String medType, String medColor, String medDescription,
+      ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
+      String medEXP) {
+    this.medName = medName;
+    this.medType = medType;
+    this.medColor = medColor;
+    this.medDescription = medDescription;
+    this.medTime = medTime;
+    this.medDoseStr = medDoseStr;
+    this.medDose = medDose;
+    this.medTotal = medTotal;
+    this.medRemaining = medTotal;
+    this.medEXP = medEXP;
+    this.dateAdded = new Date();
+    switch (medType) {
+      case "tablet":
+        this.medUnit = "เม็ด";
+        break;
+      case "capsule":
+        this.medUnit = "แคปซูล";
+        break;
+      case "liquid":
+        this.medUnit = "มิลลิลิตร";
+        break;
+      case "inject":
+        this.medUnit = "เข็ม";
+        break;
+    }
+  }
+
   public Medicine(String id, String medName, String medType, String medColor, String medDescription,
       ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
       String medEXP) {
