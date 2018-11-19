@@ -22,6 +22,15 @@ public class Doctor {
   private String hospital;
   private ArrayList<String> workTime;
 
+  public Doctor(String prefix, String name, String ward, String hospital,
+      ArrayList<String> workTime) {
+    this.prefix = prefix;
+    this.name = name;
+    this.ward = ward;
+    this.hospital = hospital;
+    this.workTime = workTime;
+  }
+
   public Doctor(String id, String prefix, String name, String ward, String hospital,
       ArrayList<String> workTime) {
     this.id = id;

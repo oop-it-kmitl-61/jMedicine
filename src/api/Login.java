@@ -46,6 +46,28 @@ public class Login {
     throw new LoginException("Login failed");
   }
 
+  public static User doSignUp(String username, String password)
+      throws NoSuchAlgorithmException, SQLException, LoginException {
+    password = sha256(password);
+
+    String SQLCommand = "INSERT INTO users (username, password) VALUES (?,?)";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setString(1, username);
+    pStatement.setString(2, password);
+
+    ResultSet result = pStatement.executeQuery();
+
+    if (result.next()) {
+      return new User(result.getString("title") + result.getString("firstname") + " " + result
+          .getString("lastname"), result.getString("gender"), String.valueOf(result.getInt("age")),
+          String.valueOf(result.getFloat("weight")),
+          String.valueOf(result.getFloat("height")), result.getString("id"));
+    }
+
+    throw new LoginException("Login failed");
+  }
+
   public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
     Login l = new Login();
     System.out.println(doSignIn("wiput", "123456"));
