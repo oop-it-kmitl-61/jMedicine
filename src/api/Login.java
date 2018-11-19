@@ -13,13 +13,18 @@ import java.sql.SQLException;
 
 public class Login {
 
-  private Connection connection;
+  private static Connection connection;
 
-  public Login() throws SQLException {
-    connection = Database.getConnection();
+  static {
+    try {
+      connection = Database.getConnection();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
-  public User doSignIn(String username, String password)
+
+  public static User doSignIn(String username, String password)
       throws NoSuchAlgorithmException, SQLException, LoginException {
     password = sha256(password);
 
@@ -43,7 +48,7 @@ public class Login {
 
   public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
     Login l = new Login();
-    System.out.println(l.doSignIn("wiput", "123456"));
+    System.out.println(doSignIn("wiput", "123456"));
   }
 
 }
