@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class Medicine {
 
+  private String id;
   private String medName;
   private String medType;
   private String medColor;
@@ -18,9 +19,10 @@ public class Medicine {
   private Date dateAdded;
   private String medUnit;
 
-  public Medicine(String medName, String medType, String medColor, String medDescription,
+  public Medicine(String id, String medName, String medType, String medColor, String medDescription,
       ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
       String medEXP) {
+    this.id = id;
     this.medName = medName;
     this.medType = medType;
     this.medColor = medColor;
@@ -46,6 +48,14 @@ public class Medicine {
         this.medUnit = "เข็ม";
         break;
     }
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 
   public String getMedName() {
