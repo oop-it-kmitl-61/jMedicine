@@ -1,6 +1,5 @@
 package core;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.XPath.Step;
 import java.util.ArrayList;
 
 /**
@@ -29,8 +28,7 @@ public class User {
   }
 
   public User(String userId, String userTitle, String userFirstName, String userLastName,
-      String userEmail, String userGender, String userAge, String userWeight,
-      String userHeight) {
+      String userEmail, String userGender, String userAge, String userWeight, String userHeight) {
     this.userId = userId;
     this.userTitle = userTitle;
     this.userFirstName = userFirstName;
@@ -40,6 +38,7 @@ public class User {
     this.userAge = userAge;
     this.userWeight = userWeight;
     this.userHeight = userHeight;
+    this.userName = userTitle + userFirstName + " " + userLastName;
   }
 
   public User(String userName, String userEmail, String userGender, String userAge,

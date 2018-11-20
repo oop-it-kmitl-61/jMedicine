@@ -64,7 +64,6 @@ public class Login {
     pStatement.setFloat(9, Float.valueOf(user.getUserHeight()));
     pStatement.setInt(10, Integer.valueOf(user.getUserAge()));
 
-
     ResultSet result = pStatement.executeQuery();
 
     result.next();
@@ -73,9 +72,4 @@ public class Login {
 
     return user;
   }
-
-  public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
-
-  }
-
 }
