@@ -2,6 +2,17 @@ package core;
 
 import java.util.ArrayList;
 
+/**
+ * Stores a doctor information
+ * Use a constructor to new a doctor.
+ *
+ * @param prefix a doctor prefix, chosen from a combo box.
+ * @param name a doctor name.
+ * @param ward a doctor ward.
+ * @param hospital a doctor's workplace.
+ * @param workTime an ArrayList of a time that doctor will be working.
+ */
+
 public class Doctor {
 
   private String id;

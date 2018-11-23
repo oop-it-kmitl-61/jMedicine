@@ -16,6 +16,7 @@ public class Database {
     props.setProperty("user", DB_USER);
     props.setProperty("password", DB_PASS);
     props.setProperty("ssl", "false");
+
     return DriverManager.getConnection(url, props);
   }
 

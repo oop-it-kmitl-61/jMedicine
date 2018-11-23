@@ -3,8 +3,24 @@ package core;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Medicine {
+/**
+ * Stores a medicine information.
+ * Use a constructor to new a medicine.
+ *
+ * @param medName a name of medicine.
+ * @param medType a string to classify the medicine,
+ *        must be "tablet", "capsule", "liquid" or "Inject".
+ * @param medColor a string of color.
+ * @param medDescription a description of medicine.
+ * @param medTime an ArrayList of String, containing a time for having a medicine.
+ * @param medDoseStr an ArrayList of String, containing how to have a medicine.
+ * @param medDose a number of medicine per one dose.
+ * @param medTotal a total numbers of medicine have been prescribed.
+ * @param medEXP a medicine expired date.
+ */
 
+public class Medicine {
+  
   private String id;
   private String medName;
   private String medType;
@@ -92,87 +108,45 @@ public class Medicine {
     return medName;
   }
 
-  public void setMedName(String medName) {
-    this.medName = medName;
-  }
-
   public String getMedType() {
     return medType;
-  }
-
-  public void setMedType(String medType) {
-    this.medType = medType;
   }
 
   public String getMedColor() {
     return medColor;
   }
 
-  public void setMedColor(String medColor) {
-    this.medColor = medColor;
-  }
-
   public String getMedDescription() {
     return medDescription;
-  }
-
-  public void setMedDescription(String medDescription) {
-    this.medDescription = medDescription;
   }
 
   public ArrayList<String> getMedTime() {
     return medTime;
   }
 
-  public void setMedTime(ArrayList<String> medTime) {
-    this.medTime = medTime;
-  }
-
   public ArrayList<String> getMedDoseStr() {
     return medDoseStr;
-  }
-
-  public void setMedDoseStr(ArrayList<String> medDoseStr) {
-    this.medDoseStr = medDoseStr;
   }
 
   public int getMedDose() {
     return medDose;
   }
 
-  public void setMedDose(int medDose) {
-    this.medDose = medDose;
-  }
-
   public int getMedRemaining() {
     return medRemaining;
-  }
-
-  public void setMedRemaining(int medRemaining) {
-    this.medRemaining = medRemaining;
   }
 
   public String getMedEXP() {
     return medEXP;
   }
 
-  public void setMedEXP(String medEXP) {
-    this.medEXP = medEXP;
-  }
-
   public Date getDateAdded() {
     return dateAdded;
-  }
-
-  public void setDateAdded(Date dateAdded) {
-    this.dateAdded = dateAdded;
   }
 
   public String getMedUnit() {
     return medUnit;
   }
 
-  public int getMedTotal() {
-    return medTotal;
-  }
+  public int getMedTotal() { return medTotal; }
 }
