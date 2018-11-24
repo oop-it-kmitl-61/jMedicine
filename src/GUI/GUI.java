@@ -1,4 +1,9 @@
-package main;
+package GUI;
+
+import static GUI.GUIHelper.*;
+import static api.Login.*;
+
+import api.LoginException;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionHandler;
 import com.teamdev.jxbrowser.chromium.PermissionRequest;
@@ -26,6 +31,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +40,8 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
+import core.LocationHelper;
+
 
 /**
  * GUI class creates all graphic user interface, all in javax.swing.
@@ -48,10 +57,10 @@ public class GUI implements ActionListener {
   private JPanel panelWelcome;
   private JPanel panelSub01, panelSub02, panelSub03, panelSub04, panelSub05, panelSub06;
   private JPanel panelTitle, panelLoop, cardLoop;
-  private JTextField tfUserName;
-  private JButton buttons[];
+  private JTextField tfSignInUserName, tfSignInPassword, tfSignUpUserName, tfSignUpPassword, tfSignUpPasswordConfirm;
+  private static JButton buttons[];
   private Dimension windowSize, minSize;
-  private Color mainBlue;
+  private static Color mainBlue;
   private User user;
   private MedicineUtil medUtil;
 
@@ -59,18 +68,18 @@ public class GUI implements ActionListener {
     this.medUtil = new MedicineUtil();
     this.windowSize = windowSize;
     this.minSize = new Dimension(800, 600);
-    this.mainBlue = new Color(20, 101, 155);
+    mainBlue = new Color(20, 101, 155);
     // Load font
     try {
       GraphicsEnvironment ge =
           GraphicsEnvironment.getLocalGraphicsEnvironment();
-      ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/main/font/THSarabunNew.ttf")));
+      ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/GUI/font/THSarabunNew.ttf")));
     } catch (IOException | FontFormatException ex) {
       ex.printStackTrace();
     }
   }
 
-  public void init() {
+  private void main() {
     /* Creates the main frame including left navigation and 6 sub panels on the right */
 
     // Init main panels
@@ -246,7 +255,7 @@ public class GUI implements ActionListener {
 
   private JPanel panelNearbyHospitals() {
     /*
-      Creates GUI displaying Google Maps that is showing the current position
+      Creates GUI displaying Google LocationHelper that is showing the current position
       of the user, fetched from a public IP address, queried nearby hospitals.
      */
 
@@ -256,7 +265,7 @@ public class GUI implements ActionListener {
 
     // Fetch current location into an array of double,
     // containing latitude and longitude.
-    double[] location = Maps.getLocation();
+    double[] location = LocationHelper.getLocation();
 
     // Init web browser
     Browser browser = new Browser();
@@ -449,8 +458,8 @@ public class GUI implements ActionListener {
     JLabel labelUsername = makeLabel("Username");
     JLabel labelPassword = makeLabel("Password");
     makeLabelClickable(labelRegister, "ลงทะเบียน");
-    tfUserName = makeTextField(20);
-    JTextField tfPassword = makeTextField(20);
+    tfSignInUserName = makeTextField(20);
+    tfSignInPassword = makeTextField(20);
     JButton btnSignIn = makeButton("เข้าสู่ระบบ");
     panelWelcome = new JPanel(new CardLayout());
     JPanel panelYourName = new JPanel(new GridBagLayout());
@@ -487,11 +496,11 @@ public class GUI implements ActionListener {
     gbc.gridy = 2;
     panelYourName.add(labelUsername, gbc);
     gbc.gridy = 3;
-    panelYourName.add(tfUserName, gbc);
+    panelYourName.add(tfSignInUserName, gbc);
     gbc.gridy = 4;
     panelYourName.add(labelPassword, gbc);
     gbc.gridy = 5;
-    panelYourName.add(tfPassword, gbc);
+    panelYourName.add(tfSignInPassword, gbc);
     gbc.gridy = 6;
     panelYourName.add(btnSignIn, gbc);
     gbc.gridy = 7;
@@ -505,9 +514,9 @@ public class GUI implements ActionListener {
     panelSignUp.setLayout(new BoxLayout(panelSignUp, BoxLayout.PAGE_AXIS));
     labelUsername = makeLabel("Username");
     labelPassword = makeLabel("Password");
-    tfUserName = makeTextField(20);
-    tfPassword = makeTextField(20);
-    JTextField tfConfirmPassword = makeTextField(20);
+    tfSignUpUserName = makeTextField(20);
+    tfSignUpPassword = makeTextField(20);
+    tfSignUpPasswordConfirm = makeTextField(20);
     JButton btnSignUp = makeButton("ลงทะเบียน");
     JPanel panelSub = new JPanel();
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
@@ -521,11 +530,11 @@ public class GUI implements ActionListener {
     setPadding(btnSignUp, 20, 0, 0, 0);
 
     panelSub.add(labelUsername);
-    panelSub.add(tfUserName);
+    panelSub.add(tfSignUpUserName);
     panelSub.add(labelPassword);
-    panelSub.add(tfPassword);
+    panelSub.add(tfSignUpPassword);
     panelSub.add(makeLabel("กรอก Password อีกครั้ง"));
-    panelSub.add(tfConfirmPassword);
+    panelSub.add(tfSignUpPasswordConfirm);
     panelSub.add(btnSignUp);
 
     panelSignUp.add(panelTitle, BorderLayout.NORTH);
@@ -557,26 +566,6 @@ public class GUI implements ActionListener {
     frameWelcome.setMinimumSize(this.minSize);
     frameWelcome.setSize(this.windowSize);
     frameWelcome.setVisible(true);
-  }
-
-  private void paintButton() {
-    /* Handles color painting on the left navigation. */
-    for(JButton button: buttons) {
-      button.setBorderPainted(false);
-      button.setBackground(mainBlue);
-      button.setOpaque(false);
-      button.setForeground(Color.WHITE);
-    }
-  }
-
-  private void paintCurrentTabButton(JButton button) {
-    /*
-      Handles color painting on the left navigation. The current tab
-      will be painted in white.
-     */
-    button.setBackground(Color.WHITE);
-    button.setOpaque(true);
-    button.setForeground(Color.BLACK);
   }
 
   private void makeLeftNavigation() {
@@ -679,7 +668,7 @@ public class GUI implements ActionListener {
     button.setFont(new Font("TH Sarabun New", Font.BOLD, 42));
     button.setHorizontalAlignment(SwingConstants.LEFT);
     try {
-      Image img = ImageIO.read(new File("src/main/img/back.png"));
+      Image img = ImageIO.read(new File("src/GUI/img/back.png"));
       button.setIcon(new ImageIcon(img));
     } catch (Exception ignored) { }
     button.setOpaque(false);
@@ -705,7 +694,7 @@ public class GUI implements ActionListener {
 
     JButton btnNew = new JButton(btnName);
     try {
-      Image img = ImageIO.read(new File("src/main/img/add.png"));
+      Image img = ImageIO.read(new File("src/GUI/img/add.png"));
       btnNew.setIcon(new ImageIcon(img));
     } catch (Exception ignored) { }
     btnNew.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -783,7 +772,7 @@ public class GUI implements ActionListener {
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
 
     try {
-      Image img = ImageIO.read(new File("src/main/img/doctor.png"));
+      Image img = ImageIO.read(new File("src/GUI/img/doctor.png"));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ignored) { }
 
@@ -827,7 +816,7 @@ public class GUI implements ActionListener {
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
 
     try {
-      Image img = ImageIO.read(new File("src/main/img/calendar.png"));
+      Image img = ImageIO.read(new File("src/GUI/img/calendar.png"));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ignored) { }
 
@@ -944,13 +933,6 @@ public class GUI implements ActionListener {
     return panelAddMed;
   }
 
-  private JPanel newPanelLoop() {
-    JPanel panelLoop = new JPanel();
-    panelLoop.setLayout(new BoxLayout(panelLoop, BoxLayout.PAGE_AXIS));
-    setPadding(panelLoop, 20, 0, 5, 5);
-    return panelLoop;
-  }
-
   @Override
   public void actionPerformed(ActionEvent e) {
     String btnCommand = e.getActionCommand();
@@ -964,20 +946,29 @@ public class GUI implements ActionListener {
         frameWelcome = null;
       }
     } else if (btnCommand.equals("เข้าสู่ระบบ")) {
+      String username = tfSignInUserName.getText();
+      String password = tfSignInPassword.getText();
+      System.out.println(username+ password);
+      System.out.println();
+      try {
+        System.out.println(doSignIn(username, password));
+      } catch (LoginException | NoSuchAlgorithmException | SQLException ex) {
+        ex.printStackTrace();
+      }
       CardLayout cl = (CardLayout)(panelWelcome.getLayout());
       cl.show(panelWelcome, "เพิ่มยาตัวแรก");
-      String username = "";
-      if (tfUserName.getText().isEmpty()) {
-        username = "(ไม่ได้ตั้งชื่อ)";
+      String name = "";
+      if (tfSignInUserName.getText().isEmpty()) {
+        name = "(ไม่ได้ตั้งชื่อ)";
       } else {
-        username = tfUserName.getText();
+        name = tfSignInUserName.getText();
       }
       user = new User(username);
       initSampleDoctor();
       initSampleMedicine01();
       initSampleMedicine02();
       initSampleMedicine03();
-      init();
+      main();
     }
   }
 
@@ -1018,137 +1009,11 @@ public class GUI implements ActionListener {
     user.addUserDoctor(doctor);
   }
 
-  private JTextField makeTextField(int columns) {
-    JTextField textField = new JTextField(columns);
-    textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
-    return textField;
+  static JButton[] getButtons() {
+    return buttons;
   }
 
-  private JTextField makeTextField() {
-    JTextField textField = new JTextField();
-    textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
-    return textField;
-  }
-
-  private JComboBox makeComboBox(String[] comboBoxItems) {
-    JComboBox comboBox = new JComboBox(comboBoxItems);
-    comboBox.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
-    comboBox.setBackground(Color.WHITE);
-    return comboBox;
-  }
-
-  private JRadioButton makeRadioButton(String radioButtonText) {
-    JRadioButton radioButton = new JRadioButton(radioButtonText);
-    radioButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
-    return radioButton;
-  }
-
-  private JCheckBox makeCheckBox(String checkBoxText, boolean isChecked) {
-    JCheckBox checkBox = new JCheckBox(checkBoxText);
-    checkBox.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
-    checkBox.setSelected(isChecked);
-    return checkBox;
-  }
-
-  private JCheckBox makeCheckBox(String checkBoxText) {
-    JCheckBox checkBox = new JCheckBox(checkBoxText);
-    checkBox.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
-    return checkBox;
-  }
-
-  private JButton makeButton(String buttonText) {
-    JButton button = new JButton(buttonText);
-    button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
-    return button;
-  }
-
-  private JLabel makeTitleLabel(String labelText) {
-    JLabel label = new JLabel(labelText);
-    label.setFont(new Font("TH Sarabun New", Font.BOLD, 42));
-    return label;
-  }
-
-  private JLabel makeBoldLabel(String labelText) {
-    JLabel label = new JLabel(labelText);
-    label.setFont(new Font("TH Sarabun New", Font.BOLD, 26));
-    return label;
-  }
-
-  private JLabel makeLabel(String labelText) {
-    JLabel label = new JLabel(labelText);
-    label.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
-    return label;
-  }
-
-  private void makeLabelLeft(JLabel label) {
-    label.setAlignmentX(Component.LEFT_ALIGNMENT);
-  }
-
-  private void makeLabelCenter(JLabel label) {
-    label.setAlignmentX(Component.CENTER_ALIGNMENT);
-  }
-
-  private void setPadding(JLabel object, int top, int right, int bottom, int left) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
-  }
-
-  private void setPadding(JLabel object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
-  }
-
-  private void setPadding(JLabel object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
-  }
-
-  private void setPadding(JLabel object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
-  }
-
-  private void setPadding(JTextField object, int top, int right, int bottom, int left) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
-  }
-
-  private void setPadding(JTextField object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
-  }
-
-  private void setPadding(JTextField object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
-  }
-
-  private void setPadding(JTextField object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
-  }
-
-  private void setPadding(JButton object, int top, int right, int bottom, int left) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
-  }
-
-  private void setPadding(JButton object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
-  }
-
-  private void setPadding(JButton object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
-  }
-
-  private void setPadding(JButton object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
-  }
-
-  private void setPadding(JPanel object, int top, int right, int bottom, int left) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
-  }
-
-  private void setPadding(JPanel object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
-  }
-
-  private void setPadding(JPanel object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
-  }
-
-  private void setPadding(JPanel object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  static Color getMainBlue() {
+    return mainBlue;
   }
 }

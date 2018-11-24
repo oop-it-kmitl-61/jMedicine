@@ -13,7 +13,7 @@ public class User {
   private String userTitle;
   private String userFirstName;
   private String userLastName;
-  private String userName = "(ไม่ได้ตั้งชื่อ)";
+  private String userName;
   private String userEmail;
   private String userGender;
   private String userAge;

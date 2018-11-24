@@ -1,5 +1,6 @@
 package main;
 
+import GUI.GUI;
 import java.awt.Dimension;
 
 public class Main {
