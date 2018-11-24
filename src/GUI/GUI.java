@@ -163,7 +163,18 @@ public class GUI implements ActionListener {
     // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(makeTitleLabel("ยาทั้งหมด"));
+    panelLoop = reloadMedicines();
 
+    // Add all panels into the main panel
+    panelSub02.add(panelTitle, BorderLayout.NORTH);
+    panelSub02.add(panelLoop);
+
+    return panelSub02;
+  }
+
+  private JPanel reloadMedicines() {
+    panelLoop = null;
+    cardLoop = null;
     // Fetch all medicines from the records
     ArrayList<Medicine> userMedicines = user.getUserMedicines();
 
@@ -182,11 +193,7 @@ public class GUI implements ActionListener {
       // End Make Loop
     }
 
-    // Add all panels into the main panel
-    panelSub02.add(panelTitle, BorderLayout.NORTH);
-    panelSub02.add(panelLoop);
-
-    return  panelSub02;
+    return panelLoop;
   }
 
   private JPanel panelAllAppointments() {
@@ -342,12 +349,31 @@ public class GUI implements ActionListener {
     /* Creates GUI displaying all information of a single medicine */
 
     String medName = medicine.getMedName();
+    JButton btnRemove = makeButton("ลบยาตัวนี้");
     JLabel labelPic = medUtil.getMedIcon(medicine);
     JPanel panelView = new JPanel(new BorderLayout());
     JPanel panelSub = new JPanel();
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
     JButton labelTitle = makeBackButton(medName, "ยาทั้งหมด");
     setPadding(labelPic, 0, 0, 10);
+
+    btnRemove.addActionListener(e -> {
+      int dialogResult = JOptionPane.showConfirmDialog (null, makeLabel("ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง"), "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION);
+      if(dialogResult == JOptionPane.YES_OPTION){
+        JLabel labelMessage;
+        if (user.removeUserMedicine(medicine)) {
+          labelMessage = getRemoveSuccessfulMessage("ยา");
+        } else {
+          labelMessage = getRemoveFailedMessage("ยา");
+        }
+        panelRight.remove(panelAddMedicine());
+        panelSub02 = null;
+        panelSub02 = new JPanel(new BorderLayout());
+        panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
+        backTo("ยาทั้งหมด");
+        JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE);
+      }
+    });
 
     panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(labelTitle);
@@ -376,6 +402,7 @@ public class GUI implements ActionListener {
     panelSub.add(makeLabel("จำนวนยาเริ่มต้น: " + medicine.getMedRemaining()));
     panelSub.add(makeLabel("จำนวนยาที่เหลือ: " + medicine.getMedRemaining()));
     panelSub.add(makeLabel("วันหมดอายุ: " + medicine.getMedEXP()));
+    panelSub.add(btnRemove);
 
     panelView.add(panelTitle, BorderLayout.NORTH);
     panelView.add(panelSub);
@@ -714,6 +741,17 @@ public class GUI implements ActionListener {
     return panelLoopInfo;
   }
 
+  private void backTo(String backTo) {
+    /* Navigates user back to some page */
+    if (backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
+      CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+      cl.show(panelWelcome, "ยังไม่ได้เข้าสู่ระบบ");
+    } else {
+      CardLayout cl = (CardLayout)(panelRight.getLayout());
+      cl.show(panelRight, backTo);
+    }
+  }
+
   private JPanel makeMedCard(Medicine medicine) {
     /* Creates a card that will be used on the All medicines panel only. */
     String medTitle = medicine.getMedName()+" ("+medicine.getMedDescription()+")";
@@ -937,39 +975,39 @@ public class GUI implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     String btnCommand = e.getActionCommand();
-    if (btnCommand.equals("บันทึกยา") || btnCommand.equals("ข้ามขั้นตอนนี้")) {
-      if (frameWelcome == null) {
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
-        cl.show(panelRight, "ยาทั้งหมด");
-      } else {
-        frameWelcome.setVisible(false);
-        frameMain.setVisible(true);
-        frameWelcome = null;
-      }
-    } else if (btnCommand.equals("เข้าสู่ระบบ")) {
-      String username = tfSignInUserName.getText();
-      char[] password = tfSignInPassword.getPassword();
-      System.out.println(username+ password);
-      System.out.println();
-      try {
-        System.out.println(doSignIn(username, password));
-      } catch (LoginException | NoSuchAlgorithmException | SQLException ex) {
-        ex.printStackTrace();
-      }
-      CardLayout cl = (CardLayout)(panelWelcome.getLayout());
-      cl.show(panelWelcome, "เพิ่มยาตัวแรก");
-      String name = "";
-      if (tfSignInUserName.getText().isEmpty()) {
-        name = "(ไม่ได้ตั้งชื่อ)";
-      } else {
-        name = tfSignInUserName.getText();
-      }
-      user = new User(username);
-      initSampleDoctor();
-      initSampleMedicine01();
-      initSampleMedicine02();
-      initSampleMedicine03();
-      main();
+
+    switch (btnCommand) {
+
+      case "บันทึกยา":
+      case "ข้ามขั้นตอนนี้":
+        if (frameWelcome == null) {
+          CardLayout cl = (CardLayout)(panelRight.getLayout());
+          cl.show(panelRight, "ยาทั้งหมด");
+        } else {
+          frameWelcome.setVisible(false);
+          frameMain.setVisible(true);
+          frameWelcome = null;
+        }
+        break;
+
+      case "เข้าสู่ระบบ":
+        String username = tfSignInUserName.getText();
+        char[] password = tfSignInPassword.getPassword();
+//      TODO: SIGN IN HERE
+//      try {
+//        System.out.println(doSignIn(username, password));
+//      } catch (LoginException | NoSuchAlgorithmException | SQLException ex) {
+//        ex.printStackTrace();
+//      }
+        CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+        cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+        user = new User(username);
+        initSampleDoctor();
+        initSampleMedicine01();
+        initSampleMedicine02();
+        initSampleMedicine03();
+        main();
+        break;
     }
   }
 

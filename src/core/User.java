@@ -148,6 +148,25 @@ public class User {
     this.userDoctors.add(doctor);
   }
 
+  public boolean removeUserDoctor(Doctor doctor) {
+    try {
+      this.userDoctors.remove(doctor);
+    } catch (NullPointerException ignored) {
+      return false;
+    }
+    return true;
+  }
+
+  public boolean removeUserMedicine(Medicine medicine) {
+    try {
+      this.userMedicines.remove(medicine);
+    } catch (NullPointerException ex) {
+      ex.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
   @Override
   public String toString() {
     return "User{" +

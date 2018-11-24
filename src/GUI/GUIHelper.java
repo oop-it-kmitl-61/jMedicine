@@ -16,6 +16,14 @@ import javax.swing.JTextField;
 
 class GUIHelper {
 
+  static JLabel getRemoveSuccessfulMessage(String type) {
+    return makeLabel("ลบ"+type+"เรียบร้อยแล้ว");
+  }
+
+  static JLabel getRemoveFailedMessage(String type) {
+    return makeLabel("ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ"+type+"ได้");
+  }
+
   static JTextField makeTextField(int columns) {
     JTextField textField = new JTextField(columns);
     textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
