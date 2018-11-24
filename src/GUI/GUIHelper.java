@@ -10,6 +10,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
@@ -25,6 +26,12 @@ class GUIHelper {
     JTextField textField = new JTextField();
     textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     return textField;
+  }
+
+  static JPasswordField makePasswordField(int columns) {
+    JPasswordField passwordField = new JPasswordField(columns);
+    passwordField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    return passwordField;
   }
 
   static JComboBox makeComboBox(String[] comboBoxItems) {

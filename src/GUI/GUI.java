@@ -57,7 +57,8 @@ public class GUI implements ActionListener {
   private JPanel panelWelcome;
   private JPanel panelSub01, panelSub02, panelSub03, panelSub04, panelSub05, panelSub06;
   private JPanel panelTitle, panelLoop, cardLoop;
-  private JTextField tfSignInUserName, tfSignInPassword, tfSignUpUserName, tfSignUpPassword, tfSignUpPasswordConfirm;
+  private JTextField tfSignInUserName, tfSignUpUserName;
+  private JPasswordField tfSignInPassword, tfSignUpPassword, tfSignUpPasswordConfirm;
   private static JButton buttons[];
   private Dimension windowSize, minSize;
   private static Color mainBlue;
@@ -459,7 +460,7 @@ public class GUI implements ActionListener {
     JLabel labelPassword = makeLabel("Password");
     makeLabelClickable(labelRegister, "ลงทะเบียน");
     tfSignInUserName = makeTextField(20);
-    tfSignInPassword = makeTextField(20);
+    tfSignInPassword = makePasswordField(20);
     JButton btnSignIn = makeButton("เข้าสู่ระบบ");
     panelWelcome = new JPanel(new CardLayout());
     JPanel panelYourName = new JPanel(new GridBagLayout());
@@ -515,8 +516,8 @@ public class GUI implements ActionListener {
     labelUsername = makeLabel("Username");
     labelPassword = makeLabel("Password");
     tfSignUpUserName = makeTextField(20);
-    tfSignUpPassword = makeTextField(20);
-    tfSignUpPasswordConfirm = makeTextField(20);
+    tfSignUpPassword = makePasswordField(20);
+    tfSignUpPasswordConfirm = makePasswordField(20);
     JButton btnSignUp = makeButton("ลงทะเบียน");
     JPanel panelSub = new JPanel();
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
@@ -947,7 +948,7 @@ public class GUI implements ActionListener {
       }
     } else if (btnCommand.equals("เข้าสู่ระบบ")) {
       String username = tfSignInUserName.getText();
-      String password = tfSignInPassword.getText();
+      char[] password = tfSignInPassword.getPassword();
       System.out.println(username+ password);
       System.out.println();
       try {
