@@ -1,4 +1,4 @@
-package main;
+package core;
 
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
@@ -15,7 +15,7 @@ import java.net.UnknownHostException;
 /**
  * Gets latitude and longitude by a public IP address.
  */
-public class Maps {
+public class LocationHelper {
 
   public static double[] getLocation() {
     double[] result = null;
@@ -33,7 +33,7 @@ public class Maps {
     }
 
     //Get lat, lng
-    File database = new File("src/main/mapdb/GeoLite2-City.mmdb");
+    File database = new File("src/core/mapdb/GeoLite2-City.mmdb");
     DatabaseReader reader = null;
     try {
       reader = new DatabaseReader.Builder(database).build();

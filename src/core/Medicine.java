@@ -20,7 +20,6 @@ import java.util.Date;
  */
 
 public class Medicine {
-
   private String id;
   private String medName;
   private String medType;

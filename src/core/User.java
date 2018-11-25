@@ -13,7 +13,7 @@ public class User {
   private String userTitle;
   private String userFirstName;
   private String userLastName;
-  private String userName = "(ไม่ได้ตั้งชื่อ)";
+  private String userName;
   private String userEmail;
   private String userGender;
   private String userAge;
@@ -39,17 +39,8 @@ public class User {
     this.userWeight = userWeight;
     this.userHeight = userHeight;
     this.userName = userTitle + userFirstName + " " + userLastName;
-  }
-
-  public User(String userName, String userEmail, String userGender, String userAge,
-      String userWeight, String userHeight, String userId) {
-    this.userEmail = userEmail;
-    this.userName = userName;
-    this.userGender = userGender;
-    this.userAge = userAge;
-    this.userWeight = userWeight;
-    this.userHeight = userHeight;
-    this.userId = userId;
+    this.userMedicines = new ArrayList<>();
+    this.userDoctors = new ArrayList<>();
   }
 
   public String getUserTitle() {
@@ -146,6 +137,25 @@ public class User {
 
   public void addUserDoctor(Doctor doctor) {
     this.userDoctors.add(doctor);
+  }
+
+  public boolean removeUserDoctor(Doctor doctor) {
+    try {
+      this.userDoctors.remove(doctor);
+    } catch (NullPointerException ignored) {
+      return false;
+    }
+    return true;
+  }
+
+  public boolean removeUserMedicine(Medicine medicine) {
+    try {
+      this.userMedicines.remove(medicine);
+    } catch (NullPointerException ex) {
+      ex.printStackTrace();
+      return false;
+    }
+    return true;
   }
 
   @Override

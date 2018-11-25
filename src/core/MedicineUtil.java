@@ -61,7 +61,7 @@ public class MedicineUtil {
     }
 
     try {
-      Image img = ImageIO.read(new File("src/main/img/" + imgURL));
+      Image img = ImageIO.read(new File("src/GUI/img/" + imgURL));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ex) {
       ex.printStackTrace();
