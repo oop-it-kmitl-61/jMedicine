@@ -487,35 +487,52 @@ public class GUI implements ActionListener, KeyListener {
     // JPanels
     JPanel panelAddDoctor = new JPanel();
     JPanel panelSub = new JPanel();
-    panelTitle = new JPanel(new BorderLayout());
+    JPanel panelRow = new JPanel();
+    panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มแพทย์ใหม่", "แพทย์");
+    JButton btnAdd = makeButton("บันทึกแพทย์");
 
     // Styling
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
-    panelTitle.add(btnBack);
     setPadding(panelTitle, 0, 0, 20);
+    setPadding(panelSub, 0, 120, 40);
 
-    JTextField tfDoctorName = makeTextField();
-    JTextField tfDoctorWard = makeTextField();
-    JTextField tfDoctorHospital = makeTextField();
+    JTextField tfDoctorName = makeTextField(20);
+    JTextField tfDoctorSurName = makeTextField(20);
+    JTextField tfDoctorWard = makeTextField(20);
+    JTextField tfDoctorHospital = makeTextField(40);
     String[] prefixes = {"นพ.", "พญ.", "ศ.นพ", "ผศ.นพ"};
     JComboBox cbPrefix = makeComboBox(prefixes);
     //TODO: ทำให้เพิ่มวันและเวลาที่แพทย์เข้าตรวจได้
     //แนวคิด: ทำ JCheckBox ให้ครบทุกวัน (จันทร์-เสาร์) ให้ติ๊กเลือก ถ้าติ๊กช่องไหนก็ใส่เวลาลง textfield ของวันนั้นเข้าไปด้วย
 
-    panelSub.add(makeLabel("คำนำหน้า"));
-    panelSub.add(cbPrefix);
-    panelSub.add(makeLabel("ชื่อ-สกุล"));
-    panelSub.add(tfDoctorName);
-    panelSub.add(makeLabel("แผนก"));
-    panelSub.add(tfDoctorWard);
-    panelSub.add(makeLabel("ชื่อสถานพยาบาล"));
-    panelSub.add(tfDoctorHospital);
+    panelTitle.add(btnBack);
+
+    panelRow.add(makeLabel("คำนำหน้า"));
+    panelRow.add(cbPrefix);
+    panelRow.add(makeLabel("ชื่อ"));
+    panelRow.add(tfDoctorName);
+    panelRow.add(makeLabel("นามสกุล"));
+    panelRow.add(tfDoctorSurName);
+    panelSub.add(panelRow);
+
+    panelRow = new JPanel();
+    panelRow.add(makeLabel("แผนก"));
+    panelRow.add(tfDoctorWard);
+    panelSub.add(panelRow);
+
+    panelRow = new JPanel();
+    panelRow.add(makeLabel("ชื่อสถานพยาบาล"));
+    panelRow.add(tfDoctorHospital);
+    panelSub.add(panelRow);
+
+    panelSub.add(btnAdd);
 
     panelAddDoctor.add(panelTitle, BorderLayout.NORTH);
-    panelAddDoctor.add(panelSub);
+    panelAddDoctor.add(panelSub, BorderLayout.CENTER);
+    panelAddDoctor.add(btnAdd, BorderLayout.SOUTH);
 
     return panelAddDoctor;
   }
