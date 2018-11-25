@@ -43,6 +43,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import core.LocationHelper;
+import mdlaf.MaterialLookAndFeel;
 
 
 /**
@@ -73,14 +74,7 @@ public class GUI implements ActionListener, KeyListener {
     this.windowSize = windowSize;
     this.minSize = new Dimension(800, 600);
     mainBlue = new Color(20, 101, 155);
-    // Load font
-    try {
-      GraphicsEnvironment ge =
-          GraphicsEnvironment.getLocalGraphicsEnvironment();
-      ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/GUI/font/THSarabunNew.ttf")));
-    } catch (IOException | FontFormatException ex) {
-      ex.printStackTrace();
-    }
+    GUIHelper.setup();
   }
 
   private void main() {
@@ -483,15 +477,17 @@ public class GUI implements ActionListener, KeyListener {
      */
 
     frameWelcome = new JFrame("jMedicine: เข้าสู่ระบบ");
-    panelLoadingSignin = getLoadingPanel(true);
+    panelLoadingSignin = getLoadingPanel(false);
     panelLoadingSignin.setVisible(false);
     panelErrorSignin = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
     panelErrorSignin.setVisible(false);
     JLabel space = new JLabel();
     JLabel labelWelcomeSub = makeLabel("เข้าสู่ระบบเพื่อ Sync ข้อมูลของคุณทุกที่ ทุกเวลา");
     JLabel labelRegister = makeLabel("ยังไม่มีบัญชี? ลงทะเบียนที่นี่");
-    JLabel labelUsername = makeLabel("Username");
-    JLabel labelPassword = makeLabel("Password");
+    JLabel labelUsername = makeBoldLabel("Username");
+    JLabel labelPassword = makeBoldLabel("Password");
+    setPadding(labelUsername, 0, 0, -16, 0);
+    setPadding(labelPassword, 0, 0, -10, 0);
     makeLabelClickable(labelRegister, "ลงทะเบียน");
     tfSignInUserName = makeTextField(20);
     tfSignInPassword = makePasswordField(20);
@@ -534,7 +530,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSignIn.add(labelUsername, gbc);
     gbc.gridy++;
     panelSignIn.add(tfSignInUserName, gbc);
-    gbc.gridy++;
+    gbc.gridy += 2;
     panelSignIn.add(labelPassword, gbc);
     gbc.gridy++;
     panelSignIn.add(tfSignInPassword, gbc);
@@ -542,7 +538,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSignIn.add(panelLoadingSignin, gbc);
     gbc.gridy++;
     panelSignIn.add(panelErrorSignin, gbc);
-    gbc.gridy++;
+    gbc.gridy += 2;
     panelSignIn.add(btnSignIn, gbc);
     gbc.gridy++;
     panelSignIn.add(labelRegister, gbc);
@@ -612,12 +608,12 @@ public class GUI implements ActionListener, KeyListener {
   private void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
     buttons = new JButton[] {
-        makeButton("ภาพรวม"),
-        makeButton("ยาทั้งหมด"),
-        makeButton("นัดแพทย์"),
-        makeButton("แพทย์"),
-        makeButton("โรงพยาบาลใกล้เคียง"),
-        makeButton("การตั้งค่า"),
+        makeLeftNavigationButton("ภาพรวม"),
+        makeLeftNavigationButton("ยาทั้งหมด"),
+        makeLeftNavigationButton("นัดแพทย์"),
+        makeLeftNavigationButton("แพทย์"),
+        makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
+        makeLeftNavigationButton("การตั้งค่า"),
     };
 
     int buttonY = 0;

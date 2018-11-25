@@ -2,11 +2,12 @@ package GUI;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Image;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
-import java.net.URL;
-import javax.imageio.ImageIO;
+import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -18,8 +19,31 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import mdlaf.MaterialLookAndFeel;
+import mdlaf.animation.MaterialUIMovement;
+import mdlaf.utils.MaterialColors;
 
 class GUIHelper {
+
+  static void setup() {
+    System.setProperty("apple.laf.useScreenMenuBar", "true");
+    System.setProperty("apple.awt.application.name", "jMedicine");
+    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "jMedicine");
+    try {
+      GraphicsEnvironment ge =
+          GraphicsEnvironment.getLocalGraphicsEnvironment();
+      ge.registerFont(
+          Font.createFont(
+              Font.TRUETYPE_FONT, new File("src/GUI/font/THSarabunNew.ttf")
+          )
+      );
+      UIManager.setLookAndFeel(new MaterialLookAndFeel());
+    } catch (UnsupportedLookAndFeelException | IOException | FontFormatException ex) {
+      ex.printStackTrace();
+    }
+  }
 
   static JLabel getRemoveSuccessfulMessage(String type) {
     return makeLabel("ลบ"+type+"เรียบร้อยแล้ว");
@@ -110,7 +134,7 @@ class GUIHelper {
 
   static JPasswordField makePasswordField(int columns) {
     JPasswordField passwordField = new JPasswordField(columns);
-    passwordField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    passwordField.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
     return passwordField;
   }
 
@@ -140,9 +164,19 @@ class GUIHelper {
     return checkBox;
   }
 
+  static JButton makeLeftNavigationButton(String buttonText) {
+    JButton button = new JButton(buttonText);
+    button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
+    return button;
+  }
+
   static JButton makeButton(String buttonText) {
     JButton button = new JButton(buttonText);
     button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
+    button.setBackground(GUI.getMainBlue());
+    button.setForeground (Color.WHITE);
+    button.setMaximumSize (new Dimension(200, 60));
+    MaterialUIMovement.add(button, MaterialColors.LIGHT_BLUE_600);
     return button;
   }
 
@@ -182,7 +216,9 @@ class GUIHelper {
   static void paintButton() {
     /* Handles color painting on the left navigation. */
     for(JButton button: GUI.getButtons()) {
+      button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
       button.setBorderPainted(false);
+      button.setFocusPainted(false);
       button.setBackground(GUI.getMainBlue());
       button.setOpaque(false);
       button.setForeground(Color.WHITE);
@@ -194,6 +230,9 @@ class GUIHelper {
       Handles color painting on the left navigation. The current tab
       will be painted in white.
      */
+    button.setFont(new Font("TH Sarabun New", Font.BOLD, 26));
+    button.setBorderPainted(false);
+    button.setFocusPainted(false);
     button.setBackground(Color.WHITE);
     button.setOpaque(true);
     button.setForeground(Color.BLACK);
@@ -228,6 +267,22 @@ class GUIHelper {
   }
 
   static void setPadding(JTextField object, int top) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  }
+
+  static void setPadding(JPasswordField object, int top, int right, int bottom, int left) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+  }
+
+  static void setPadding(JPasswordField object, int top, int right, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  }
+
+  static void setPadding(JPasswordField object, int top, int right) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  }
+
+  static void setPadding(JPasswordField object, int top) {
     object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
   }
 
