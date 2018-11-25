@@ -688,6 +688,9 @@ public class GUI implements ActionListener, KeyListener {
       public void mouseClicked(MouseEvent e)
       {
         if (href.equals("ลงทะเบียน") || href.equals("ยังไม่ได้เข้าสู่ระบบ") ) {
+          if (frameWelcome == null) {
+            initWelcome();
+          }
           frameWelcome.setVisible(true);
           CardLayout cl = (CardLayout)(panelWelcome.getLayout());
           cl.show(panelWelcome, href);
@@ -716,13 +719,7 @@ public class GUI implements ActionListener, KeyListener {
     button.setContentAreaFilled(false);
     button.setBorderPainted(false);
     button.addActionListener(e -> {
-      if (backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
-        CardLayout cl = (CardLayout)(panelWelcome.getLayout());
-        cl.show(panelWelcome, "ยังไม่ได้เข้าสู่ระบบ");
-      } else {
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
-        cl.show(panelRight, backTo);
-      }
+      backTo(backTo);
     });
     return button;
   }
@@ -986,32 +983,49 @@ public class GUI implements ActionListener, KeyListener {
   }
 
   private void executeSignIn() {
-    panelLoadingSignin.setVisible(true);
-    SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
-      @Override
-      protected Integer doInBackground() throws Exception {
-        String username = tfSignInUserName.getText();
-        char[] password = tfSignInPassword.getPassword();
-        try {
-          user = doSignIn(username, password);
-//          System.out.println(user);
-          CardLayout cl = (CardLayout)(panelWelcome.getLayout());
-          cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+    if (tfSignInUserName.getText().equals("") || tfSignInPassword.getPassword().equals("")) {
+      panelErrorSignin.setVisible(true);
+    } else {
+      panelErrorSignin.setVisible(false);
+      panelLoadingSignin.setVisible(true);
+      SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
+        @Override
+        protected Integer doInBackground() throws Exception {
+          String username = tfSignInUserName.getText();
+          char[] password = tfSignInPassword.getPassword();
+          try {
+            user = doSignIn(username, password);
+          } catch (LoginException ignored) {
+            panelLoadingSignin.setVisible(false);
+            panelErrorSignin.setVisible(true);
+          } catch (NoSuchAlgorithmException | SQLException ex) {
+            ex.printStackTrace();
+          }
+          return null;
+        }
+
+        @Override
+        protected void done() {
           initSampleDoctor();
           initSampleMedicine01();
           initSampleMedicine02();
           initSampleMedicine03();
           main();
-        } catch (LoginException ignored) {
-          panelLoadingSignin.setVisible(false);
-          panelErrorSignin.setVisible(true);
-        } catch (NoSuchAlgorithmException | SQLException ex) {
-          ex.printStackTrace();
+          System.out.println(user);
+          if (user.getUserMedicines().size() > 0) {
+            frameWelcome.setVisible(false);
+            frameMain.setVisible(true);
+            frameWelcome = null;
+            CardLayout cl = (CardLayout)(panelRight.getLayout());
+            cl.show(panelRight, "ภาพรวม");
+          } else {
+            CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+            cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+          }
         }
-        return null;
-      }
-    };
-    swingWorker.execute();
+      };
+      swingWorker.execute();
+    }
   }
 
   @Override

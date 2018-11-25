@@ -39,17 +39,8 @@ public class User {
     this.userWeight = userWeight;
     this.userHeight = userHeight;
     this.userName = userTitle + userFirstName + " " + userLastName;
-  }
-
-  public User(String userName, String userEmail, String userGender, String userAge,
-      String userWeight, String userHeight, String userId) {
-    this.userEmail = userEmail;
-    this.userName = userName;
-    this.userGender = userGender;
-    this.userAge = userAge;
-    this.userWeight = userWeight;
-    this.userHeight = userHeight;
-    this.userId = userId;
+    this.userMedicines = new ArrayList<>();
+    this.userDoctors = new ArrayList<>();
   }
 
   public String getUserTitle() {
