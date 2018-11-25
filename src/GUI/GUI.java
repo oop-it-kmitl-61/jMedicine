@@ -24,6 +24,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -37,6 +38,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -101,12 +103,15 @@ public class GUI implements ActionListener, KeyListener {
   private static Color mainBlue;
   private User user;
   private MedicineUtil medUtil;
+  Locale locale;
 
   public GUI(Dimension windowSize) {
     this.medUtil = new MedicineUtil();
     this.windowSize = windowSize;
     this.minSize = new Dimension(800, 600);
+    this.locale = new Locale("th","TH");
     mainBlue = new Color(20, 101, 155);
+    JOptionPane.setDefaultLocale(locale);
     GUIHelper.setup();
   }
 
@@ -402,7 +407,19 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnRemove.addActionListener(e -> {
-      int dialogResult = JOptionPane.showConfirmDialog (null, makeLabel("ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง"), "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION);
+      int dialogResult = 0;
+      JLabel labelConfirm = makeLabel("ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
+      setPadding(labelConfirm, 0, 16, 0, 0);
+
+      Toolkit.getDefaultToolkit().beep();
+      try {
+        Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
+        Icon icon = new ImageIcon(img);
+        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE,icon);
+      } catch (Exception ignored) {
+        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION);
+      }
+
       if(dialogResult == JOptionPane.YES_OPTION){
         JLabel labelMessage;
         if (user.removeUserMedicine(medicine)) {
@@ -410,12 +427,19 @@ public class GUI implements ActionListener, KeyListener {
         } else {
           labelMessage = getRemoveFailedMessage("ยา");
         }
+        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllMedicines());
         panelSub02 = null;
         panelSub02 = new JPanel(new BorderLayout());
         panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
         backTo("ยาทั้งหมด");
-        JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE);
+        try {
+          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
+          Icon icon = new ImageIcon(img);
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE, icon);
+        } catch (Exception ignored) {
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE);
+        }
       }
     });
 
@@ -513,7 +537,19 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnRemove.addActionListener(e -> {
-      int dialogResult = JOptionPane.showConfirmDialog (null, makeLabel("ต้องการลบแพทย์คนนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง"), "คุณกำลังทำการลบแพทย์", JOptionPane.YES_NO_OPTION);
+      JLabel labelConfirm = makeLabel("ต้องการลบแพทย์คนนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
+      setPadding(labelConfirm, 0, 16, 0 ,0);
+      int dialogResult = 0;
+
+      Toolkit.getDefaultToolkit().beep();
+      try {
+        Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
+        Icon icon = new ImageIcon(img);
+        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบแพทย์", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, icon);
+      } catch (Exception ignored) {
+        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบแพทย์", JOptionPane.YES_NO_OPTION);
+      }
+
       if(dialogResult == JOptionPane.YES_OPTION){
         JLabel labelMessage;
         if (user.removeUserDoctor(doctor)) {
@@ -521,12 +557,19 @@ public class GUI implements ActionListener, KeyListener {
         } else {
           labelMessage = getRemoveFailedMessage("แพทย์");
         }
+        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllDoctors());
         panelSub04 = null;
         panelSub04 = new JPanel(new BorderLayout());
         panelRight.add(panelAllDoctors(), "แพทย์");
         backTo("แพทย์");
-        JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์", JOptionPane.INFORMATION_MESSAGE);
+        try {
+          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
+          Icon icon = new ImageIcon(img);
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์", JOptionPane.INFORMATION_MESSAGE, icon);
+        } catch (Exception ignored) {
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์", JOptionPane.INFORMATION_MESSAGE);
+        }
       }
     });
 
@@ -580,7 +623,19 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnRemove.addActionListener(e -> {
-      int dialogResult = JOptionPane.showConfirmDialog (null, makeLabel("ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง"), "คุณกำลังทำการลบนัดแพทย์", JOptionPane.YES_NO_OPTION);
+      JLabel labelConfirm = makeLabel("ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
+      setPadding(labelConfirm, 0, 16, 0 ,0);
+      int dialogResult = 0;
+
+      Toolkit.getDefaultToolkit().beep();
+      try {
+        Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
+        Icon icon = new ImageIcon(img);
+        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบนัดแพทย์", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, icon);
+      } catch (Exception ignored) {
+        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบนัดแพทย์", JOptionPane.YES_NO_OPTION);
+      }
+
       if(dialogResult == JOptionPane.YES_OPTION){
         JLabel labelMessage;
         if (user.removeUserAppointment(appointment)) {
@@ -588,12 +643,19 @@ public class GUI implements ActionListener, KeyListener {
         } else {
           labelMessage = getRemoveFailedMessage("นัดแพทย์");
         }
+        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllAppointments());
         panelSub03 = null;
         panelSub03 = new JPanel(new BorderLayout());
         panelRight.add(panelAllAppointments(), "นัดแพทย์");
         backTo("นัดแพทย์");
-        JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์", JOptionPane.INFORMATION_MESSAGE);
+        try {
+          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
+          Icon icon = new ImageIcon(img);
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์", JOptionPane.INFORMATION_MESSAGE, icon);
+        } catch (Exception ignored) {
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์", JOptionPane.INFORMATION_MESSAGE);
+        }
       }
     });
 

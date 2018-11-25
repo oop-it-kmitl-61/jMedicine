@@ -6,11 +6,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -35,6 +37,9 @@ class GUIHelper {
   public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy", new Locale("th", "TH"));
   public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
   public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm", new Locale("th", "TH"));
+
+  public static String imgSuccessSrc = "src/GUI/img/success.png";
+  public static String imgWarningSrc = "src/GUI/img/warning.png";
 
   static void setup() {
     try {
