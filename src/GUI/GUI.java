@@ -414,10 +414,10 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(makeLabel("จำนวนยาเริ่มต้น: " + medicine.getMedRemaining()));
     panelSub.add(makeLabel("จำนวนยาที่เหลือ: " + medicine.getMedRemaining()));
     panelSub.add(makeLabel("วันหมดอายุ: " + GUIHelper.formatDMY.format(medicine.getMedEXP())));
-    panelSub.add(btnRemove);
 
     panelView.add(panelTitle, BorderLayout.NORTH);
-    panelView.add(panelSub);
+    panelView.add(panelSub, BorderLayout.CENTER);
+    panelView.add(btnRemove, BorderLayout.SOUTH);
 
     return panelView;
   }
@@ -512,10 +512,9 @@ public class GUI implements ActionListener, KeyListener {
       panelSub.add(labelWorkTime);
     }
 
-    panelSub.add(btnRemove);
-
     panelView.add(panelTitle, BorderLayout.NORTH);
-    panelView.add(panelSub);
+    panelView.add(panelSub, BorderLayout.CENTER);
+    panelView.add(btnRemove, BorderLayout.SOUTH);
 
     return panelView;
   }
@@ -1166,6 +1165,7 @@ public class GUI implements ActionListener, KeyListener {
         @Override
         protected void done() {
           if (user != null) {
+            System.out.println(user);
             initSampleDoctor();
             initSampleMedicine01();
             initSampleMedicine02();
