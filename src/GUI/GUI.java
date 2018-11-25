@@ -49,6 +49,42 @@ import core.LocationHelper;
  * Use a constructor to new a GUI.
  *
  * @param windowSize a Dimension class consists of width and height.
+ *
+ * ===============================================
+ * Main Structure
+ * ===============================================
+ *
+ * GUI.java
+ * \_ GUI()         -> Init and setup
+ * \_ initWelcome() -> Makes GUI when the user is not signed in.
+ * \_ main()        -> Makes GUI after the user has signed in.
+ *    \_ panelOverview()         -> Returns a panel that displays all overview cards.
+ *    \  \_ makeOverviewCard()   -> Returns an overview card.
+ *    \
+ *    \_ panelAllMedicines()     -> Returns a panel that displays all user's medicines cards.
+ *    \  \_ makeMedCard()        -> Returns a medicine card.
+ *    \  \_ viewMedicine()       -> Returns a panel that displays a single medicine information.
+ *    \  \_ addMedicine()        -> Returns a panel to add new medicine.
+ *    \  \_ addMedGUI()          -> Makes UI to add new medicine, being used by initWelcome() and addMedicine().
+ *    \  \_ COMING SOON          -> Returns a panel to edit an existed medicine.
+ *    \
+ *    \_ panelAllAppointments()  -> Returns a panel that displays all user's appointments cards.
+ *    \  \_ makeAppointmentCard()-> Returns an appointment card.
+ *    \  \_ viewAppointmentCard()-> Returns a panel that displays a single appointment information.
+ *    \  \_ COMING SOON          -> Returns a panel to add new appointment.
+ *    \  \_ COMING SOON          -> Returns a panel to edit an existed appointment.
+ *    \
+ *    \_ panelAllDoctors()       -> Returns a panel that displays all user's doctors cards.
+ *    \  \_ makeDoctorCard()     -> Returns a doctor card.
+ *    \  \_ viewDoctors()        -> Returns a panel that displays a single doctors information.
+ *    \  \_ addDoctors()         -> Returns a panel to add new doctor.
+ *    \  \_ COMING SOON          -> Returns a panel to edit an existed doctor.
+ *    \
+ *    \_ panelNearbyHospitals()  -> Returns a panel that displays Google Maps showing nearby hospitals.
+ *    \_ panelSettings()         -> Returns a panel that displays user's settings.
+ *    \  \_ COMING SOON          -> Returns a panel to edit user information.
+ *    \_ makeLeftNavigation()    -> Returns a left navigation panel.
+ *    
  */
 
 public class GUI implements ActionListener, KeyListener {
