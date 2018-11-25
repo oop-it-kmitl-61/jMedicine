@@ -24,15 +24,15 @@ public class Login {
   }
 
 
-  public static User doSignIn(String username, String password)
+  public static User doSignIn(String username, char[] password)
       throws NoSuchAlgorithmException, SQLException, LoginException {
-    password = sha256(password);
+    String encrypted = sha256(String.valueOf(password));
 
     String SQLCommand = "SELECT * FROM users WHERE username = ? AND password = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, username);
-    pStatement.setString(2, password);
+    pStatement.setString(2, encrypted);
 
     ResultSet result = pStatement.executeQuery();
 
@@ -46,15 +46,15 @@ public class Login {
     throw new LoginException("Login failed");
   }
 
-  public static User doSignUp(User user, String password)
+  public static User doSignUp(User user, char[] password)
       throws NoSuchAlgorithmException, SQLException {
-    password = sha256(password);
+    String encrypted = sha256(String.valueOf(password));
 
     String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, user.getUserName());
-    pStatement.setString(2, password);
+    pStatement.setString(2, encrypted);
     pStatement.setString(3, user.getUserEmail());
     pStatement.setString(4, user.getUserTitle());
     pStatement.setString(5, user.getUserFirstName());

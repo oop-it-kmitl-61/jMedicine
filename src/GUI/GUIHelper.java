@@ -3,8 +3,13 @@ package GUI;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Image;
+import java.io.File;
+import java.net.URL;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -22,6 +27,73 @@ class GUIHelper {
 
   static JLabel getRemoveFailedMessage(String type) {
     return makeLabel("ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ"+type+"ได้");
+  }
+
+  static JPanel getLoadingPanel(boolean withBG) {
+    String src = "src/GUI/img/loading";
+    if (withBG) {
+      src += "-bg";
+    } else {
+      src += "-no-bg";
+    }
+    src += ".gif";
+
+    JPanel panelLoading = new JPanel();
+    JLabel labelPic = new JLabel();
+    JLabel labelLoading = makeLabel("กำลังโหลด");
+    setPadding(labelLoading, 4, 0, 0, 0);
+    try {
+      ImageIcon img = new ImageIcon(src);
+      labelPic.setIcon(img);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+
+    panelLoading.add(labelPic);
+    panelLoading.add(labelLoading);
+    return panelLoading;
+  }
+
+  static JPanel getLoadingPanel(String loadingMessage, boolean withBG) {
+    String src = "src/GUI/img/loading";
+    if (withBG) {
+      src += "-bg";
+    } else {
+      src += "-no-bg";
+    }
+    src += ".gif";
+
+    JPanel panelLoading = new JPanel();
+    JLabel labelPic = new JLabel();
+    JLabel labelLoading = makeLabel(loadingMessage);
+    setPadding(labelLoading, 4, 0, 0, 0);
+    try {
+      ImageIcon img = new ImageIcon(src);
+      labelPic.setIcon(img);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+
+    panelLoading.add(labelPic);
+    panelLoading.add(labelLoading);
+    return panelLoading;
+  }
+
+  static JPanel getErrorPanel(String errorMessage) {
+    String src = "src/GUI/img/error.png";
+    JPanel panelError = new JPanel();
+    JLabel labelPic = new JLabel();
+    JLabel labelError = makeLabel(errorMessage);
+    setPadding(labelError, 8, 0, 0, 0);
+    try {
+      ImageIcon img = new ImageIcon(src);
+      labelPic.setIcon(img);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    panelError.add(labelPic);
+    panelError.add(labelError);
+    return panelError;
   }
 
   static JTextField makeTextField(int columns) {
