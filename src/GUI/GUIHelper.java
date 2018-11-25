@@ -28,9 +28,6 @@ import mdlaf.utils.MaterialColors;
 class GUIHelper {
 
   static void setup() {
-    System.setProperty("apple.laf.useScreenMenuBar", "true");
-    System.setProperty("apple.awt.application.name", "jMedicine");
-    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "jMedicine");
     try {
       GraphicsEnvironment ge =
           GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -242,79 +239,79 @@ class GUIHelper {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  static void setPadding(JLabel object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  static void setPadding(JLabel object, int top, int leftAndRight, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, leftAndRight, bottom, leftAndRight));
   }
 
-  static void setPadding(JLabel object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  static void setPadding(JLabel object, int topAndBottom, int leftAndRight) {
+    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
-  static void setPadding(JLabel object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  static void setPadding(JLabel object, int allSidesAmount) {
+    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   static void setPadding(JTextField object, int top, int right, int bottom, int left) {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  static void setPadding(JTextField object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  static void setPadding(JTextField object, int top, int leftAndRight, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, leftAndRight, bottom, leftAndRight));
   }
 
-  static void setPadding(JTextField object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  static void setPadding(JTextField object, int topAndBottom, int leftAndRight) {
+    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
-  static void setPadding(JTextField object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  static void setPadding(JTextField object, int allSidesAmount) {
+    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   static void setPadding(JPasswordField object, int top, int right, int bottom, int left) {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  static void setPadding(JPasswordField object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  static void setPadding(JPasswordField object, int top, int leftAndRight, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, leftAndRight, bottom, leftAndRight));
   }
 
-  static void setPadding(JPasswordField object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  static void setPadding(JPasswordField object, int topAndBottom, int leftAndRight) {
+    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
-  static void setPadding(JPasswordField object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  static void setPadding(JPasswordField object, int allSidesAmount) {
+    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   static void setPadding(JButton object, int top, int right, int bottom, int left) {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  static void setPadding(JButton object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  static void setPadding(JButton object, int top, int leftAndRight, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, leftAndRight, bottom, leftAndRight));
   }
 
-  static void setPadding(JButton object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  static void setPadding(JButton object, int topAndBottom, int leftAndRight) {
+    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
-  static void setPadding(JButton object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  static void setPadding(JButton object, int allSidesAmount) {
+    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   static void setPadding(JPanel object, int top, int right, int bottom, int left) {
     object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
   }
 
-  static void setPadding(JPanel object, int top, int right, int bottom) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, bottom, right));
+  static void setPadding(JPanel object, int top, int leftAndRight, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, leftAndRight, bottom, leftAndRight));
   }
 
-  static void setPadding(JPanel object, int top, int right) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, right, top, right));
+  static void setPadding(JPanel object, int topAndBottom, int leftAndRight) {
+    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
-  static void setPadding(JPanel object, int top) {
-    object.setBorder(BorderFactory.createEmptyBorder(top, top, top, top));
+  static void setPadding(JPanel object, int allSidesAmount) {
+    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 }

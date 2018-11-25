@@ -1050,7 +1050,6 @@ public class GUI implements ActionListener, KeyListener {
     String btnCommand = e.getActionCommand();
 
     switch (btnCommand) {
-
       case "บันทึกยา":
       case "ข้ามขั้นตอนนี้":
         if (frameWelcome == null) {

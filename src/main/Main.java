@@ -6,7 +6,14 @@ import java.awt.Dimension;
 public class Main {
 
   public static void main(String[] args) {
+    macSetup();
     GUI jMedicine = new GUI(new Dimension(1024, 768));
     jMedicine.initWelcome();
+  }
+
+  public static void macSetup() {
+    System.setProperty("apple.laf.useScreenMenuBar", "true");
+    System.setProperty("apple.awt.application.name", "jMedicine");
+    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "jMedicine");
   }
 }
