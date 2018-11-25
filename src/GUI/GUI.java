@@ -20,8 +20,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -32,7 +30,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -43,7 +40,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import core.LocationHelper;
-import mdlaf.MaterialLookAndFeel;
 
 
 /**
@@ -61,8 +57,8 @@ public class GUI implements ActionListener, KeyListener {
   private JPanel panelSub01, panelSub02, panelSub03, panelSub04, panelSub05, panelSub06;
   private JPanel panelTitle, panelLoop, cardLoop;
   private JPanel panelSignIn, panelLoadingSignin, panelErrorSignin;
-  private JTextField tfSignInUserName, tfSignUpUserName;
-  private JPasswordField tfSignInPassword, tfSignUpPassword, tfSignUpPasswordConfirm;
+  private JTextField tfUserName;
+  private JPasswordField tfPassword, tfPasswordConfirm;
   private static JButton buttons[];
   private Dimension windowSize, minSize;
   private static Color mainBlue;
@@ -476,36 +472,82 @@ public class GUI implements ActionListener, KeyListener {
       run for the first time or the user is not logged in.
      */
 
+    // Frame
     frameWelcome = new JFrame("jMedicine: เข้าสู่ระบบ");
+
+    // Panels
     panelLoadingSignin = getLoadingPanel(false);
-    panelLoadingSignin.setVisible(false);
     panelErrorSignin = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
-    panelErrorSignin.setVisible(false);
-    JLabel space = new JLabel();
-    JLabel labelWelcomeSub = makeLabel("เข้าสู่ระบบเพื่อ Sync ข้อมูลของคุณทุกที่ ทุกเวลา");
-    JLabel labelRegister = makeLabel("ยังไม่มีบัญชี? ลงทะเบียนที่นี่");
-    JLabel labelUsername = makeBoldLabel("Username");
-    JLabel labelPassword = makeBoldLabel("Password");
-    setPadding(labelUsername, 0, 0, -16, 0);
-    setPadding(labelPassword, 0, 0, -10, 0);
-    makeLabelClickable(labelRegister, "ลงทะเบียน");
-    tfSignInUserName = makeTextField(20);
-    tfSignInPassword = makePasswordField(20);
-    JButton btnSignIn = makeButton("เข้าสู่ระบบ");
     panelWelcome = new JPanel(new CardLayout());
     panelSignIn = new JPanel(new GridBagLayout());
     JPanel panelFirstMed = new JPanel();
-    setPadding(labelRegister, 20, 60);
 
-    // Welcome Panel
+    // JLabels
+    JLabel space = new JLabel();
     JLabel labelWelcome = makeTitleLabel("ยินดีต้อนรับ");
+    JLabel labelWelcomeSub = makeLabel("เข้าสู่ระบบเพื่อ Sync ข้อมูลของคุณทุกที่ ทุกเวลา");
+    JLabel labelRegister = makeLabel("ยังไม่มีบัญชี? ลงทะเบียนที่นี่");
+    JLabel labelSignIn = makeLabel("มีบัญชีอยู่แล้ว? เข้าสู่ระบบที่นี่");
+    JLabel labelUsername = makeBoldLabel("Username");
+    JLabel labelPassword = makeBoldLabel("Password");
+    JLabel labelPasswordConfirm = makeBoldLabel("กรอก Password อีกครั้ง");
+
+    // JTextFields
+    tfUserName = makeTextField(20);
+    tfPassword = makePasswordField(20);
+    tfPasswordConfirm = makePasswordField(20);
+
+    // JButtons
+    JButton btnSignIn = makeButton("เข้าสู่ระบบ");
+    JButton btnSignUp = makeButton("ลงทะเบียน");
+
+    // Styling
+    setPadding(labelUsername, 0, 0, -16, 0);
+    setPadding(labelPassword, 0, 0, -10, 0);
+    setPadding(labelPasswordConfirm, 0, 0, -10, 0);
+    setPadding(labelRegister, 20, 60);
+    setPadding(labelSignIn, 20, 60);
+    panelLoadingSignin.setVisible(false);
+    panelErrorSignin.setVisible(false);
+    labelPasswordConfirm.setVisible(false);
+    tfPasswordConfirm.setVisible(false);
+    btnSignUp.setVisible(false);
+    labelSignIn.setVisible(false);
     makeLabelCenter(labelWelcome);
     makeLabelCenter(labelWelcomeSub);
 
+    // Listeners
     btnSignIn.addActionListener(this);
-    tfSignInUserName.addKeyListener(this);
-    tfSignInPassword.addKeyListener(this);
+    tfUserName.addKeyListener(this);
+    tfPassword.addKeyListener(this);
+    labelRegister.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        labelPasswordConfirm.setVisible(true);
+        tfPasswordConfirm.setVisible(true);
+        btnSignIn.setVisible(false);
+        labelRegister.setVisible(false);
+        btnSignUp.setVisible(true);
+        labelSignIn.setVisible(true);
+        labelWelcomeSub.setVisible(false);
+        labelWelcome.setText("ลงทะเบียน");
+      }
+    });
+    labelSignIn.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        labelPasswordConfirm.setVisible(false);
+        tfPasswordConfirm.setVisible(false);
+        btnSignIn.setVisible(true);
+        labelRegister.setVisible(true);
+        btnSignUp.setVisible(false);
+        labelSignIn.setVisible(false);
+        labelWelcomeSub.setVisible(true);
+        labelWelcome.setText("ยินดีต้อนรับ");
+      }
+    });
 
+    // Welcome Panel
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.anchor = GridBagConstraints.NORTH;
@@ -529,53 +571,32 @@ public class GUI implements ActionListener, KeyListener {
     gbc.gridy++;
     panelSignIn.add(labelUsername, gbc);
     gbc.gridy++;
-    panelSignIn.add(tfSignInUserName, gbc);
-    gbc.gridy += 2;
+    panelSignIn.add(tfUserName, gbc);
+    gbc.gridy++;
     panelSignIn.add(labelPassword, gbc);
     gbc.gridy++;
-    panelSignIn.add(tfSignInPassword, gbc);
+    panelSignIn.add(tfPassword, gbc);
+    gbc.gridy++;
+    panelSignIn.add(tfPassword, gbc);
+    gbc.gridy++;
+    panelSignIn.add(labelPasswordConfirm, gbc);
+    gbc.gridy++;
+    panelSignIn.add(tfPasswordConfirm, gbc);
     gbc.gridy++;
     panelSignIn.add(panelLoadingSignin, gbc);
     gbc.gridy++;
     panelSignIn.add(panelErrorSignin, gbc);
-    gbc.gridy += 2;
+    gbc.gridy++;
+    panelSignIn.add(btnSignUp, gbc);
+    gbc.gridy++;
     panelSignIn.add(btnSignIn, gbc);
     gbc.gridy++;
     panelSignIn.add(labelRegister, gbc);
+    gbc.gridy++;
+    panelSignIn.add(labelSignIn, gbc);
     space = new JLabel();
     gbc.weighty = 300;
     panelSignIn.add(space, gbc);
-
-    // Sign Up Panel
-    JPanel panelSignUp = new JPanel();
-    panelSignUp.setLayout(new BoxLayout(panelSignUp, BoxLayout.PAGE_AXIS));
-    labelUsername = makeLabel("Username");
-    labelPassword = makeLabel("Password");
-    tfSignUpUserName = makeTextField(20);
-    tfSignUpPassword = makePasswordField(20);
-    tfSignUpPasswordConfirm = makePasswordField(20);
-    JButton btnSignUp = makeButton("ลงทะเบียน");
-    JPanel panelSub = new JPanel();
-    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
-    JButton btnTitle = makeBackButton("ลงทะเบียน", "ยังไม่ได้เข้าสู่ระบบ");
-
-    panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(btnTitle);
-    panelTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-    setPadding(panelTitle, 0, 0, 20);
-    setPadding(panelSub, 0, 45, 200, 25);
-    setPadding(btnSignUp, 20, 0, 0, 0);
-
-    panelSub.add(labelUsername);
-    panelSub.add(tfSignUpUserName);
-    panelSub.add(labelPassword);
-    panelSub.add(tfSignUpPassword);
-    panelSub.add(makeLabel("กรอก Password อีกครั้ง"));
-    panelSub.add(tfSignUpPasswordConfirm);
-    panelSub.add(btnSignUp);
-
-    panelSignUp.add(panelTitle, BorderLayout.NORTH);
-    panelSignUp.add(panelSub);
 
     // FirstMed Panel
     JLabel labelTitle = makeTitleLabel("เพิ่มยาตัวแรกของคุณ");
@@ -596,7 +617,6 @@ public class GUI implements ActionListener, KeyListener {
 
     panelWelcome.add(panelSignIn, "ยังไม่ได้เข้าสู่ระบบ");
     panelWelcome.add(panelFirstMed, "เพิ่มยาตัวแรก");
-    panelWelcome.add(panelSignUp, "ลงทะเบียน");
 
     frameWelcome.add(panelWelcome);
     frameWelcome.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -979,7 +999,7 @@ public class GUI implements ActionListener, KeyListener {
   }
 
   private void executeSignIn() {
-    if (tfSignInUserName.getText().equals("") || tfSignInPassword.getPassword().equals("")) {
+    if (tfUserName.getText().equals("") || tfPassword.getPassword().equals("")) {
       panelErrorSignin.setVisible(true);
     } else {
       panelErrorSignin.setVisible(false);
@@ -987,8 +1007,8 @@ public class GUI implements ActionListener, KeyListener {
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
-          String username = tfSignInUserName.getText();
-          char[] password = tfSignInPassword.getPassword();
+          String username = tfUserName.getText();
+          char[] password = tfPassword.getPassword();
           try {
             user = doSignIn(username, password);
           } catch (LoginException ignored) {
@@ -1002,21 +1022,22 @@ public class GUI implements ActionListener, KeyListener {
 
         @Override
         protected void done() {
-          initSampleDoctor();
-          initSampleMedicine01();
-          initSampleMedicine02();
-          initSampleMedicine03();
-          main();
-          System.out.println(user);
-          if (user.getUserMedicines().size() > 0) {
-            frameWelcome.setVisible(false);
-            frameMain.setVisible(true);
-            frameWelcome = null;
-            CardLayout cl = (CardLayout)(panelRight.getLayout());
-            cl.show(panelRight, "ภาพรวม");
-          } else {
-            CardLayout cl = (CardLayout)(panelWelcome.getLayout());
-            cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+          if (user != null) {
+            initSampleDoctor();
+            initSampleMedicine01();
+            initSampleMedicine02();
+            initSampleMedicine03();
+            main();
+            if (user.getUserMedicines().size() > 0) {
+              frameWelcome.setVisible(false);
+              frameMain.setVisible(true);
+              frameWelcome = null;
+              CardLayout cl = (CardLayout)(panelRight.getLayout());
+              cl.show(panelRight, "ภาพรวม");
+            } else {
+              CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+              cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+            }
           }
         }
       };
@@ -1055,7 +1076,7 @@ public class GUI implements ActionListener, KeyListener {
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if (e.getSource() == tfSignInUserName || e.getSource() == tfSignInPassword) {
+    if (e.getSource() == tfUserName || e.getSource() == tfPassword) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         executeSignIn();
       }
