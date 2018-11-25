@@ -411,7 +411,7 @@ public class GUI implements ActionListener, KeyListener {
       JLabel labelConfirm = makeLabel("ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
       setPadding(labelConfirm, 0, 16, 0, 0);
 
-      Toolkit.getDefaultToolkit().beep();
+      beep("warning");
       try {
         Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
         Icon icon = new ImageIcon(img);
@@ -434,6 +434,7 @@ public class GUI implements ActionListener, KeyListener {
         panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
         backTo("ยาทั้งหมด");
         try {
+          beep("success");
           Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
           Icon icon = new ImageIcon(img);
           JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE, icon);
@@ -541,7 +542,7 @@ public class GUI implements ActionListener, KeyListener {
       setPadding(labelConfirm, 0, 16, 0 ,0);
       int dialogResult = 0;
 
-      Toolkit.getDefaultToolkit().beep();
+      beep("warning");
       try {
         Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
         Icon icon = new ImageIcon(img);
@@ -627,7 +628,7 @@ public class GUI implements ActionListener, KeyListener {
       setPadding(labelConfirm, 0, 16, 0 ,0);
       int dialogResult = 0;
 
-      Toolkit.getDefaultToolkit().beep();
+      beep("warning");
       try {
         Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
         Icon icon = new ImageIcon(img);
