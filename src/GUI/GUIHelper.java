@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -29,8 +30,11 @@ import mdlaf.utils.MaterialColors;
 
 class GUIHelper {
 
-  public static DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
-  public static DateFormat dateTimeFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm");
+  public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
+  public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
+  public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy", new Locale("th", "TH"));
+  public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
+  public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm", new Locale("th", "TH"));
 
   static void setup() {
     try {

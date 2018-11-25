@@ -36,7 +36,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.imageio.ImageIO;
@@ -127,9 +126,7 @@ public class GUI implements ActionListener, KeyListener {
 
     // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
-    DateFormat dateFormat = GUIHelper.dateFormat;
-    Date date = new Date();
-    String today = dateFormat.format(date);
+    String today = GUIHelper.formatDMYFull.format(new Date());
     panelTitle.add(makeTitleLabel(today));
 
     // Init card loop
@@ -413,10 +410,10 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(makeLabel("คำอธิบาย: " + medicine.getMedDescription()));
     panelSub.add(makeLabel("เวลาที่ต้องทาน: " + sbMedTime + " " + sbDoseStr));
     panelSub.add(makeLabel("ขนาดรับประทาน: " + medicine.getMedDose() + " " + medicine.getMedUnit()));
-    panelSub.add(makeLabel("วันที่เพิ่มยา: " + GUIHelper.dateFormat.format(medicine.getDateAdded())));
+    panelSub.add(makeLabel("วันที่เพิ่มยา: " + GUIHelper.formatDMY.format(medicine.getDateAdded())));
     panelSub.add(makeLabel("จำนวนยาเริ่มต้น: " + medicine.getMedRemaining()));
     panelSub.add(makeLabel("จำนวนยาที่เหลือ: " + medicine.getMedRemaining()));
-    panelSub.add(makeLabel("วันหมดอายุ: " + GUIHelper.dateFormat.format(medicine.getMedEXP())));
+    panelSub.add(makeLabel("วันหมดอายุ: " + GUIHelper.formatDMY.format(medicine.getMedEXP())));
     panelSub.add(btnRemove);
 
     panelView.add(panelTitle, BorderLayout.NORTH);
@@ -905,7 +902,8 @@ public class GUI implements ActionListener, KeyListener {
     /* Creates a card that will be used on the All medicines panel only. */
     Date medEXP = medicine.getMedEXP();
     String medTitle = medicine.getMedName()+" ("+medicine.getMedDescription()+")";
-    String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+GUIHelper.dateFormat.format(medEXP);
+    String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+GUIHelper.formatDMY
+        .format(medEXP);
     JLabel labelTitle = makeBoldLabel(medTitle);
     JLabel labelShortInfo = makeLabel(medShortInfo);
     JLabel labelPic = medUtil.getMedIcon(medicine);
@@ -992,11 +990,9 @@ public class GUI implements ActionListener, KeyListener {
   private JPanel makeAppointmentCard(Appointment appointment) {
     /* Creates a card that will be used on the All appointments panel only. */
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    String date = dateFormat.format(appointment.getTimeStart());
-    dateFormat = new SimpleDateFormat("HH.mm");
-    String timeStart = dateFormat.format(appointment.getTimeStart());
-    String timeEnd = dateFormat.format(appointment.getTimeStop());
+    String date = GUIHelper.formatDMY.format(appointment.getTimeStart());
+    String timeStart = GUIHelper.formatHM.format(appointment.getTimeStart());
+    String timeEnd = GUIHelper.formatHM.format(appointment.getTimeStop());
 
     Doctor appDr = appointment.getDoctor();
 
@@ -1244,7 +1240,7 @@ public class GUI implements ActionListener, KeyListener {
     sampleMedDoseStr.add("หลังอาหาร");
     Date dateEXP = new Date();
     try {
-      dateEXP = new SimpleDateFormat("dd/mm/yyyy").parse("28/02/2019");
+      dateEXP = GUIHelper.formatDMY.parse("28/02/2019");
     } catch (ParseException e) {
       e.printStackTrace();
     }
@@ -1259,7 +1255,7 @@ public class GUI implements ActionListener, KeyListener {
     sampleMedDoseStr.add("");
     Date dateEXP = new Date();
     try {
-      dateEXP = new SimpleDateFormat("dd/mm/yyyy").parse("28/02/2019");
+      dateEXP = GUIHelper.formatDMY.parse("28/02/2019");
     } catch (ParseException e) {
       e.printStackTrace();
     }
@@ -1274,7 +1270,7 @@ public class GUI implements ActionListener, KeyListener {
     sampleMedDoseStr.add("หลังอาหาร");
     Date dateEXP = new Date();
     try {
-      dateEXP = new SimpleDateFormat("dd/mm/yyyy").parse("28/02/2019");
+      dateEXP = GUIHelper.formatDMY.parse("28/02/2019");
     } catch (ParseException e) {
       e.printStackTrace();
     }
@@ -1294,8 +1290,8 @@ public class GUI implements ActionListener, KeyListener {
     Date dateStart = new Date();
     Date dateEnd = new Date();
     try {
-      dateStart = new SimpleDateFormat("dd/mm/yyyy HH.mm").parse("1/12/2018 09.30");
-      dateEnd = new SimpleDateFormat("dd/mm/yyyy HH.mm").parse("1/02/2018 16.30");
+      dateStart = GUIHelper.formatDMYHM.parse("1/12/2018 09.30");
+      dateEnd = GUIHelper.formatDMYHM.parse("1/02/2018 16.30");
     } catch (ParseException e) {
       e.printStackTrace();
     }
