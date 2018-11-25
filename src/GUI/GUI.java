@@ -43,6 +43,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import core.LocationHelper;
+import mdlaf.shadows.DropShadowBorder;
 
 
 /**
@@ -164,10 +165,12 @@ public class GUI implements ActionListener, KeyListener {
       including medication reminders and doctor appointments.
      */
 
+    panelSub01.setLayout(new BoxLayout(panelSub01, BoxLayout.PAGE_AXIS));
     // Init title panel displaying title label
-    panelTitle = new JPanel(new BorderLayout());
+    panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
     String today = GUIHelper.formatDMYFull.format(new Date());
     panelTitle.add(makeTitleLabel(today));
+    setPadding(panelTitle, 0, 0, 0, 2);
 
     // Init card loop
     panelLoop = newPanelLoop();
@@ -179,9 +182,11 @@ public class GUI implements ActionListener, KeyListener {
     panelLoop.add(cardLoop);
     // End sample loop
 
+    panelLoop.add(Box.createVerticalGlue());
     // Add all panels into the main panel
-    panelSub01.add(panelTitle, BorderLayout.NORTH);
+    panelSub01.add(panelTitle);
     panelSub01.add(panelLoop);
+    panelSub01.add(Box.createVerticalGlue());
 
     return panelSub01;
   }
@@ -890,23 +895,48 @@ public class GUI implements ActionListener, KeyListener {
 
   private JPanel makeOverviewCard(String time, String medName, String dose) {
     /* Creates a card that will be used on the Overview panel only. */
+
+    // JPanels
     JPanel panelLoopInfo = new JPanel();
+    JPanel panelLine = new JPanel();
+    JPanel panelTime = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelMed = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelMedInfo = new JPanel();
+
+    // JLabels
+    JLabel labelPic = medUtil.getMedIcon(user.getUserMedicines().get(0));
+    JLabel labelTime = makeBoldLabel(time);
+    JLabel labelMedName = makeLabel(medName);
+    JLabel labelAmount = makeLabel(dose);
+
+    // Styling
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.PAGE_AXIS));
+    panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));
     panelLoopInfo.setBorder(new CompoundBorder(
         BorderFactory.createEmptyBorder(5, 0, 20, 0),
-        new RoundedBorder(10)
+        new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true, true)
     ));
-    JLabel labelTime = makeBoldLabel(time);
-    JLabel labelMed = makeLabel(medName);
-    JLabel labelAmount = makeLabel(dose);
-    makeLabelCenter(labelTime);
-    makeLabelCenter(labelMed);
-    makeLabelCenter(labelAmount);
-    setPadding(labelTime, 5, 0, 5, 0);
-    panelLoopInfo.add(labelTime);
-    panelLoopInfo.add(labelMed);
-    panelLoopInfo.add(labelAmount);
-    panelLoopInfo.add(Box.createHorizontalGlue());
+    panelLine.setBackground(getMainBlue());
+    setPadding(panelLine, 0, 0, -40, 0);
+    setPadding(panelTime, 0, 0, -100, 0);
+    setPadding(labelTime, 10, 0, 5, 0);
+    setPadding(labelMedName, 10, 0, -10, 0);
+
+    panelMedInfo.add(labelMedName);
+    panelMedInfo.add(labelAmount);
+
+    panelMed.add(labelPic);
+    panelMed.add(panelMedInfo);
+
+    panelTime.add(labelTime);
+
+    panelLoopInfo.add(panelLine);
+    panelLoopInfo.add(panelTime);
+    panelLoopInfo.add(panelMed);
+    panelTime.setSize(panelLoop.getWidth(), 10);
+    panelTime.setPreferredSize(new Dimension(panelLoop.getWidth(), 10));
+    panelLoopInfo.setSize(panelLoop.getWidth(), 20);
+    panelLoopInfo.setPreferredSize(new Dimension(panelLoop.getWidth(), 20));
     return panelLoopInfo;
   }
 
