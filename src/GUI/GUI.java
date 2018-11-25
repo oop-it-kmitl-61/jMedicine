@@ -33,7 +33,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,7 +83,7 @@ import core.LocationHelper;
  *    \_ panelSettings()         -> Returns a panel that displays user's settings.
  *    \  \_ COMING SOON          -> Returns a panel to edit user information.
  *    \_ makeLeftNavigation()    -> Returns a left navigation panel.
- *    
+ *
  */
 
 public class GUI implements ActionListener, KeyListener {
@@ -94,7 +93,7 @@ public class GUI implements ActionListener, KeyListener {
   private JPanel panelWelcome;
   private JPanel panelSub01, panelSub02, panelSub03, panelSub04, panelSub05, panelSub06;
   private JPanel panelTitle, panelLoop, cardLoop;
-  private JPanel panelSignIn, panelLoadingSignin, panelErrorSignin;
+  private JPanel panelSignIn, panelLoadingSignIn, panelErrorSignIn;
   private JTextField tfUserName;
   private JPasswordField tfPassword, tfPasswordConfirm;
   private static JButton buttons[];
@@ -190,20 +189,10 @@ public class GUI implements ActionListener, KeyListener {
      */
 
     // Init title panel displaying title label
+    JLabel labelTitle = makeTitleLabel("ยาทั้งหมด");
     panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(makeTitleLabel("ยาทั้งหมด"));
-    panelLoop = reloadMedicines();
+    panelTitle.add(labelTitle);
 
-    // Add all panels into the main panel
-    panelSub02.add(panelTitle, BorderLayout.NORTH);
-    panelSub02.add(panelLoop);
-
-    return panelSub02;
-  }
-
-  private JPanel reloadMedicines() {
-    panelLoop = null;
-    cardLoop = null;
     // Fetch all medicines from the records
     ArrayList<Medicine> userMedicines = user.getUserMedicines();
 
@@ -212,17 +201,20 @@ public class GUI implements ActionListener, KeyListener {
     panelLoop.add(makeNewButton("เพิ่มยาใหม่"));
 
     if (userMedicines.isEmpty()) {
-      // TODO: What to show if the user has never added a single medicine?
+      labelTitle.setText("คุณยังไม่มียาที่บันทึกไว้");
     } else {
-      // Make Loop
+      labelTitle.setText("ยาทั้งหมด");
       for (Medicine medCurrent : userMedicines) {
         cardLoop = makeMedCard(medCurrent);
         panelLoop.add(cardLoop);
       }
-      // End Make Loop
     }
 
-    return panelLoop;
+    // Add all panels into the main panel
+    panelSub02.add(panelTitle, BorderLayout.NORTH);
+    panelSub02.add(panelLoop);
+
+    return panelSub02;
   }
 
   private JPanel panelAllAppointments() {
@@ -233,8 +225,9 @@ public class GUI implements ActionListener, KeyListener {
      */
 
     // Init title panel displaying title label
+    JLabel labelTitle = makeTitleLabel("นัดแพทย์");
     panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(makeTitleLabel("นัดแพทย์"));
+    panelTitle.add(labelTitle);
 
     // Init panel loop
     panelLoop = newPanelLoop();
@@ -244,14 +237,13 @@ public class GUI implements ActionListener, KeyListener {
     ArrayList<Appointment> userAppointment = user.getUserAppointments();
 
     if (userAppointment.isEmpty()) {
-      // TODO: What to show if the user has never added a single appointment?
+      labelTitle.setText("คุณยังไม่มีนัดแพทย์ที่บันทึกไว้");
     } else {
-      // Make Loop
+      labelTitle.setText("นัดแพทย์");
       for (Appointment appCurrent : userAppointment) {
         cardLoop = makeAppointmentCard(appCurrent);
         panelLoop.add(cardLoop);
       }
-      // End Make Loop
     }
 
     // Add all panels into the main panel
@@ -270,8 +262,9 @@ public class GUI implements ActionListener, KeyListener {
      */
 
     // Init title panel displaying title label
+    JLabel labelTitle = makeTitleLabel("แพทย์");
     panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(makeTitleLabel("แพทย์"));
+    panelTitle.add(labelTitle);
 
     // Fetch all doctors
     ArrayList<Doctor> userDoctors = user.getUserDoctors();
@@ -281,14 +274,13 @@ public class GUI implements ActionListener, KeyListener {
     panelLoop.add(makeNewButton("เพิ่มแพทย์ใหม่"));
 
     if (userDoctors.isEmpty()) {
-      // TODO: What to show if user has never added a single doctor?
+      labelTitle.setText("คุณยังไม่มีแพทย์ที่บันทึกไว้");
     } else {
-      // Make Loop
+      labelTitle.setText("แพทย์");
       for (Doctor doctorCurrent : userDoctors) {
         cardLoop = makeDoctorCard(doctorCurrent);
         panelLoop.add(cardLoop);
       }
-      // End Make Loop
     }
 
     // Add all panels into the main panel
@@ -404,8 +396,9 @@ public class GUI implements ActionListener, KeyListener {
     // Styling
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
     setPadding(labelPic, 0, 0, 10);
-    setPadding(panelTitle, 0, 0, 20);
-    setPadding(panelSub, 0, 0, 0, 45);
+    setPadding(panelTitle, -6, 0, 20, 8);
+    setPadding(panelSub, 0, 0, 0, 65);
+    setPadding(panelView, 0, 0, 0, -20);
 
     // Listeners
     btnRemove.addActionListener(e -> {
@@ -513,8 +506,10 @@ public class GUI implements ActionListener, KeyListener {
 
     // Styling
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
-    setPadding(panelTitle, 0, 0, 20);
-    setPadding(panelSub, 0, 0, 10, 45);
+    setPadding(panelTitle, -6, 0, 20, 8);
+    setPadding(panelSub, 0, 0, 0, 65);
+    setPadding(panelView, 0, 0, 0, -20);
+
 
     // Listeners
     btnRemove.addActionListener(e -> {
@@ -631,8 +626,8 @@ public class GUI implements ActionListener, KeyListener {
     frameWelcome = new JFrame("jMedicine: เข้าสู่ระบบ");
 
     // Panels
-    panelLoadingSignin = getLoadingPanel(false);
-    panelErrorSignin = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
+    panelLoadingSignIn = getLoadingPanel(false);
+    panelErrorSignIn = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
     panelWelcome = new JPanel(new CardLayout());
     panelSignIn = new JPanel(new GridBagLayout());
     JPanel panelFirstMed = new JPanel();
@@ -662,8 +657,8 @@ public class GUI implements ActionListener, KeyListener {
     setPadding(labelPasswordConfirm, 0, 0, -10, 0);
     setPadding(labelRegister, 20, 60);
     setPadding(labelSignIn, 20, 60);
-    panelLoadingSignin.setVisible(false);
-    panelErrorSignin.setVisible(false);
+    panelLoadingSignIn.setVisible(false);
+    panelErrorSignIn.setVisible(false);
     labelPasswordConfirm.setVisible(false);
     tfPasswordConfirm.setVisible(false);
     btnSignUp.setVisible(false);
@@ -738,9 +733,9 @@ public class GUI implements ActionListener, KeyListener {
     gbc.gridy++;
     panelSignIn.add(tfPasswordConfirm, gbc);
     gbc.gridy++;
-    panelSignIn.add(panelLoadingSignin, gbc);
+    panelSignIn.add(panelLoadingSignIn, gbc);
     gbc.gridy++;
-    panelSignIn.add(panelErrorSignin, gbc);
+    panelSignIn.add(panelErrorSignIn, gbc);
     gbc.gridy++;
     panelSignIn.add(btnSignUp, gbc);
     gbc.gridy++;
@@ -1178,10 +1173,10 @@ public class GUI implements ActionListener, KeyListener {
 
   private void executeSignIn() {
     if (tfUserName.getText().equals("") || tfPassword.getPassword().equals("")) {
-      panelErrorSignin.setVisible(true);
+      panelErrorSignIn.setVisible(true);
     } else {
-      panelErrorSignin.setVisible(false);
-      panelLoadingSignin.setVisible(true);
+      panelErrorSignIn.setVisible(false);
+      panelLoadingSignIn.setVisible(true);
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
@@ -1190,8 +1185,8 @@ public class GUI implements ActionListener, KeyListener {
           try {
             user = doSignIn(username, password);
           } catch (LoginException ignored) {
-            panelLoadingSignin.setVisible(false);
-            panelErrorSignin.setVisible(true);
+            panelLoadingSignIn.setVisible(false);
+            panelErrorSignIn.setVisible(true);
           } catch (NoSuchAlgorithmException | SQLException ex) {
             ex.printStackTrace();
           }
@@ -1201,7 +1196,6 @@ public class GUI implements ActionListener, KeyListener {
         @Override
         protected void done() {
           if (user != null) {
-            System.out.println(user);
             initSampleDoctor();
             initSampleMedicine01();
             initSampleMedicine02();

@@ -7,7 +7,7 @@ public class Main {
 
   public static void main(String[] args) {
     macSetup();
-    GUI jMedicine = new GUI(new Dimension(1024, 768));
+    GUI jMedicine = new GUI(new Dimension(1280, 768));
     jMedicine.initWelcome();
   }
 
