@@ -36,3 +36,5 @@ bin/
 
 # MacOS
 .DS_Store
+
+out/

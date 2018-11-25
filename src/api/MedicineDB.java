@@ -4,6 +4,7 @@ package api;
 import core.Database;
 import core.Medicine;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("Duplicates")
 public class MedicineDB {
 
   private static Connection connection;
@@ -37,10 +39,12 @@ public class MedicineDB {
     ArrayList<Medicine> results = new ArrayList<>();
 
     while (result.next()) {
-      ArrayList<String> time = Arrays.stream((Object[]) result.getArray("time").getArray())
+      ArrayList<String> time;
+      time = Arrays.stream((Object[]) result.getArray("time").getArray())
           .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
 
-      ArrayList<String> doseStr = Arrays.stream((Object[]) result.getArray("doseStr").getArray())
+      ArrayList<String> doseStr;
+      doseStr = Arrays.stream((Object[]) result.getArray("doseStr").getArray())
           .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
 
       results.add(
@@ -55,6 +59,7 @@ public class MedicineDB {
 
     return results;
   }
+
 
   public static Medicine getMedicineInfo(String id) throws SQLException {
     String SQLCommand = "SELECT * FROM medicine WHERE \"id\" = ?";
@@ -77,16 +82,59 @@ public class MedicineDB {
         result.getDate("expire"));
   }
 
-  public static Medicine addMedicine(Medicine medicine) {
-    
+  public static Medicine addMedicine(Medicine medicine) throws SQLException {
+
+    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (name, type, color, description, dose, total, \"doseStr\", expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setString(1, medicine.getMedName());
+    pStatement.setString(2, medicine.getMedType());
+    pStatement.setString(3, medicine.getMedColor());
+    pStatement.setString(4, medicine.getMedDescription());
+    pStatement.setInt(5, medicine.getMedDose());
+    pStatement.setInt(6, medicine.getMedTotal());
+    pStatement.setArray(7, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
+    pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
+
+    ResultSet result = pStatement.executeQuery();
+
+    result.next();
+
+    medicine.setId(result.getString("id"));
+
+    pStatement.close();
+
     return medicine;
   }
 
-  public static void removeMedicine(String id) {
 
+  public static Medicine updateMedicine(Medicine medicine) throws SQLException {
+    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ? WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setString(1, medicine.getMedName());
+    pStatement.setString(2, medicine.getMedType());
+    pStatement.setString(3, medicine.getMedColor());
+    pStatement.setString(4, medicine.getMedDescription());
+    pStatement.setInt(5, medicine.getMedDose());
+    pStatement.setInt(6, medicine.getMedTotal());
+    pStatement.setArray(7, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
+    pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
+    pStatement.setString(9, medicine.getId());
+
+    pStatement.executeUpdate();
+
+    return medicine;
   }
 
-  public static Medicine updateMedicine(Medicine medicine) {
-    return medicine;
+
+  public static void removeMedicine(Medicine medicine) throws SQLException {
+    String SQLCommand = "DELETE FROM medicine WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+
+    pStatement.setString(1, medicine.getId());
+
+    pStatement.executeUpdate();
   }
 }
