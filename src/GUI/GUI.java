@@ -319,19 +319,21 @@ public class GUI implements ActionListener, KeyListener {
   private JPanel panelAddMedicine() {
     /* Creates outer GUI when user add a new medicine from all medicines page. */
 
-    // Init title panel displaying a button that can be clicked to go back
+    // JPanels
     JPanel panelAddMedicine = new JPanel(new BorderLayout());
-    JButton btnBack = makeBackButton("เพิ่มยาใหม่", "ยาทั้งหมด");
+    JPanel panelBox = new JPanel();
     panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(btnBack);
+
+    // JButtons
+    JButton btnBack = makeBackButton("เพิ่มยาใหม่", "ยาทั้งหมด");
+
+    // Styling
+    panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.X_AXIS));
+    setPadding(panelAddMedicine, 0, 0, 40, -16);
+    setPadding(panelBox, 0, 0, 20);
     setPadding(panelTitle, 0, 0, 20);
 
-    JPanel panelBox = new JPanel();
-
-    panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.X_AXIS));
-    setPadding(panelAddMedicine, 0, 0, 40, 0);
-    setPadding(panelBox, 0, 0, 20);
-
+    panelTitle.add(btnBack);
     panelAddMedicine.add(panelTitle, BorderLayout.NORTH);
     panelAddMedicine.add(addMedGUI());
 
@@ -341,15 +343,26 @@ public class GUI implements ActionListener, KeyListener {
   private JPanel panelViewMedicine(Medicine medicine) {
     /* Creates GUI displaying all information of a single medicine */
 
-    String medName = medicine.getMedName();
-    JButton btnRemove = makeButton("ลบยาตัวนี้");
-    JLabel labelPic = medUtil.getMedIcon(medicine);
+    // JPanels
     JPanel panelView = new JPanel(new BorderLayout());
     JPanel panelSub = new JPanel();
-    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
-    JButton labelTitle = makeBackButton(medName, "ยาทั้งหมด");
-    setPadding(labelPic, 0, 0, 10);
+    panelTitle = new JPanel(new BorderLayout());
 
+    // JLabels
+    JLabel labelPic = medUtil.getMedIcon(medicine);
+    String medName = medicine.getMedName();
+
+    // JButtons
+    JButton btnRemove = makeButton("ลบยาตัวนี้");
+    JButton labelTitle = makeBackButton(medName, "ยาทั้งหมด");
+
+    // Styling
+    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    setPadding(labelPic, 0, 0, 10);
+    setPadding(panelTitle, 0, 0, 20);
+    setPadding(panelSub, 0, 0, 0, 45);
+
+    // Listeners
     btnRemove.addActionListener(e -> {
       int dialogResult = JOptionPane.showConfirmDialog (null, makeLabel("ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง"), "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION);
       if(dialogResult == JOptionPane.YES_OPTION){
@@ -359,7 +372,7 @@ public class GUI implements ActionListener, KeyListener {
         } else {
           labelMessage = getRemoveFailedMessage("ยา");
         }
-        panelRight.remove(panelAddMedicine());
+        panelRight.remove(panelAllMedicines());
         panelSub02 = null;
         panelSub02 = new JPanel(new BorderLayout());
         panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
@@ -368,11 +381,8 @@ public class GUI implements ActionListener, KeyListener {
       }
     });
 
-    panelTitle = new JPanel(new BorderLayout());
     panelTitle.add(labelTitle);
     panelTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-    setPadding(panelTitle, 0, 0, 20);
-    setPadding(panelSub, 0, 0, 0, 45);
 
     // MedTime is an ArrayList, convert it into a printable format.
     StringBuilder sbMedTime = new StringBuilder();
@@ -405,11 +415,17 @@ public class GUI implements ActionListener, KeyListener {
 
   private JPanel panelAddDoctor() {
     /* Creates GUI of the form for adding a new doctor. */
+
+    // JPanels
     JPanel panelAddDoctor = new JPanel();
     JPanel panelSub = new JPanel();
-    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
-    JButton btnBack = makeBackButton("เพิ่มแพทย์ใหม่", "แพทย์");
     panelTitle = new JPanel(new BorderLayout());
+
+    // JButtons
+    JButton btnBack = makeBackButton("เพิ่มแพทย์ใหม่", "แพทย์");
+
+    // Styling
+    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
     panelTitle.add(btnBack);
     setPadding(panelTitle, 0, 0, 20);
 
@@ -438,16 +454,43 @@ public class GUI implements ActionListener, KeyListener {
 
   private JPanel panelViewDoctor(Doctor doctor) {
     /* Creates GUI displaying all information of a single doctor. */
-    String doctorName = doctor.getPrefix() + " " + doctor.getName();
+
+    // JPanels
     JPanel panelView = new JPanel(new BorderLayout());
     JPanel panelSub = new JPanel();
-    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
-    JButton btnBack = makeBackButton(doctorName, "แพทย์");
     panelTitle = new JPanel(new BorderLayout());
-    panelTitle.add(btnBack);
+
+    String doctorName = doctor.getPrefix() + " " + doctor.getName();
+
+    // JButtons
+    JButton btnRemove = makeButton("ลบแพทย์");
+    JButton btnBack = makeBackButton(doctorName, "แพทย์");
+
+    // Styling
+    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
     setPadding(panelTitle, 0, 0, 20);
     setPadding(panelSub, 0, 0, 0, 45);
 
+    // Listeners
+    btnRemove.addActionListener(e -> {
+      int dialogResult = JOptionPane.showConfirmDialog (null, makeLabel("ต้องการลบแพทย์คนนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง"), "คุณกำลังทำการลบแพทย์", JOptionPane.YES_NO_OPTION);
+      if(dialogResult == JOptionPane.YES_OPTION){
+        JLabel labelMessage;
+        if (user.removeUserDoctor(doctor)) {
+          labelMessage = getRemoveSuccessfulMessage("แพทย์");
+        } else {
+          labelMessage = getRemoveFailedMessage("แพทย์");
+        }
+        panelRight.remove(panelAllDoctors());
+        panelSub04 = null;
+        panelSub04 = new JPanel(new BorderLayout());
+        panelRight.add(panelAllDoctors(), "แพทย์");
+        backTo("แพทย์");
+        JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์", JOptionPane.INFORMATION_MESSAGE);
+      }
+    });
+
+    panelTitle.add(btnBack);
     panelSub.add(makeLabel("ชื่อแพทย์: " + doctorName));
     panelSub.add(makeLabel("แผนก: " + doctor.getWard()));
     panelSub.add(makeLabel("โรงพยาบาล: " + doctor.getHospital()));
@@ -459,6 +502,8 @@ public class GUI implements ActionListener, KeyListener {
       setPadding(labelWorkTime, 0, 20);
       panelSub.add(labelWorkTime);
     }
+
+    panelSub.add(btnRemove);
 
     panelView.add(panelTitle, BorderLayout.NORTH);
     panelView.add(panelSub);
