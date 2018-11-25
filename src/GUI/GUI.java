@@ -4,6 +4,12 @@ import static GUI.GUIHelper.*;
 import static api.Login.*;
 
 import api.LoginException;
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.components.DateTimePicker;
+import com.github.lgooddatepicker.components.TimePicker;
+import com.github.lgooddatepicker.components.TimePickerSettings;
+import com.github.lgooddatepicker.components.TimePickerSettings.TimeArea;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionHandler;
 import com.teamdev.jxbrowser.chromium.PermissionRequest;
@@ -24,7 +30,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -36,6 +41,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -146,6 +153,7 @@ public class GUI implements ActionListener, KeyListener {
     panelRight.add(panelSettings(), "การตั้งค่า");
     panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
     panelRight.add(panelAddDoctor(), "เพิ่มแพทย์ใหม่");
+    panelRight.add(panelAddAppointment(), "เพิ่มนัดใหม่");
 
     // Add left navigation and right panel into the main panel
     panelMain.add(panelLeft, BorderLayout.WEST);
@@ -699,6 +707,86 @@ public class GUI implements ActionListener, KeyListener {
     panelView.add(panelSub, BorderLayout.SOUTH);
 
     return panelView;
+  }
+
+  private JPanel panelAddAppointment() {
+
+    // JPanels
+    JPanel panelAddAppointment = new JPanel(new BorderLayout());
+    JPanel panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelBody = new JPanel();
+
+    // JButtons
+    JButton btnBack = makeBackButton("เพิ่มนัดใหม่", "นัดแพทย์");
+    JButton btnAdd = makeButton("บันทึกนัด");
+
+    // JTextFields
+    // TODO: tfDoctor @ addAppointment
+    JTextField tfDoctor = makeTextField(30);
+    JTextField tfHospital = makeTextField(30);
+    JTextField tfNote = makeTextField(40);
+
+    // JLabels
+    JLabel labelDateTitle = makeLabel("วันที่นัด");
+    JLabel labelTimeStart = makeLabel("ตั้งแต่เวลา");
+    JLabel labelTimeEnd = makeLabel("จนถึงเวลา");
+    JLabel labelDoctor = makeLabel("แพทย์ที่นัด");
+    JLabel labelHospital = makeLabel("ชื่อสถานพยาบาล");
+    JLabel labelNote = makeLabel("หมายเหตุการนัด");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelAddAppointment, -11, 0, 20, -18);
+    setPadding(panelBody, 0, 0, 260, 28);
+    setPadding(panelTitle, 0, 0, 20);
+    setPadding(labelDoctor, 10, 0, -10, 0);
+    setPadding(labelHospital, 10, 0, -10, 0);
+    setPadding(labelNote, 10, 0, -10, 0);
+
+    // Panel Title
+    panelTitle.add(btnBack);
+
+    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(labelDateTitle);
+    DatePicker datePicker1 = new DatePicker();
+    panelSub.add(datePicker1);
+    panelSub.add(labelTimeStart);
+    TimePicker timePicker1 = new TimePicker();
+    panelSub.add(timePicker1);
+    panelSub.add(labelTimeEnd);
+    TimePicker timePicker2 = new TimePicker();
+    panelSub.add(timePicker2);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(labelDoctor);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(tfDoctor);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(labelHospital);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(tfHospital);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(labelNote);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(tfNote);
+    panelBody.add(panelSub);
+
+    panelAddAppointment.add(panelTitle, BorderLayout.NORTH);
+    panelAddAppointment.add(panelBody, BorderLayout.CENTER);
+    panelAddAppointment.add(btnAdd, BorderLayout.SOUTH);
+
+    return panelAddAppointment;
   }
 
   public void initWelcome() {
