@@ -21,10 +21,12 @@ public class User {
   private String userHeight;
   private ArrayList<Medicine> userMedicines;
   private ArrayList<Doctor> userDoctors;
+  private ArrayList<Appointment> userAppointments;
   public User(String userName) {
     this.userName = userName;
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();
+    this.userAppointments = new ArrayList<>();
   }
 
   public User(String userId, String userTitle, String userFirstName, String userLastName,
@@ -41,6 +43,7 @@ public class User {
     this.userName = userTitle + userFirstName + " " + userLastName;
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();
+    this.userAppointments = new ArrayList<>();
   }
 
   public String getUserTitle() {
@@ -123,6 +126,10 @@ public class User {
     this.userHeight = userHeight;
   }
 
+  public ArrayList<Appointment> getUserAppointments() {
+    return userAppointments;
+  }
+
   public ArrayList<Medicine> getUserMedicines() {
     return userMedicines;
   }
@@ -131,12 +138,25 @@ public class User {
     return userDoctors;
   }
 
+  public void addUserAppointment(Appointment appointment) {
+    this.userAppointments.add(appointment);
+  }
+
   public void addUserMedicine(Medicine medicine) {
     this.userMedicines.add(medicine);
   }
 
   public void addUserDoctor(Doctor doctor) {
     this.userDoctors.add(doctor);
+  }
+
+  public boolean removeUserAppointment(Appointment appointment) {
+    try {
+      this.userAppointments.remove(appointment);
+    } catch (NullPointerException ignored) {
+      return false;
+    }
+    return true;
   }
 
   public boolean removeUserDoctor(Doctor doctor) {

@@ -47,7 +47,7 @@ public class MedicineDB {
           new Medicine(result.getString("id"), result.getString("name"), result.getString("type"),
               result.getString("color"), result.getString("description"), time,
               doseStr, result.getInt("dose"), result.getInt("total"),
-              result.getString("expire")));
+              result.getDate("expire")));
     }
 
     pStatement.close();
@@ -74,7 +74,7 @@ public class MedicineDB {
     return new Medicine(result.getString("id"), result.getString("name"), result.getString("type"),
         result.getString("color"), result.getString("description"), time,
         doseStr, result.getInt("dose"), result.getInt("total"),
-        result.getString("expire"));
+        result.getDate("expire"));
   }
 
   public static Medicine addMedicine(Medicine medicine) {

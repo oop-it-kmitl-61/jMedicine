@@ -8,6 +8,8 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -26,6 +28,9 @@ import mdlaf.animation.MaterialUIMovement;
 import mdlaf.utils.MaterialColors;
 
 class GUIHelper {
+
+  public static DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+  public static DateFormat dateTimeFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm");
 
   static void setup() {
     try {

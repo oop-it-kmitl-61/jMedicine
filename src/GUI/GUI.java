@@ -9,6 +9,7 @@ import com.teamdev.jxbrowser.chromium.PermissionHandler;
 import com.teamdev.jxbrowser.chromium.PermissionRequest;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
+import core.Appointment;
 import core.Doctor;
 import core.Medicine;
 import core.MedicineUtil;
@@ -33,7 +34,9 @@ import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.imageio.ImageIO;
@@ -124,7 +127,7 @@ public class GUI implements ActionListener, KeyListener {
 
     // Init title panel displaying title label
     panelTitle = new JPanel(new BorderLayout());
-    DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+    DateFormat dateFormat = GUIHelper.dateFormat;
     Date date = new Date();
     String today = dateFormat.format(date);
     panelTitle.add(makeTitleLabel(today));
@@ -203,11 +206,20 @@ public class GUI implements ActionListener, KeyListener {
     // Init panel loop
     panelLoop = newPanelLoop();
     panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
-    // TODO: Fetch all appointments from the database
-    // Sample loop
-    cardLoop = makeAppointmentCard("1/12/2561 เวลา 09.00 น. - 16.00 น.", "นพ.เก่ง จัง โรงพยาบาลบำรุงราษฎร์");
-    panelLoop.add(cardLoop);
-    // End sample loop
+
+    // Fetch all medicines from the records
+    ArrayList<Appointment> userAppointment = user.getUserAppointments();
+
+    if (userAppointment.isEmpty()) {
+      // TODO: What to show if the user has never added a single appointment?
+    } else {
+      // Make Loop
+      for (Appointment appCurrent : userAppointment) {
+        cardLoop = makeAppointmentCard(appCurrent);
+        panelLoop.add(cardLoop);
+      }
+      // End Make Loop
+    }
 
     // Add all panels into the main panel
     panelSub03.add(panelLoop);
@@ -401,10 +413,10 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(makeLabel("คำอธิบาย: " + medicine.getMedDescription()));
     panelSub.add(makeLabel("เวลาที่ต้องทาน: " + sbMedTime + " " + sbDoseStr));
     panelSub.add(makeLabel("ขนาดรับประทาน: " + medicine.getMedDose() + " " + medicine.getMedUnit()));
-    panelSub.add(makeLabel("วันที่เพิ่มยา: " + medicine.getDateAdded()));
+    panelSub.add(makeLabel("วันที่เพิ่มยา: " + GUIHelper.dateFormat.format(medicine.getDateAdded())));
     panelSub.add(makeLabel("จำนวนยาเริ่มต้น: " + medicine.getMedRemaining()));
     panelSub.add(makeLabel("จำนวนยาที่เหลือ: " + medicine.getMedRemaining()));
-    panelSub.add(makeLabel("วันหมดอายุ: " + medicine.getMedEXP()));
+    panelSub.add(makeLabel("วันหมดอายุ: " + GUIHelper.dateFormat.format(medicine.getMedEXP())));
     panelSub.add(btnRemove);
 
     panelView.add(panelTitle, BorderLayout.NORTH);
@@ -469,7 +481,7 @@ public class GUI implements ActionListener, KeyListener {
     // Styling
     panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
     setPadding(panelTitle, 0, 0, 20);
-    setPadding(panelSub, 0, 0, 0, 45);
+    setPadding(panelSub, 0, 0, 10, 45);
 
     // Listeners
     btnRemove.addActionListener(e -> {
@@ -507,6 +519,72 @@ public class GUI implements ActionListener, KeyListener {
 
     panelView.add(panelTitle, BorderLayout.NORTH);
     panelView.add(panelSub);
+
+    return panelView;
+  }
+
+  private JPanel panelViewAppointment(Appointment appointment) {
+    /* Creates GUI displaying information of a single appointment. */
+
+    // JPanels
+    JPanel panelView = new JPanel(new BorderLayout());
+    JPanel panelSub = new JPanel();
+    panelTitle = new JPanel(new BorderLayout());
+
+    Doctor appointmentDr = appointment.getDoctor();
+    String doctorName = appointmentDr.getPrefix() + " " + appointmentDr.getName();
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
+    String date = dateFormat.format(appointment.getTimeStart());
+    dateFormat = new SimpleDateFormat("HH.mm");
+    String timeStart = dateFormat.format(appointment.getTimeStart());
+    String timeEnd = dateFormat.format(appointment.getTimeStop());
+
+    String title = date + " เวลา " + timeStart + " น. - " + timeEnd + " น.";
+
+    // JButtons
+    JButton btnRemove = makeButton("ลบนัดแพทย์");
+    JButton btnBack = makeBackButton(title, "นัดแพทย์");
+
+    // Styling
+    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    setPadding(panelTitle, 0, 0, 20);
+    setPadding(panelSub, 20, 0, 0, 45);
+
+    // Listeners
+    btnRemove.addActionListener(e -> {
+      int dialogResult = JOptionPane.showConfirmDialog (null, makeLabel("ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง"), "คุณกำลังทำการลบนัดแพทย์", JOptionPane.YES_NO_OPTION);
+      if(dialogResult == JOptionPane.YES_OPTION){
+        JLabel labelMessage;
+        if (user.removeUserAppointment(appointment)) {
+          labelMessage = getRemoveSuccessfulMessage("นัดแพทย์");
+        } else {
+          labelMessage = getRemoveFailedMessage("นัดแพทย์");
+        }
+        panelRight.remove(panelAllAppointments());
+        panelSub03 = null;
+        panelSub03 = new JPanel(new BorderLayout());
+        panelRight.add(panelAllAppointments(), "นัดแพทย์");
+        backTo("นัดแพทย์");
+        JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์", JOptionPane.INFORMATION_MESSAGE);
+      }
+    });
+
+    // Init web browser
+    Browser browser = new Browser();
+    BrowserView view = new BrowserView(browser);
+    // Load URL that query the hospital around the current position
+    browser.loadURL("https://www.google.co.th/maps/search/"+ appointment.getHospitalName());
+
+    panelTitle.add(btnBack);
+    panelSub.add(makeLabel("แพทย์ผู้นัด: " + doctorName));
+    panelSub.add(makeLabel("โรงพยาบาล: " + appointment.getHospitalName()));
+    panelSub.add(makeLabel("กำหนดนัด: " + title));
+    panelSub.add(btnRemove);
+
+    panelView.add(panelTitle, BorderLayout.NORTH);
+    panelView.add(view, BorderLayout.CENTER);
+    panelView.add(panelSub, BorderLayout.SOUTH);
 
     return panelView;
   }
@@ -825,8 +903,9 @@ public class GUI implements ActionListener, KeyListener {
 
   private JPanel makeMedCard(Medicine medicine) {
     /* Creates a card that will be used on the All medicines panel only. */
+    Date medEXP = medicine.getMedEXP();
     String medTitle = medicine.getMedName()+" ("+medicine.getMedDescription()+")";
-    String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+medicine.getMedEXP();
+    String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+GUIHelper.dateFormat.format(medEXP);
     JLabel labelTitle = makeBoldLabel(medTitle);
     JLabel labelShortInfo = makeLabel(medShortInfo);
     JLabel labelPic = medUtil.getMedIcon(medicine);
@@ -910,8 +989,20 @@ public class GUI implements ActionListener, KeyListener {
     return panelLoopInfo;
   }
 
-  private JPanel makeAppointmentCard(String title, String shortInfo) {
+  private JPanel makeAppointmentCard(Appointment appointment) {
     /* Creates a card that will be used on the All appointments panel only. */
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
+    String date = dateFormat.format(appointment.getTimeStart());
+    dateFormat = new SimpleDateFormat("HH.mm");
+    String timeStart = dateFormat.format(appointment.getTimeStart());
+    String timeEnd = dateFormat.format(appointment.getTimeStop());
+
+    Doctor appDr = appointment.getDoctor();
+
+    String title = date + " เวลา " + timeStart + " น. - " + timeEnd + " น.";
+    String shortInfo = appDr.getPrefix() + " " + appDr.getName() + " " + appointment.getHospitalName();
+
     JLabel labelTitle = makeBoldLabel(title);
     JLabel labelShortInfo = makeLabel(shortInfo);
     JLabel labelPic = new JLabel();
@@ -940,6 +1031,17 @@ public class GUI implements ActionListener, KeyListener {
     panelLoopInfo.add(panelPic);
     panelLoopInfo.add(panelInfo);
     panelLoopInfo.add(Box.createHorizontalGlue());
+
+    panelLoopInfo.addMouseListener(new MouseAdapter()
+    {
+      public void mouseClicked(MouseEvent e)
+      {
+        panelRight.add(panelViewAppointment(appointment), title);
+        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        cl.show(panelRight, title);
+      }
+    });
+
     return panelLoopInfo;
   }
 
@@ -1072,6 +1174,7 @@ public class GUI implements ActionListener, KeyListener {
             initSampleMedicine01();
             initSampleMedicine02();
             initSampleMedicine03();
+            initSampleAppointment();
             main();
             if (user.getUserMedicines().size() > 0) {
               frameWelcome.setVisible(false);
@@ -1139,7 +1242,13 @@ public class GUI implements ActionListener, KeyListener {
     sampleMedTime.add("เย็น");
     ArrayList<String> sampleMedDoseStr = new ArrayList<>();
     sampleMedDoseStr.add("หลังอาหาร");
-    Medicine prednisolone = new Medicine("Prednisolone", "tablet", "white", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 20, "31/12/2018");
+    Date dateEXP = new Date();
+    try {
+      dateEXP = new SimpleDateFormat("dd/mm/yyyy").parse("28/02/2019");
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    Medicine prednisolone = new Medicine("Prednisolone", "tablet", "white", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 20, dateEXP);
     user.addUserMedicine(prednisolone);
   }
 
@@ -1148,7 +1257,13 @@ public class GUI implements ActionListener, KeyListener {
     sampleMedTime.add("ก่อนนอน");
     ArrayList<String> sampleMedDoseStr = new ArrayList<>();
     sampleMedDoseStr.add("");
-    Medicine chlopheniramine = new Medicine("Chlopheniramine", "tablet", "yellow", "ยาแก้แพ้", sampleMedTime, sampleMedDoseStr, 1, 50, "21/12/2019");
+    Date dateEXP = new Date();
+    try {
+      dateEXP = new SimpleDateFormat("dd/mm/yyyy").parse("28/02/2019");
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    Medicine chlopheniramine = new Medicine("Chlopheniramine", "tablet", "yellow", "ยาแก้แพ้", sampleMedTime, sampleMedDoseStr, 1, 50, dateEXP);
     user.addUserMedicine(chlopheniramine);
   }
 
@@ -1157,7 +1272,13 @@ public class GUI implements ActionListener, KeyListener {
     sampleMedTime.add("เช้า");
     ArrayList<String> sampleMedDoseStr = new ArrayList<>();
     sampleMedDoseStr.add("หลังอาหาร");
-    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 7, "28/02/2019");
+    Date dateEXP = new Date();
+    try {
+      dateEXP = new SimpleDateFormat("dd/mm/yyyy").parse("28/02/2019");
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 7, dateEXP);
     user.addUserMedicine(amoxicillin);
   }
 
@@ -1167,6 +1288,20 @@ public class GUI implements ActionListener, KeyListener {
     workTime.add("วันพฤหัสบดี เวลา 09.00 น. - 16.00 น.");
     Doctor doctor = new Doctor("นพ.", "เก่ง จัง", "หู คอ จมูก", "บำรุงราษฎร์", workTime);
     user.addUserDoctor(doctor);
+  }
+
+  private void initSampleAppointment() {
+    Date dateStart = new Date();
+    Date dateEnd = new Date();
+    try {
+      dateStart = new SimpleDateFormat("dd/mm/yyyy HH.mm").parse("1/12/2018 09.30");
+      dateEnd = new SimpleDateFormat("dd/mm/yyyy HH.mm").parse("1/02/2018 16.30");
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    Doctor doctor = user.getUserDoctors().get(0);
+    Appointment appointment = new Appointment(dateStart, dateEnd, doctor, "บำรุงราษฎร์");
+    user.addUserAppointment(appointment);
   }
 
   static JButton[] getButtons() {

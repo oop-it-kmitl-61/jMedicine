@@ -31,13 +31,13 @@ public class Medicine {
   private int medDose;
   private int medTotal;
   private int medRemaining;
-  private String medEXP;
+  private Date medEXP;
   private Date dateAdded;
   private String medUnit;
 
   public Medicine(String medName, String medType, String medColor, String medDescription,
       ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
-      String medEXP) {
+      Date medEXP) {
     this.medName = medName;
     this.medType = medType;
     this.medColor = medColor;
@@ -67,7 +67,7 @@ public class Medicine {
 
   public Medicine(String id, String medName, String medType, String medColor, String medDescription,
       ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
-      String medEXP) {
+      Date medEXP) {
     this.id = id;
     this.medName = medName;
     this.medType = medType;
@@ -136,7 +136,7 @@ public class Medicine {
     return medRemaining;
   }
 
-  public String getMedEXP() {
+  public Date getMedEXP() {
     return medEXP;
   }
 
