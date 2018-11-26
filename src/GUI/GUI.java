@@ -54,33 +54,9 @@ import mdlaf.shadows.DropShadowBorder;
 
 
 /**
- * GUI class creates all graphic user interface, all in javax.swing. Use a constructor to new a
- * GUI.
+ * GUI class creates all graphic user interface, all in javax.swing.
  *
  * @param windowSize a Dimension class consists of width and height.
- *
- * =============================================== Main Structure ===============================================
- *
- * GUI.java \_ GUI()         -> Init and setup \_ initWelcome() -> Makes GUI when the user is not
- * signed in. \_ main()        -> Makes GUI after the user has signed in. \_ panelOverview() ->
- * Returns a panel that displays all overview cards. \  \_ makeOverviewCard()   -> Returns an
- * overview card. \ \_ panelAllMedicines()     -> Returns a panel that displays all user's medicines
- * cards. \  \_ makeMedCard()        -> Returns a medicine card. \  \_ viewMedicine()       ->
- * Returns a panel that displays a single medicine information. \  \_ addMedicine()        ->
- * Returns a panel to add new medicine. \  \_ addMedGUI()          -> Makes UI to add new medicine,
- * being used by initWelcome() and addMedicine(). \  \_ COMING SOON          -> Returns a panel to
- * edit an existed medicine. \ \_ panelAllAppointments()  -> Returns a panel that displays all
- * user's appointments cards. \  \_ makeAppointmentCard()-> Returns an appointment card. \  \_
- * viewAppointmentCard()-> Returns a panel that displays a single appointment information. \  \_
- * COMING SOON          -> Returns a panel to add new appointment. \  \_ COMING SOON          ->
- * Returns a panel to edit an existed appointment. \ \_ panelAllDoctors()       -> Returns a panel
- * that displays all user's doctors cards. \  \_ makeDoctorCard()     -> Returns a doctor card. \ \_
- * viewDoctors()        -> Returns a panel that displays a single doctors information. \  \_
- * addDoctors()         -> Returns a panel to add new doctor. \  \_ COMING SOON          -> Returns
- * a panel to edit an existed doctor. \ \_ panelNearbyHospitals()  -> Returns a panel that displays
- * Google Maps showing nearby hospitals. \_ panelSettings()         -> Returns a panel that displays
- * user's settings. \  \_ COMING SOON          -> Returns a panel to edit user information. \_
- * makeLeftNavigation()    -> Returns a left navigation panel.
  */
 
 public class GUI implements ActionListener, KeyListener {
@@ -368,21 +344,22 @@ public class GUI implements ActionListener, KeyListener {
 
     // JPanels
     JPanel panelAddMedicine = new JPanel(new BorderLayout());
-    JPanel panelBox = new JPanel();
+    JPanel panelBody = new JPanel(new BorderLayout());
     panelTitle = new JPanel(new BorderLayout());
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มยาใหม่", "ยาทั้งหมด");
 
     // Styling
-    panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.X_AXIS));
-    setPadding(panelAddMedicine, 0, 0, 40, -16);
-    setPadding(panelBox, 0, 0, 20);
+    setPadding(panelAddMedicine, -2, 0, 40, -16);
+    setPadding(panelBody, 0, 0, 20, 40);
     setPadding(panelTitle, 0, 0, 20);
 
     panelTitle.add(btnBack);
+    panelBody.add(addMedGUI(), BorderLayout.CENTER);
+
     panelAddMedicine.add(panelTitle, BorderLayout.NORTH);
-    panelAddMedicine.add(addMedGUI());
+    panelAddMedicine.add(panelBody, BorderLayout.CENTER);
 
     return panelAddMedicine;
   }
@@ -510,8 +487,6 @@ public class GUI implements ActionListener, KeyListener {
     JCheckBox cbThursday = makeCheckBox("วันพฤหัสบดี");
     JCheckBox cbFriday = makeCheckBox("วันศุกร์");
     JCheckBox cbSaturday = makeCheckBox("วันเสาร์");
-    JCheckBox[] checkBoxes = {cbSunday, cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday,
-        cbSaturday};
 
     // TimePickers
     TimePicker sundayStartPicker = new TimePicker();
@@ -1305,7 +1280,7 @@ public class GUI implements ActionListener, KeyListener {
     button.setFont(new Font("TH Sarabun New", Font.BOLD, 42));
     button.setHorizontalAlignment(SwingConstants.LEFT);
     try {
-      Image img = ImageIO.read(new File("src/GUI/img/back.png"));
+      Image img = ImageIO.read(new File(imgPath + "/system/back.png"));
       button.setIcon(new ImageIcon(img));
     } catch (Exception ignored) {
     }
@@ -1326,7 +1301,7 @@ public class GUI implements ActionListener, KeyListener {
 
     JButton btnNew = new JButton(btnName);
     try {
-      Image img = ImageIO.read(new File("src/GUI/img/add.png"));
+      Image img = ImageIO.read(new File(imgPath + "/system/add.png"));
       btnNew.setIcon(new ImageIcon(img));
     } catch (Exception ignored) {
     }
@@ -1418,7 +1393,7 @@ public class GUI implements ActionListener, KeyListener {
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
 
     try {
-      Image img = ImageIO.read(new File("src/GUI/img/doctor.png"));
+      Image img = ImageIO.read(new File(imgPath + "/system/doctor.png"));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ignored) {
     }
@@ -1472,7 +1447,7 @@ public class GUI implements ActionListener, KeyListener {
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
 
     try {
-      Image img = ImageIO.read(new File("src/GUI/img/calendar.png"));
+      Image img = ImageIO.read(new File(imgPath + "/system/calendar.png"));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ignored) {
     }
@@ -1499,104 +1474,252 @@ public class GUI implements ActionListener, KeyListener {
     return panelLoopInfo;
   }
 
-  private JPanel addMedGUI() {
+  private JScrollPane addMedGUI() {
     /* Creates GUI of the form for adding a new medicine. */
     String medUnit = "เม็ด";
-    JPanel panelAddMed = new JPanel();
-    JTextField tfMedName = makeTextField(10);
+
+    // JPanels
+    JPanel panelAddMedGUI = new JPanel();
+    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSubMorning = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSubAfternoon = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSubEvening = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSubBed = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelTabletColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelCapsuleColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelLiquidColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+    // JTextFields
+    JTextField tfMedName = makeTextField(20);
     JTextField tfMedDescription = makeTextField(20);
-    JTextField tfAmount = makeTextField(2);
+    JTextField tfAmountMorning = makeTextField(2);
+    JTextField tfAmountAfternoon = makeTextField(2);
+    JTextField tfAmountEvening = makeTextField(2);
+    JTextField tfAmountBed = makeTextField(2);
     JTextField tfTotalMeds = makeTextField(2);
     JTextField tfMedEXP = makeTextField(10);
-    JButton btnSave = makeButton("บันทึกยา");
-    ButtonGroup rdGroup = new ButtonGroup();
 
+    // JButtons
+    JButton btnSave = makeButton("บันทึกยา");
+
+    // Arrays
     String[] medType = medUtil.getMedType();
-    String[] medColor = medUtil.getMedColor();
+    String[] tabletColor = medUtil.getTabletColor();
+    String[] liquidColor = medUtil.getLiquidColor();
     String[] medTime = medUtil.getMedTime();
     String[] medDoseStr = medUtil.getMedDoseStr();
-    ArrayList<JCheckBox> chTime = new ArrayList<>();
-    ArrayList<JRadioButton> rdAmountStr = new ArrayList<>();
+    ArrayList<ImageIcon> tabletColorIcons = new ArrayList<>();
+    ArrayList<ImageIcon> liquidColorIcons = new ArrayList<>();
 
+    for (String color : tabletColor) {
+      tabletColorIcons.add(new ImageIcon(GUIHelper.imgPath + "/colors/" + color + ".png"));
+    }
+    for (String color : liquidColor) {
+      liquidColorIcons.add(new ImageIcon(GUIHelper.imgPath + "/colors/" + color + ".png"));
+    }
+
+    // JComboBoxes
     JComboBox cbMedType = makeComboBox(medType);
-    JComboBox cbMedColor = makeComboBox(medColor);
+    JComboBox cbTabletColor = makeComboBox(tabletColorIcons);
+    JComboBox cbLiquidColor = makeComboBox(liquidColorIcons);
+    JComboBox cbCapsuleColor01 = makeComboBox(tabletColorIcons);
+    JComboBox cbCapsuleColor02 = makeComboBox(tabletColorIcons);
 
-    for (String time : medTime) {
-      chTime.add(makeCheckBox(time));
-    }
+    // JCheckBoxes
+    JCheckBox cbMorning = makeCheckBox(medTime[0]);
+    JCheckBox cbAfternoon = makeCheckBox(medTime[1]);
+    JCheckBox cbEvening = makeCheckBox(medTime[2]);
+    JCheckBox cbBed = makeCheckBox(medTime[3]);
 
-    for (String amountStr : medDoseStr) {
-      JRadioButton rdItem = makeRadioButton(amountStr);
-      rdAmountStr.add(rdItem);
-      rdGroup.add(rdItem);
-    }
+    // JRadioButtons
+    JRadioButton rbMorningBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbMorningAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbMorningImme = makeRadioButton(medDoseStr[2]);
 
+    JRadioButton rbAfternoonBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbAfternoonAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbAfternoonImme = makeRadioButton(medDoseStr[2]);
+
+    JRadioButton rbEveningBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbEveningAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbEveningImme = makeRadioButton(medDoseStr[2]);
+
+    // Radio Groups
+    ButtonGroup bgMorning = new ButtonGroup();
+    ButtonGroup bgAfternoon = new ButtonGroup();
+    ButtonGroup bgEvening = new ButtonGroup();
+
+    bgMorning.add(rbMorningBefore);
+    bgMorning.add(rbMorningAfter);
+    bgMorning.add(rbMorningImme);
+
+    bgAfternoon.add(rbAfternoonBefore);
+    bgAfternoon.add(rbAfternoonAfter);
+    bgAfternoon.add(rbAfternoonImme);
+
+    bgEvening.add(rbEveningBefore);
+    bgEvening.add(rbEveningAfter);
+    bgEvening.add(rbEveningImme);
+
+    // Styling
+    panelAddMedGUI.setLayout(new BoxLayout(panelAddMedGUI, BoxLayout.PAGE_AXIS));
+    setPadding(panelAddMedGUI, 0, 0, 40);
+    panelCapsuleColor.setVisible(false);
+    panelLiquidColor.setVisible(false);
+    panelSubMorning.setVisible(false);
+    panelSubAfternoon.setVisible(false);
+    panelSubEvening.setVisible(false);
+    panelSubBed.setVisible(false);
+
+    // Listeners
     btnSave.addActionListener(this);
-    panelAddMed.setLayout(new BoxLayout(panelAddMed, BoxLayout.PAGE_AXIS));
-    setPadding(panelAddMed, 0, 0, 40);
+    cbMedType.addActionListener(e -> {
+      switch (cbMedType.getSelectedIndex()) {
+        case 0:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(true);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          break;
+        case 1:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(true);
+          panelLiquidColor.setVisible(false);
+          break;
+        case 2:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(true);
+          break;
+        default:
+          panelColor.setVisible(false);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          break;
+      }
+    });
+    cbAfternoon.addActionListener(e -> {
+      if (cbAfternoon.isSelected()) {
+        panelSubAfternoon.setVisible(true);
+      } else {
+        panelSubAfternoon.setVisible(false);
+      }
+    });
+    cbEvening.addActionListener(e -> {
+      if (cbEvening.isSelected()) {
+        panelSubEvening.setVisible(true);
+      } else {
+        panelSubEvening.setVisible(false);
+      }
+    });
+    cbBed.addActionListener(e -> {
+      if (cbBed.isSelected()) {
+        panelSubBed.setVisible(true);
+      } else {
+        panelSubBed.setVisible(false);
+      }
+    });
+    cbMorning.addActionListener(e -> {
+      if (cbMorning.isSelected()) {
+        panelSubMorning.setVisible(true);
+      } else {
+        panelSubMorning.setVisible(false);
+      }
+    });
 
-    cbMedType.addActionListener(this);
-    cbMedColor.addActionListener(this);
+    panelSub.add(makeLabel("ชื่อยา"));
+    panelSub.add(tfMedName);
+    panelSub.add(makeLabel("ประเภท"));
+    panelSub.add(cbMedType);
+    panelAddMedGUI.add(panelSub);
 
-    JPanel panelInline = new JPanel(new FlowLayout());
-    panelInline.add(makeLabel("ชื่อยา"));
-    panelInline.add(tfMedName);
-    panelInline.add(makeLabel("ประเภท"));
-    panelInline.add(cbMedType);
-    panelInline.add(makeLabel("สีของยา"));
-    panelInline.add(cbMedColor);
-    panelAddMed.add(panelInline);
+    panelColor.add(makeBoldLabel("สีของยา"));
+    panelAddMedGUI.add(panelColor);
 
-    JPanel panelBorder = new JPanel(new BorderLayout());
-    setPadding(panelBorder, 10, 20);
-    panelBorder.add(makeLabel("คำอธิบายยา (เช่น ยาแก้ปวด)"), BorderLayout.NORTH);
-    panelBorder.add(tfMedDescription);
-    panelAddMed.add(panelBorder);
+    panelTabletColor.add(cbTabletColor);
+    panelAddMedGUI.add(panelTabletColor);
 
-    panelBorder = new JPanel(new BorderLayout());
-    setPadding(panelBorder, 10, 20);
-    //NORTH
-    panelBorder.add(makeLabel("เวลาที่ต้องรับประทาน"), BorderLayout.NORTH);
+    panelCapsuleColor.add(makeLabel("สีที่ 1"));
+    panelCapsuleColor.add(cbCapsuleColor01);
+    panelCapsuleColor.add(makeLabel("สีที่ 2"));
+    panelCapsuleColor.add(cbCapsuleColor02);
+    panelAddMedGUI.add(panelCapsuleColor);
 
-    // WEST
-    panelInline = new JPanel(new FlowLayout());
-    for (JCheckBox aChTime : chTime) {
-      panelInline.add(aChTime);
-    }
-    panelBorder.add(panelInline, BorderLayout.WEST);
+    panelLiquidColor.add(cbLiquidColor);
+    panelAddMedGUI.add(panelLiquidColor);
 
-    // EAST
-    panelInline = new JPanel(new FlowLayout());
-    for (JRadioButton aRdAmountStr : rdAmountStr) {
-      panelInline.add(aRdAmountStr);
-    }
-    panelInline.setPreferredSize(new Dimension(100, panelInline.getHeight()));
-    panelBorder.add(panelInline, BorderLayout.CENTER);
-    panelInline = new JPanel(new FlowLayout());
-    panelInline.add(makeLabel("จำนวน"));
-    panelInline.add(tfAmount);
-    panelInline.add(makeLabel(medUnit));
-    panelBorder.add(panelInline, BorderLayout.EAST);
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("คำอธิบายยา (เช่น ยาแก้ปวด)"));
+    panelSub.add(tfMedDescription);
+    panelAddMedGUI.add(panelSub);
 
-    // SOUTH
-    JPanel panelBox = new JPanel();
-    panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.PAGE_AXIS));
-    panelInline = new JPanel(new FlowLayout());
-    panelInline.add(makeLabel("จำนวนยาทั้งหมด"));
-    panelInline.add(tfTotalMeds);
-    panelInline.add(makeLabel(medUnit));
-    panelBox.add(panelInline);
-    panelInline = new JPanel(new FlowLayout());
-    panelInline.add(makeLabel("วันหมดอายุ"));
-    panelInline.add(tfMedEXP);
-    panelBox.add(panelInline);
-    panelBorder.add(panelBox, BorderLayout.SOUTH);
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("เวลาที่ต้องรับประทาน"));
+    panelAddMedGUI.add(panelSub);
 
-    btnSave.setAlignmentX(Component.CENTER_ALIGNMENT);
-    panelAddMed.add(panelBorder);
-    panelAddMed.add(btnSave);
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbMorning);
+    panelSubMorning.add(rbMorningBefore);
+    panelSubMorning.add(rbMorningAfter);
+    panelSubMorning.add(rbMorningImme);
+    panelSubMorning.add(makeLabel("จำนวน"));
+    panelSubMorning.add(tfAmountMorning);
+    panelSubMorning.add(makeLabel(medUnit));
+    panelSub.add(panelSubMorning);
+    panelAddMedGUI.add(panelSub);
 
-    return panelAddMed;
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbAfternoon);
+    panelSubAfternoon.add(rbAfternoonBefore);
+    panelSubAfternoon.add(rbAfternoonAfter);
+    panelSubAfternoon.add(rbAfternoonImme);
+    panelSubAfternoon.add(makeLabel("จำนวน"));
+    panelSubAfternoon.add(tfAmountAfternoon);
+    panelSubAfternoon.add(makeLabel(medUnit));
+    panelSub.add(panelSubAfternoon);
+    panelAddMedGUI.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbEvening);
+    panelSubEvening.add(rbEveningBefore);
+    panelSubEvening.add(rbEveningAfter);
+    panelSubEvening.add(rbEveningImme);
+    panelSubEvening.add(makeLabel("จำนวน"));
+    panelSubEvening.add(tfAmountEvening);
+    panelSubEvening.add(makeLabel(medUnit));
+    panelSub.add(panelSubEvening);
+    panelAddMedGUI.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbBed);
+    panelSubBed.add(makeLabel("จำนวน"));
+    panelSubBed.add(tfAmountBed);
+    panelSubBed.add(makeLabel(medUnit));
+    panelSub.add(panelSubBed);
+    panelAddMedGUI.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
+    panelSub.add(tfTotalMeds);
+    panelSub.add(makeLabel(medUnit));
+    panelAddMedGUI.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("วันหมดอายุ"));
+    panelSub.add(tfMedEXP);
+    panelAddMedGUI.add(panelSub);
+
+    panelSub = new JPanel();
+    panelSub.add(btnSave);
+    panelAddMedGUI.add(panelSub);
+
+    JScrollPane scrollPane = new JScrollPane(panelAddMedGUI);
+
+    return scrollPane;
   }
 
   private void executeSignIn() {
