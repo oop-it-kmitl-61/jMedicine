@@ -35,9 +35,14 @@ public class DoctorDB {
     ArrayList<Doctor> results = new ArrayList<>();
 
     while (result.next()) {
-      ArrayList<String> time;
-      time = Arrays.stream((Object[]) result.getArray("time").getArray())
-          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+      ArrayList<ArrayList> time = new ArrayList<>();
+
+      Arrays.stream((Object[]) result.getArray("time").getArray()).forEach(obj -> {
+        ArrayList<String> t = new ArrayList<>();
+        t.addAll(Arrays.asList((String[]) obj));
+        time.add(t);
+      });
 
       results.add(
           new Doctor(result.getString("id"), result.getString("title"),
@@ -71,6 +76,14 @@ public class DoctorDB {
     pStatement.close();
 
     return doctor;
+  }
+
+  public static void main(String[] args) {
+    try {
+      getAllDoctor("67502c25-73a3-4c06-8b5d-97d3341ddd28");
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
 }
