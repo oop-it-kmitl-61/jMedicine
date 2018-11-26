@@ -56,6 +56,11 @@ public class DoctorDB {
 
   public static Doctor addDoctor(Doctor doctor, String userId) throws SQLException {
 
+    ArrayList time = new ArrayList();
+    for (ArrayList t : doctor.getWorkTime()) {
+      time.add(connection.createArrayOf("text", t.toArray()));
+    }
+
     String SQLCommand = "WITH ROW AS ( INSERT INTO doctors (user, title, firstname, lastname, ward, hospital, time) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
@@ -65,7 +70,7 @@ public class DoctorDB {
     pStatement.setString(4, doctor.getLastName());
     pStatement.setString(5, doctor.getWard());
     pStatement.setString(6, doctor.getHospital());
-    pStatement.setArray(7, connection.createArrayOf("text", doctor.getWorkTime().toArray()));
+    pStatement.setArray(7, connection.createArrayOf("text", time.toArray()));
 
     ResultSet result = pStatement.executeQuery();
 
