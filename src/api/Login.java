@@ -1,6 +1,7 @@
 package api;
 
 import static api.MedicineDB.getAllMedicine;
+import static api.DoctorDB.getAllDoctor;
 import static core.Utils.sha256;
 
 import core.Database;
@@ -44,6 +45,7 @@ public class Login {
           String.valueOf(result.getFloat("weight")), String.valueOf(result.getFloat("height")));
 
       user.setUserMedicines(getAllMedicine(user.getUserId()));
+      user.setUserDoctors(getAllDoctor(user.getUserId()));
 
       return user;
     }
