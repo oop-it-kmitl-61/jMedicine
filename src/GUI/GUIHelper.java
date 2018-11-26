@@ -7,10 +7,19 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
+import javax.print.attribute.standard.Media;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -36,6 +45,9 @@ class GUIHelper {
   public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
   public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm", new Locale("th", "TH"));
 
+  public static String imgSuccessSrc = "src/GUI/img/success.png";
+  public static String imgWarningSrc = "src/GUI/img/warning.png";
+
   static void setup() {
     try {
       GraphicsEnvironment ge =
@@ -49,6 +61,17 @@ class GUIHelper {
     } catch (UnsupportedLookAndFeelException | IOException | FontFormatException ex) {
       ex.printStackTrace();
     }
+  }
+
+  static void beep(String type) {
+    String path = "src/GUI/sounds/" + type + ".wav";
+    File f = new File(path);
+    try {
+      AudioInputStream audioIn = AudioSystem.getAudioInputStream(f);
+      Clip clip = AudioSystem.getClip();
+      clip.open(audioIn);
+      clip.start();
+    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ignored) { }
   }
 
   static JLabel getRemoveSuccessfulMessage(String type) {
