@@ -3,8 +3,7 @@ package core;
 import java.util.ArrayList;
 
 /**
- * Stores a doctor information
- * Use a constructor to new a doctor.
+ * Stores a doctor information Use a constructor to new a doctor.
  *
  * @param prefix a doctor prefix, chosen from a combo box.
  * @param name a doctor name.
@@ -18,6 +17,8 @@ public class Doctor {
   private String id;
   private String prefix;
   private String name;
+  private String firstName;
+  private String lastName;
   private String ward;
   private String hospital;
   private ArrayList<String> workTime;
@@ -41,6 +42,34 @@ public class Doctor {
     this.workTime = workTime;
   }
 
+  public Doctor(String id, String prefix, String firstName, String lastName, String ward,
+      String hospital, ArrayList<String> workTime) {
+    this.id = id;
+    this.prefix = prefix;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.ward = ward;
+    this.hospital = hospital;
+    this.workTime = workTime;
+    this.name = firstName + " " + lastName;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
   public String getId() {
     return id;
   }
@@ -53,19 +82,39 @@ public class Doctor {
     return prefix;
   }
 
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
+  }
+
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getWard() {
     return ward;
   }
 
+  public void setWard(String ward) {
+    this.ward = ward;
+  }
+
   public String getHospital() {
     return hospital;
   }
 
+  public void setHospital(String hospital) {
+    this.hospital = hospital;
+  }
+
   public ArrayList<String> getWorkTime() {
     return workTime;
+  }
+
+  public void setWorkTime(ArrayList<String> workTime) {
+    this.workTime = workTime;
   }
 }

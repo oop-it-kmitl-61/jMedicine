@@ -82,19 +82,20 @@ public class MedicineDB {
         result.getDate("expire"));
   }
 
-  public static Medicine addMedicine(Medicine medicine) throws SQLException {
+  public static Medicine addMedicine(Medicine medicine, String userId) throws SQLException {
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (name, type, color, description, dose, total, \"doseStr\", expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (user, name, type, color, description, dose, total, \"doseStr\", expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
-    pStatement.setString(1, medicine.getMedName());
-    pStatement.setString(2, medicine.getMedType());
-    pStatement.setString(3, medicine.getMedColor());
-    pStatement.setString(4, medicine.getMedDescription());
-    pStatement.setInt(5, medicine.getMedDose());
-    pStatement.setInt(6, medicine.getMedTotal());
-    pStatement.setArray(7, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
-    pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
+    pStatement.setString(1, userId);
+    pStatement.setString(2, medicine.getMedName());
+    pStatement.setString(3, medicine.getMedType());
+    pStatement.setString(4, medicine.getMedColor());
+    pStatement.setString(5, medicine.getMedDescription());
+    pStatement.setInt(6, medicine.getMedDose());
+    pStatement.setInt(7, medicine.getMedTotal());
+    pStatement.setArray(8, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
+    pStatement.setDate(9, new Date(medicine.getMedEXP().getTime()));
 
     ResultSet result = pStatement.executeQuery();
 
