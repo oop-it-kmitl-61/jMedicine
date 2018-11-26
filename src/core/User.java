@@ -134,12 +134,20 @@ public class User {
     return userMedicines;
   }
 
+  public void setUserMedicines(ArrayList<Medicine> userMedicines) {
+    this.userMedicines = userMedicines;
+  }
+
   public ArrayList<Doctor> getUserDoctors() {
     return userDoctors;
   }
 
   public void addUserAppointment(Appointment appointment) {
     this.userAppointments.add(appointment);
+  }
+
+  public void setUserDoctors(ArrayList<Doctor> userDoctors) {
+    this.userDoctors = userDoctors;
   }
 
   public void addUserMedicine(Medicine medicine) {

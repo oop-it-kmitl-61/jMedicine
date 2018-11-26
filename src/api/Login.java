@@ -1,5 +1,7 @@
 package api;
 
+import static api.MedicineDB.getAllMedicine;
+import static api.DoctorDB.getAllDoctor;
 import static core.Utils.sha256;
 
 import core.Database;
@@ -37,10 +39,15 @@ public class Login {
     ResultSet result = pStatement.executeQuery();
 
     if (result.next()) {
-      return new User(result.getString("id"), result.getString("title"),
+      User user = new User(result.getString("id"), result.getString("title"),
           result.getString("firstname"), result.getString("lastname"), result.getString("email"),
           result.getString("gender"), String.valueOf(result.getInt("age")),
           String.valueOf(result.getFloat("weight")), String.valueOf(result.getFloat("height")));
+
+      user.setUserMedicines(getAllMedicine(user.getUserId()));
+      user.setUserDoctors(getAllDoctor(user.getUserId()));
+
+      return user;
     }
 
     throw new LoginException("Login failed");
