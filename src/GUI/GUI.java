@@ -494,7 +494,7 @@ public class GUI implements ActionListener, KeyListener {
     /* Creates GUI of the form for adding a new doctor. */
 
     // JPanels
-    JPanel panelAddDoctor = new JPanel();
+    JPanel panelAddDoctor = new JPanel(new BorderLayout());
     JPanel panelBody = new JPanel();
     panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
@@ -555,7 +555,8 @@ public class GUI implements ActionListener, KeyListener {
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
     setPadding(panelTitle, 0, 0, 20);
-    setPadding(panelBody, 0, 120, 40);
+    setPadding(panelAddDoctor, -11, 0, 20, -18);
+    setPadding(panelBody, 0, 0, 10, 28);
     for (JLabel label : labels) {
       label.setVisible(false);
     }
@@ -752,7 +753,7 @@ public class GUI implements ActionListener, KeyListener {
 
     //TODO:JScrollPane bug
     JScrollPane scrollPane = new JScrollPane(panelBody);
-    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    setPadding(scrollPane, 0, 0, 20, 0);
 
     panelAddDoctor.add(panelTitle, BorderLayout.NORTH);
     panelAddDoctor.add(scrollPane, BorderLayout.CENTER);
@@ -985,6 +986,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(labelTimeEnd);
     TimePicker timePicker2 = new TimePicker();
     panelSub.add(timePicker2);
+    setPadding(panelSub, 0, 0, 10, 0);
     panelBody.add(panelSub);
 
     panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));

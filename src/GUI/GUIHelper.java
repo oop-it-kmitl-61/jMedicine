@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -41,9 +42,11 @@ class GUIHelper {
 
   public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
-  public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy", new Locale("th", "TH"));
+  public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy",
+      new Locale("th", "TH"));
   public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
-  public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm", new Locale("th", "TH"));
+  public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm",
+      new Locale("th", "TH"));
 
   public static String imgSuccessSrc = "src/GUI/img/success.png";
   public static String imgWarningSrc = "src/GUI/img/warning.png";
@@ -71,15 +74,16 @@ class GUIHelper {
       Clip clip = AudioSystem.getClip();
       clip.open(audioIn);
       clip.start();
-    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ignored) { }
+    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ignored) {
+    }
   }
 
   static JLabel getRemoveSuccessfulMessage(String type) {
-    return makeLabel("ลบ"+type+"เรียบร้อยแล้ว");
+    return makeLabel("ลบ" + type + "เรียบร้อยแล้ว");
   }
 
   static JLabel getRemoveFailedMessage(String type) {
-    return makeLabel("ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ"+type+"ได้");
+    return makeLabel("ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ" + type + "ได้");
   }
 
   static JPanel getLoadingPanel(boolean withBG) {
@@ -203,8 +207,8 @@ class GUIHelper {
     JButton button = new JButton(buttonText);
     button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
     button.setBackground(GUI.getMainBlue());
-    button.setForeground (Color.WHITE);
-    button.setMaximumSize (new Dimension(200, 60));
+    button.setForeground(Color.WHITE);
+    button.setMaximumSize(new Dimension(200, 60));
     MaterialUIMovement.add(button, MaterialColors.LIGHT_BLUE_600);
     return button;
   }
@@ -244,7 +248,7 @@ class GUIHelper {
 
   static void paintButton() {
     /* Handles color painting on the left navigation. */
-    for(JButton button: GUI.getButtons()) {
+    for (JButton button : GUI.getButtons()) {
       button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
       button.setBorderPainted(false);
       button.setFocusPainted(false);
@@ -276,11 +280,13 @@ class GUIHelper {
   }
 
   static void setPadding(JLabel object, int topAndBottom, int leftAndRight) {
-    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+    object.setBorder(
+        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   static void setPadding(JLabel object, int allSidesAmount) {
-    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+    object.setBorder(BorderFactory
+        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   static void setPadding(JTextField object, int top, int right, int bottom, int left) {
@@ -292,11 +298,13 @@ class GUIHelper {
   }
 
   static void setPadding(JTextField object, int topAndBottom, int leftAndRight) {
-    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+    object.setBorder(
+        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   static void setPadding(JTextField object, int allSidesAmount) {
-    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+    object.setBorder(BorderFactory
+        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   static void setPadding(JPasswordField object, int top, int right, int bottom, int left) {
@@ -308,11 +316,13 @@ class GUIHelper {
   }
 
   static void setPadding(JPasswordField object, int topAndBottom, int leftAndRight) {
-    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+    object.setBorder(
+        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   static void setPadding(JPasswordField object, int allSidesAmount) {
-    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+    object.setBorder(BorderFactory
+        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   static void setPadding(JButton object, int top, int right, int bottom, int left) {
@@ -324,11 +334,13 @@ class GUIHelper {
   }
 
   static void setPadding(JButton object, int topAndBottom, int leftAndRight) {
-    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+    object.setBorder(
+        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   static void setPadding(JButton object, int allSidesAmount) {
-    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+    object.setBorder(BorderFactory
+        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   static void setPadding(JPanel object, int top, int right, int bottom, int left) {
@@ -340,10 +352,30 @@ class GUIHelper {
   }
 
   static void setPadding(JPanel object, int topAndBottom, int leftAndRight) {
-    object.setBorder(BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+    object.setBorder(
+        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   static void setPadding(JPanel object, int allSidesAmount) {
-    object.setBorder(BorderFactory.createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+    object.setBorder(BorderFactory
+        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+  }
+
+  static void setPadding(JScrollPane object, int top, int right, int bottom, int left) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, left, bottom, right));
+  }
+
+  static void setPadding(JScrollPane object, int top, int leftAndRight, int bottom) {
+    object.setBorder(BorderFactory.createEmptyBorder(top, leftAndRight, bottom, leftAndRight));
+  }
+
+  static void setPadding(JScrollPane object, int topAndBottom, int leftAndRight) {
+    object.setBorder(
+        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+  }
+
+  static void setPadding(JScrollPane object, int allSidesAmount) {
+    object.setBorder(BorderFactory
+        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 }
