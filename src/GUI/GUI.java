@@ -130,7 +130,6 @@ public class GUI implements ActionListener, KeyListener {
       including medication reminders and doctor appointments.
      */
 
-    panelSub01.setLayout(new BoxLayout(panelSub01, BoxLayout.PAGE_AXIS));
     // Init title panel displaying title label
     panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
     String today = GUIHelper.formatDMYFull.format(new Date());
@@ -148,12 +147,11 @@ public class GUI implements ActionListener, KeyListener {
         "หลังอาหาร 1 เม็ด");
     panelLoop.add(cardLoop);
     // End sample loop
+    setPadding(panelLoop, 0, 0, 600, 0);
 
-    panelLoop.add(Box.createVerticalGlue());
     // Add all panels into the main panel
-    panelSub01.add(panelTitle);
+    panelSub01.add(panelTitle, BorderLayout.NORTH);
     panelSub01.add(panelLoop);
-    panelSub01.add(Box.createVerticalGlue());
 
     return panelSub01;
   }
@@ -1238,8 +1236,8 @@ public class GUI implements ActionListener, KeyListener {
     /* Creates a card that will be used on the Overview panel only. */
 
     // JPanels
-    JPanel panelLoopInfo = new JPanel();
-    JPanel panelLine = new JPanel();
+    JPanel panelLoopInfo = new JPanel(new BorderLayout());
+    JPanel panelCard = new JPanel();
     JPanel panelTime = new JPanel(new FlowLayout(FlowLayout.LEFT));
     JPanel panelMed = new JPanel(new FlowLayout(FlowLayout.LEFT));
     JPanel panelMedInfo = new JPanel();
@@ -1251,17 +1249,13 @@ public class GUI implements ActionListener, KeyListener {
     JLabel labelAmount = makeLabel(dose);
 
     // Styling
-    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.PAGE_AXIS));
     panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));
-    panelLoopInfo.setBorder(new CompoundBorder(
-        BorderFactory.createEmptyBorder(5, 0, 20, 0),
-        new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true, true)
-    ));
-    panelLine.setBackground(getMainBlue());
-    setPadding(panelLine, 0, 0, -40, 0);
-    setPadding(panelTime, 0, 0, -100, 0);
-    setPadding(labelTime, 10, 0, 5, 0);
-    setPadding(labelMedName, 10, 0, -10, 0);
+    panelCard.setLayout(new BoxLayout(panelCard, BoxLayout.PAGE_AXIS));
+    panelCard.setBorder(
+        new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true, true));
+    setPadding(labelPic, 6, 0, 0, 8);
+    setPadding(labelMedName, 6, 0, -10, 0);
+    setPadding(panelLoopInfo, 0, 0, 20);
 
     panelMedInfo.add(labelMedName);
     panelMedInfo.add(labelAmount);
@@ -1269,15 +1263,11 @@ public class GUI implements ActionListener, KeyListener {
     panelMed.add(labelPic);
     panelMed.add(panelMedInfo);
 
+    panelCard.add(panelMed);
     panelTime.add(labelTime);
 
-    panelLoopInfo.add(panelLine);
-    panelLoopInfo.add(panelTime);
-    panelLoopInfo.add(panelMed);
-    panelTime.setSize(panelLoop.getWidth(), 10);
-    panelTime.setPreferredSize(new Dimension(panelLoop.getWidth(), 10));
-    panelLoopInfo.setSize(panelLoop.getWidth(), 20);
-    panelLoopInfo.setPreferredSize(new Dimension(panelLoop.getWidth(), 20));
+    panelLoopInfo.add(panelTime, BorderLayout.NORTH);
+    panelLoopInfo.add(panelCard);
     return panelLoopInfo;
   }
 
@@ -1892,7 +1882,8 @@ public class GUI implements ActionListener, KeyListener {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "", "ยาแก้อักเสบ", sampleMedTime,
+    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "green-orange", "ยาแก้อักเสบ",
+        sampleMedTime,
         sampleMedDoseStr, 1, 7, dateEXP);
     user.addUserMedicine(amoxicillin);
   }
