@@ -826,15 +826,19 @@ public class GUI implements ActionListener, KeyListener {
 
     panelTitle.add(btnBack);
     panelSub.add(makeLabel("ชื่อแพทย์: " + doctorName));
-    panelSub.add(makeLabel("แผนก: " + doctor.getWard()));
+    if (doctor.getWard() != null) {
+      panelSub.add(makeLabel("แผนก: " + doctor.getWard()));
+    }
     panelSub.add(makeLabel("โรงพยาบาล: " + doctor.getHospital()));
-    panelSub.add(makeLabel("เวลาเข้าตรวจ:"));
-
-    // WorkTime is an ArrayList, convert it to a printable format
-    for (String workTime : doctor.getWorkTime()) {
-      JLabel labelWorkTime = makeLabel(workTime);
-      setPadding(labelWorkTime, 0, 20);
-      panelSub.add(labelWorkTime);
+    if (doctor.getWorkTime() != null) {
+      panelSub.add(makeLabel("เวลาเข้าตรวจ:"));
+      // WorkTime is an ArrayList, convert it to a printable format
+      for (ArrayList<String> workTime : doctor.getWorkTime()) {
+        JLabel labelWorkTime = makeLabel(
+            workTime.get(0) + " เวลา " + workTime.get(1) + " น. - " + workTime.get(2) + " น.");
+        setPadding(labelWorkTime, 0, 20);
+        panelSub.add(labelWorkTime);
+      }
     }
 
     panelView.add(panelTitle, BorderLayout.NORTH);
@@ -1618,7 +1622,6 @@ public class GUI implements ActionListener, KeyListener {
         @Override
         protected void done() {
           if (user != null) {
-            initSampleDoctor();
             initSampleMedicine01();
             initSampleMedicine02();
             initSampleMedicine03();
@@ -1731,14 +1734,6 @@ public class GUI implements ActionListener, KeyListener {
     Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "", "ยาแก้อักเสบ", sampleMedTime,
         sampleMedDoseStr, 1, 7, dateEXP);
     user.addUserMedicine(amoxicillin);
-  }
-
-  private void initSampleDoctor() {
-    ArrayList<String> workTime = new ArrayList<String>();
-    workTime.add("วันพุธ เวลา 09.00 น. - 16.00 น.");
-    workTime.add("วันพฤหัสบดี เวลา 09.00 น. - 16.00 น.");
-    Doctor doctor = new Doctor("นพ.", "เก่ง จัง", "หู คอ จมูก", "บำรุงราษฎร์", workTime);
-    user.addUserDoctor(doctor);
   }
 
   private void initSampleAppointment() {
