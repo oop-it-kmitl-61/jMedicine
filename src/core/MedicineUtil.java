@@ -1,8 +1,10 @@
 package core;
 
-import core.Medicine;
+import static GUI.GUIHelper.imgPath;
+
 import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -12,9 +14,14 @@ import javax.swing.JLabel;
  */
 
 public class MedicineUtil {
+
   private String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "ยาแบบฉีด"};
-  private String[] medColor = {"ขาว", "ใส", "น้ำเงิน", "เขียว", "เหลือง", "ชมพู", "ส้ม", "น้ำตาล",
-      "ไม่ระบุ"};
+  private String[] tabletColor = {"white", "blue", "green", "yellow", "red", "pink", "purple",
+      "orange",
+      "brown"};
+  private String[] liquidColor = {"transparent", "white", "blue", "green", "yellow", "red", "pink",
+      "purple",
+      "orange", "brown", "black"};
   private String[] medTime = {"เช้า", "กลางวัน", "เย็น", "ก่อนนอน"};
   private String[] medDoseStr = {"ก่อนอาหาร", "หลังอาหาร", "พร้อมอาหาร/หลังอาหารทันที"};
 
@@ -22,8 +29,12 @@ public class MedicineUtil {
     return medType;
   }
 
-  public String[] getMedColor() {
-    return medColor;
+  public String[] getTabletColor() {
+    return tabletColor;
+  }
+
+  public String[] getLiquidColor() {
+    return liquidColor;
   }
 
   public String[] getMedTime() {
@@ -40,17 +51,16 @@ public class MedicineUtil {
     boolean urlFinished = false;
     switch (medicine.getMedType()) {
       case "tablet":
-        imgURL += "tablet-";
+        imgURL += "/tablets/tablet-";
         break;
       case "capsule":
-        imgURL += "capsule.png";
-        urlFinished = true;
+        imgURL += "/capsules/capsule-";
         break;
       case "liquid":
-        imgURL += "liquid-";
+        imgURL += "/liquids/liquid-";
         break;
       case "inject":
-        imgURL += "inject.png";
+        imgURL += "/inject.png";
         urlFinished = true;
         break;
     }
@@ -61,10 +71,15 @@ public class MedicineUtil {
     }
 
     try {
-      Image img = ImageIO.read(new File("src/GUI/img/" + imgURL));
+      Image img = ImageIO.read(new File(imgPath + imgURL));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ex) {
-      ex.printStackTrace();
+      try {
+        Image img = ImageIO.read(new File(imgPath + "/system/med-not-found.png"));
+        labelPic.setIcon(new ImageIcon(img));
+      } catch (IOException ignored) {
+      }
+
     }
 
     return labelPic;

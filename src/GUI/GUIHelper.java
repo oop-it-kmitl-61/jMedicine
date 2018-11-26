@@ -38,18 +38,19 @@ import mdlaf.MaterialLookAndFeel;
 import mdlaf.animation.MaterialUIMovement;
 import mdlaf.utils.MaterialColors;
 
-class GUIHelper {
+public class GUIHelper {
 
-  public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
-  public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
-  public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy",
+  static DateFormat formatHM = new SimpleDateFormat("HH.mm");
+  static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
+  static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy",
       new Locale("th", "TH"));
-  public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
-  public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm",
+  static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
+  static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm",
       new Locale("th", "TH"));
 
-  public static String imgSuccessSrc = "src/GUI/img/success.png";
-  public static String imgWarningSrc = "src/GUI/img/warning.png";
+  public static String imgPath = "src/GUI/img";
+  static String imgSuccessSrc = imgPath + "/system/success.png";
+  static String imgWarningSrc = imgPath + "/system/warning.png";
 
   static void setup() {
     try {
@@ -87,7 +88,7 @@ class GUIHelper {
   }
 
   static JPanel getLoadingPanel(boolean withBG) {
-    String src = "src/GUI/img/loading";
+    String src = "src/GUI/img/system/loading";
     if (withBG) {
       src += "-bg";
     } else {
@@ -112,7 +113,7 @@ class GUIHelper {
   }
 
   static JPanel getLoadingPanel(String loadingMessage, boolean withBG) {
-    String src = "src/GUI/img/loading";
+    String src = "src/GUI/img/system/loading";
     if (withBG) {
       src += "-bg";
     } else {
@@ -137,7 +138,7 @@ class GUIHelper {
   }
 
   static JPanel getErrorPanel(String errorMessage) {
-    String src = "src/GUI/img/error.png";
+    String src = "src/GUI/img/system/error.png";
     JPanel panelError = new JPanel();
     JLabel labelPic = new JLabel();
     JLabel labelError = makeLabel(errorMessage);
@@ -169,6 +170,13 @@ class GUIHelper {
     JPasswordField passwordField = new JPasswordField(columns);
     passwordField.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
     return passwordField;
+  }
+
+  static JComboBox makeComboBox(ArrayList<ImageIcon> cbIcons) {
+    Object[] icons = cbIcons.toArray();
+    JComboBox comboBox = new JComboBox(icons);
+    comboBox.setBackground(Color.WHITE);
+    return comboBox;
   }
 
   static JComboBox makeComboBox(String[] comboBoxItems) {
