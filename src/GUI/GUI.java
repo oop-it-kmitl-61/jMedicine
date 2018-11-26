@@ -54,49 +54,37 @@ import mdlaf.shadows.DropShadowBorder;
 
 
 /**
- * GUI class creates all graphic user interface, all in javax.swing.
- * Use a constructor to new a GUI.
+ * GUI class creates all graphic user interface, all in javax.swing. Use a constructor to new a
+ * GUI.
  *
  * @param windowSize a Dimension class consists of width and height.
  *
- * ===============================================
- * Main Structure
- * ===============================================
+ * =============================================== Main Structure ===============================================
  *
- * GUI.java
- * \_ GUI()         -> Init and setup
- * \_ initWelcome() -> Makes GUI when the user is not signed in.
- * \_ main()        -> Makes GUI after the user has signed in.
- *    \_ panelOverview()         -> Returns a panel that displays all overview cards.
- *    \  \_ makeOverviewCard()   -> Returns an overview card.
- *    \
- *    \_ panelAllMedicines()     -> Returns a panel that displays all user's medicines cards.
- *    \  \_ makeMedCard()        -> Returns a medicine card.
- *    \  \_ viewMedicine()       -> Returns a panel that displays a single medicine information.
- *    \  \_ addMedicine()        -> Returns a panel to add new medicine.
- *    \  \_ addMedGUI()          -> Makes UI to add new medicine, being used by initWelcome() and addMedicine().
- *    \  \_ COMING SOON          -> Returns a panel to edit an existed medicine.
- *    \
- *    \_ panelAllAppointments()  -> Returns a panel that displays all user's appointments cards.
- *    \  \_ makeAppointmentCard()-> Returns an appointment card.
- *    \  \_ viewAppointmentCard()-> Returns a panel that displays a single appointment information.
- *    \  \_ COMING SOON          -> Returns a panel to add new appointment.
- *    \  \_ COMING SOON          -> Returns a panel to edit an existed appointment.
- *    \
- *    \_ panelAllDoctors()       -> Returns a panel that displays all user's doctors cards.
- *    \  \_ makeDoctorCard()     -> Returns a doctor card.
- *    \  \_ viewDoctors()        -> Returns a panel that displays a single doctors information.
- *    \  \_ addDoctors()         -> Returns a panel to add new doctor.
- *    \  \_ COMING SOON          -> Returns a panel to edit an existed doctor.
- *    \
- *    \_ panelNearbyHospitals()  -> Returns a panel that displays Google Maps showing nearby hospitals.
- *    \_ panelSettings()         -> Returns a panel that displays user's settings.
- *    \  \_ COMING SOON          -> Returns a panel to edit user information.
- *    \_ makeLeftNavigation()    -> Returns a left navigation panel.
- *
+ * GUI.java \_ GUI()         -> Init and setup \_ initWelcome() -> Makes GUI when the user is not
+ * signed in. \_ main()        -> Makes GUI after the user has signed in. \_ panelOverview() ->
+ * Returns a panel that displays all overview cards. \  \_ makeOverviewCard()   -> Returns an
+ * overview card. \ \_ panelAllMedicines()     -> Returns a panel that displays all user's medicines
+ * cards. \  \_ makeMedCard()        -> Returns a medicine card. \  \_ viewMedicine()       ->
+ * Returns a panel that displays a single medicine information. \  \_ addMedicine()        ->
+ * Returns a panel to add new medicine. \  \_ addMedGUI()          -> Makes UI to add new medicine,
+ * being used by initWelcome() and addMedicine(). \  \_ COMING SOON          -> Returns a panel to
+ * edit an existed medicine. \ \_ panelAllAppointments()  -> Returns a panel that displays all
+ * user's appointments cards. \  \_ makeAppointmentCard()-> Returns an appointment card. \  \_
+ * viewAppointmentCard()-> Returns a panel that displays a single appointment information. \  \_
+ * COMING SOON          -> Returns a panel to add new appointment. \  \_ COMING SOON          ->
+ * Returns a panel to edit an existed appointment. \ \_ panelAllDoctors()       -> Returns a panel
+ * that displays all user's doctors cards. \  \_ makeDoctorCard()     -> Returns a doctor card. \ \_
+ * viewDoctors()        -> Returns a panel that displays a single doctors information. \  \_
+ * addDoctors()         -> Returns a panel to add new doctor. \  \_ COMING SOON          -> Returns
+ * a panel to edit an existed doctor. \ \_ panelNearbyHospitals()  -> Returns a panel that displays
+ * Google Maps showing nearby hospitals. \_ panelSettings()         -> Returns a panel that displays
+ * user's settings. \  \_ COMING SOON          -> Returns a panel to edit user information. \_
+ * makeLeftNavigation()    -> Returns a left navigation panel.
  */
 
 public class GUI implements ActionListener, KeyListener {
+
   private JFrame frameWelcome, frameMain;
   private JPanel panelLeft;
   private JPanel panelRight;
@@ -117,7 +105,7 @@ public class GUI implements ActionListener, KeyListener {
     this.medUtil = new MedicineUtil();
     this.windowSize = windowSize;
     this.minSize = new Dimension(800, 600);
-    this.locale = new Locale("th","TH");
+    this.locale = new Locale("th", "TH");
     mainBlue = new Color(20, 101, 155);
     JOptionPane.setDefaultLocale(locale);
     GUIHelper.setup();
@@ -184,9 +172,11 @@ public class GUI implements ActionListener, KeyListener {
     panelLoop = newPanelLoop();
     // TODO: Fetch these upcoming events from the database
     // Sample loop
-    cardLoop = makeOverviewCard("12.30 น. (อีก 1 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
+    cardLoop = makeOverviewCard("12.30 น. (อีก 1 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)",
+        "หลังอาหาร 1 เม็ด");
     panelLoop.add(cardLoop);
-    cardLoop = makeOverviewCard("18.30 น. (อีก 7 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)", "หลังอาหาร 1 เม็ด");
+    cardLoop = makeOverviewCard("18.30 น. (อีก 7 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)",
+        "หลังอาหาร 1 เม็ด");
     panelLoop.add(cardLoop);
     // End sample loop
 
@@ -334,7 +324,9 @@ public class GUI implements ActionListener, KeyListener {
       }
     });
     // Load URL that query the hospital around the current position
-    browser.loadURL("https://www.google.co.th/maps/search/hospitals/@"+location[0]+","+location[1]+",12z");
+    browser.loadURL(
+        "https://www.google.co.th/maps/search/hospitals/@" + location[0] + "," + location[1]
+            + ",12z");
 
     // Add all sub panels into the main panel
     panelSub05.add(panelTitle, BorderLayout.NORTH);
@@ -421,19 +413,23 @@ public class GUI implements ActionListener, KeyListener {
     // Listeners
     btnRemove.addActionListener(e -> {
       int dialogResult = 0;
-      JLabel labelConfirm = makeLabel("ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
+      JLabel labelConfirm = makeLabel(
+          "ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
       setPadding(labelConfirm, 0, 16, 0, 0);
 
       beep("warning");
       try {
         Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
         Icon icon = new ImageIcon(img);
-        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE,icon);
+        dialogResult = JOptionPane
+            .showConfirmDialog(null, labelConfirm, "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE, icon);
       } catch (Exception ignored) {
-        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION);
+        dialogResult = JOptionPane
+            .showConfirmDialog(null, labelConfirm, "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION);
       }
 
-      if(dialogResult == JOptionPane.YES_OPTION){
+      if (dialogResult == JOptionPane.YES_OPTION) {
         JLabel labelMessage;
         if (user.removeUserMedicine(medicine)) {
           labelMessage = getRemoveSuccessfulMessage("ยา");
@@ -450,9 +446,12 @@ public class GUI implements ActionListener, KeyListener {
           beep("success");
           Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
           Icon icon = new ImageIcon(img);
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE, icon);
+          JOptionPane
+              .showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE,
+                  icon);
         } catch (Exception ignored) {
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE);
+          JOptionPane
+              .showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE);
         }
       }
     });
@@ -476,8 +475,10 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(makeLabel("ชื่อยา: " + medName));
     panelSub.add(makeLabel("คำอธิบาย: " + medicine.getMedDescription()));
     panelSub.add(makeLabel("เวลาที่ต้องทาน: " + sbMedTime + " " + sbDoseStr));
-    panelSub.add(makeLabel("ขนาดรับประทาน: " + medicine.getMedDose() + " " + medicine.getMedUnit()));
-    panelSub.add(makeLabel("วันที่เพิ่มยา: " + GUIHelper.formatDMY.format(medicine.getDateAdded())));
+    panelSub
+        .add(makeLabel("ขนาดรับประทาน: " + medicine.getMedDose() + " " + medicine.getMedUnit()));
+    panelSub
+        .add(makeLabel("วันที่เพิ่มยา: " + GUIHelper.formatDMY.format(medicine.getDateAdded())));
     panelSub.add(makeLabel("จำนวนยาเริ่มต้น: " + medicine.getMedRemaining()));
     panelSub.add(makeLabel("จำนวนยาที่เหลือ: " + medicine.getMedRemaining()));
     panelSub.add(makeLabel("วันหมดอายุ: " + GUIHelper.formatDMY.format(medicine.getMedEXP())));
@@ -494,52 +495,267 @@ public class GUI implements ActionListener, KeyListener {
 
     // JPanels
     JPanel panelAddDoctor = new JPanel();
-    JPanel panelSub = new JPanel();
-    JPanel panelRow = new JPanel();
+    JPanel panelBody = new JPanel();
     panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มแพทย์ใหม่", "แพทย์");
     JButton btnAdd = makeButton("บันทึกแพทย์");
 
+    // JCheckBoxes
+    JCheckBox cbSunday = makeCheckBox("วันอาทิตย์");
+    JCheckBox cbMonday = makeCheckBox("วันจันทร์");
+    JCheckBox cbTuesday = makeCheckBox("วันอังคาร");
+    JCheckBox cbWednesday = makeCheckBox("วันพุธ");
+    JCheckBox cbThursday = makeCheckBox("วันพฤหัสบดี");
+    JCheckBox cbFriday = makeCheckBox("วันศุกร์");
+    JCheckBox cbSaturday = makeCheckBox("วันเสาร์");
+    JCheckBox[] checkBoxes = {cbSunday, cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday,
+        cbSaturday};
+
+    // TimePickers
+    TimePicker sundayStartPicker = new TimePicker();
+    TimePicker sundayEndPicker = new TimePicker();
+    TimePicker mondayStartPicker = new TimePicker();
+    TimePicker mondayEndPicker = new TimePicker();
+    TimePicker tuesStartPicker = new TimePicker();
+    TimePicker tuesEndPicker = new TimePicker();
+    TimePicker wedStartPicker = new TimePicker();
+    TimePicker wedEndPicker = new TimePicker();
+    TimePicker thurStartPicker = new TimePicker();
+    TimePicker thurEndPicker = new TimePicker();
+    TimePicker fridayStartPicker = new TimePicker();
+    TimePicker fridayEndPicker = new TimePicker();
+    TimePicker satStartPicker = new TimePicker();
+    TimePicker satEndPicker = new TimePicker();
+    TimePicker[] timePickers = {sundayStartPicker, sundayEndPicker, mondayStartPicker,
+        mondayEndPicker, tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker,
+        thurStartPicker, thurEndPicker, fridayStartPicker, fridayEndPicker, satStartPicker,
+        satEndPicker};
+
+    // JLabels
+    JLabel sundayStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel sundayEndLabel = makeLabel("จนถึงเวลา");
+    JLabel mondayStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel mondayEndLabel = makeLabel("จนถึงเวลา");
+    JLabel tuesStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel tuesEndLabel = makeLabel("จนถึงเวลา");
+    JLabel wedStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel wedEndLabel = makeLabel("จนถึงเวลา");
+    JLabel thurStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel thurEndLabel = makeLabel("จนถึงเวลา");
+    JLabel fridayStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel fridayEndLabel = makeLabel("จนถึงเวลา");
+    JLabel satStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel satEndLabel = makeLabel("จนถึงเวลา");
+    JLabel[] labels = {sundayStartLabel, sundayEndLabel, mondayStartLabel, mondayEndLabel,
+        tuesStartLabel, tuesEndLabel, wedStartLabel, wedEndLabel, thurStartLabel, thurEndLabel,
+        fridayStartLabel, fridayEndLabel, satStartLabel, satEndLabel};
+
     // Styling
-    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
     setPadding(panelTitle, 0, 0, 20);
-    setPadding(panelSub, 0, 120, 40);
+    setPadding(panelBody, 0, 120, 40);
+    for (JLabel label : labels) {
+      label.setVisible(false);
+    }
+    for (TimePicker tp : timePickers) {
+      tp.setVisible(false);
+    }
+
+    // Listeners
+    cbSunday.addActionListener(e -> {
+      if (cbSunday.isSelected()) {
+        sundayStartLabel.setVisible(true);
+        sundayEndLabel.setVisible(true);
+        sundayStartPicker.setVisible(true);
+        sundayEndPicker.setVisible(true);
+      } else {
+        sundayStartLabel.setVisible(false);
+        sundayEndLabel.setVisible(false);
+        sundayStartPicker.setVisible(false);
+        sundayEndPicker.setVisible(false);
+      }
+    });
+
+    cbMonday.addActionListener(e -> {
+      if (cbMonday.isSelected()) {
+        mondayStartLabel.setVisible(true);
+        mondayEndLabel.setVisible(true);
+        mondayStartPicker.setVisible(true);
+        mondayEndPicker.setVisible(true);
+      } else {
+        mondayStartLabel.setVisible(false);
+        mondayEndLabel.setVisible(false);
+        mondayStartPicker.setVisible(false);
+        mondayEndPicker.setVisible(false);
+      }
+    });
+
+    cbTuesday.addActionListener(e -> {
+      if (cbTuesday.isSelected()) {
+        tuesStartLabel.setVisible(true);
+        tuesEndLabel.setVisible(true);
+        tuesStartPicker.setVisible(true);
+        tuesEndPicker.setVisible(true);
+      } else {
+        tuesStartLabel.setVisible(false);
+        tuesEndLabel.setVisible(false);
+        tuesStartPicker.setVisible(false);
+        tuesEndPicker.setVisible(false);
+      }
+    });
+
+    cbWednesday.addActionListener(e -> {
+      if (cbWednesday.isSelected()) {
+        wedStartLabel.setVisible(true);
+        wedEndLabel.setVisible(true);
+        wedStartPicker.setVisible(true);
+        wedEndPicker.setVisible(true);
+      } else {
+        wedStartLabel.setVisible(false);
+        wedEndLabel.setVisible(false);
+        wedStartPicker.setVisible(false);
+        wedEndPicker.setVisible(false);
+      }
+    });
+
+    cbThursday.addActionListener(e -> {
+      if (cbThursday.isSelected()) {
+        thurStartLabel.setVisible(true);
+        thurEndLabel.setVisible(true);
+        thurStartPicker.setVisible(true);
+        thurEndPicker.setVisible(true);
+      } else {
+        thurStartLabel.setVisible(false);
+        thurEndLabel.setVisible(false);
+        thurStartPicker.setVisible(false);
+        thurEndPicker.setVisible(false);
+      }
+    });
+
+    cbFriday.addActionListener(e -> {
+      if (cbFriday.isSelected()) {
+        fridayStartLabel.setVisible(true);
+        fridayEndLabel.setVisible(true);
+        fridayStartPicker.setVisible(true);
+        fridayEndPicker.setVisible(true);
+      } else {
+        fridayStartLabel.setVisible(false);
+        fridayEndLabel.setVisible(false);
+        fridayStartPicker.setVisible(false);
+        fridayEndPicker.setVisible(false);
+      }
+    });
+
+    cbSaturday.addActionListener(e -> {
+      if (cbSaturday.isSelected()) {
+        satStartLabel.setVisible(true);
+        satEndLabel.setVisible(true);
+        satStartPicker.setVisible(true);
+        satEndPicker.setVisible(true);
+      } else {
+        satStartLabel.setVisible(false);
+        satEndLabel.setVisible(false);
+        satStartPicker.setVisible(false);
+        satEndPicker.setVisible(false);
+      }
+    });
 
     JTextField tfDoctorName = makeTextField(20);
     JTextField tfDoctorSurName = makeTextField(20);
-    JTextField tfDoctorWard = makeTextField(20);
-    JTextField tfDoctorHospital = makeTextField(40);
+    JTextField tfDoctorWard = makeTextField(16);
+    JTextField tfDoctorHospital = makeTextField(18);
     String[] prefixes = {"นพ.", "พญ.", "ศ.นพ", "ผศ.นพ"};
     JComboBox cbPrefix = makeComboBox(prefixes);
-    //TODO: ทำให้เพิ่มวันและเวลาที่แพทย์เข้าตรวจได้
-    //แนวคิด: ทำ JCheckBox ให้ครบทุกวัน (จันทร์-เสาร์) ให้ติ๊กเลือก ถ้าติ๊กช่องไหนก็ใส่เวลาลง textfield ของวันนั้นเข้าไปด้วย
 
     panelTitle.add(btnBack);
 
-    panelRow.add(makeLabel("คำนำหน้า"));
-    panelRow.add(cbPrefix);
-    panelRow.add(makeLabel("ชื่อ"));
-    panelRow.add(tfDoctorName);
-    panelRow.add(makeLabel("นามสกุล"));
-    panelRow.add(tfDoctorSurName);
-    panelSub.add(panelRow);
+    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("คำนำหน้า"));
+    panelSub.add(cbPrefix);
+    panelBody.add(panelSub);
 
-    panelRow = new JPanel();
-    panelRow.add(makeLabel("แผนก"));
-    panelRow.add(tfDoctorWard);
-    panelSub.add(panelRow);
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("ชื่อ"));
+    panelSub.add(tfDoctorName);
+    panelSub.add(makeLabel("นามสกุล"));
+    panelSub.add(tfDoctorSurName);
+    panelBody.add(panelSub);
 
-    panelRow = new JPanel();
-    panelRow.add(makeLabel("ชื่อสถานพยาบาล"));
-    panelRow.add(tfDoctorHospital);
-    panelSub.add(panelRow);
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("แผนก"));
+    panelSub.add(tfDoctorWard);
+    panelSub.add(makeLabel("ชื่อสถานพยาบาล"));
+    panelSub.add(tfDoctorHospital);
+    panelBody.add(panelSub);
 
-    panelSub.add(btnAdd);
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("วันและเวลาที่เข้าตรวจ"));
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbSunday);
+    panelSub.add(sundayStartLabel);
+    panelSub.add(sundayStartPicker);
+    panelSub.add(sundayEndLabel);
+    panelSub.add(sundayEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbMonday);
+    panelSub.add(mondayStartLabel);
+    panelSub.add(mondayStartPicker);
+    panelSub.add(mondayEndLabel);
+    panelSub.add(mondayEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbTuesday);
+    panelSub.add(tuesStartLabel);
+    panelSub.add(tuesStartPicker);
+    panelSub.add(tuesEndLabel);
+    panelSub.add(tuesEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbWednesday);
+    panelSub.add(wedStartLabel);
+    panelSub.add(wedStartPicker);
+    panelSub.add(wedEndLabel);
+    panelSub.add(wedEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbThursday);
+    panelSub.add(thurStartLabel);
+    panelSub.add(thurStartPicker);
+    panelSub.add(thurEndLabel);
+    panelSub.add(thurEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbFriday);
+    panelSub.add(fridayStartLabel);
+    panelSub.add(fridayStartPicker);
+    panelSub.add(fridayEndLabel);
+    panelSub.add(fridayEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbSaturday);
+    panelSub.add(satStartLabel);
+    panelSub.add(satStartPicker);
+    panelSub.add(satEndLabel);
+    panelSub.add(satEndPicker);
+    panelBody.add(panelSub);
+
+    //TODO:JScrollPane bug
+    JScrollPane scrollPane = new JScrollPane(panelBody);
+    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
     panelAddDoctor.add(panelTitle, BorderLayout.NORTH);
-    panelAddDoctor.add(panelSub, BorderLayout.CENTER);
+    panelAddDoctor.add(scrollPane, BorderLayout.CENTER);
     panelAddDoctor.add(btnAdd, BorderLayout.SOUTH);
 
     return panelAddDoctor;
@@ -565,23 +781,25 @@ public class GUI implements ActionListener, KeyListener {
     setPadding(panelSub, 0, 0, 0, 65);
     setPadding(panelView, 0, 0, 0, -20);
 
-
     // Listeners
     btnRemove.addActionListener(e -> {
-      JLabel labelConfirm = makeLabel("ต้องการลบแพทย์คนนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
-      setPadding(labelConfirm, 0, 16, 0 ,0);
+      JLabel labelConfirm = makeLabel(
+          "ต้องการลบแพทย์คนนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
+      setPadding(labelConfirm, 0, 16, 0, 0);
       int dialogResult = 0;
 
       beep("warning");
       try {
         Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
         Icon icon = new ImageIcon(img);
-        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบแพทย์", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, icon);
+        dialogResult = JOptionPane.showConfirmDialog(null, labelConfirm, "คุณกำลังทำการลบแพทย์",
+            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, icon);
       } catch (Exception ignored) {
-        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบแพทย์", JOptionPane.YES_NO_OPTION);
+        dialogResult = JOptionPane.showConfirmDialog(null, labelConfirm, "คุณกำลังทำการลบแพทย์",
+            JOptionPane.YES_NO_OPTION);
       }
 
-      if(dialogResult == JOptionPane.YES_OPTION){
+      if (dialogResult == JOptionPane.YES_OPTION) {
         JLabel labelMessage;
         if (user.removeUserDoctor(doctor)) {
           labelMessage = getRemoveSuccessfulMessage("แพทย์");
@@ -597,9 +815,11 @@ public class GUI implements ActionListener, KeyListener {
         try {
           Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
           Icon icon = new ImageIcon(img);
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์", JOptionPane.INFORMATION_MESSAGE, icon);
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์",
+              JOptionPane.INFORMATION_MESSAGE, icon);
         } catch (Exception ignored) {
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์", JOptionPane.INFORMATION_MESSAGE);
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์",
+              JOptionPane.INFORMATION_MESSAGE);
         }
       }
     });
@@ -611,7 +831,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(makeLabel("เวลาเข้าตรวจ:"));
 
     // WorkTime is an ArrayList, convert it to a printable format
-    for (String workTime:doctor.getWorkTime()) {
+    for (String workTime : doctor.getWorkTime()) {
       JLabel labelWorkTime = makeLabel(workTime);
       setPadding(labelWorkTime, 0, 20);
       panelSub.add(labelWorkTime);
@@ -654,20 +874,23 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnRemove.addActionListener(e -> {
-      JLabel labelConfirm = makeLabel("ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
-      setPadding(labelConfirm, 0, 16, 0 ,0);
+      JLabel labelConfirm = makeLabel(
+          "ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
+      setPadding(labelConfirm, 0, 16, 0, 0);
       int dialogResult = 0;
 
       beep("warning");
       try {
         Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
         Icon icon = new ImageIcon(img);
-        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบนัดแพทย์", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, icon);
+        dialogResult = JOptionPane.showConfirmDialog(null, labelConfirm, "คุณกำลังทำการลบนัดแพทย์",
+            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, icon);
       } catch (Exception ignored) {
-        dialogResult = JOptionPane.showConfirmDialog (null, labelConfirm, "คุณกำลังทำการลบนัดแพทย์", JOptionPane.YES_NO_OPTION);
+        dialogResult = JOptionPane.showConfirmDialog(null, labelConfirm, "คุณกำลังทำการลบนัดแพทย์",
+            JOptionPane.YES_NO_OPTION);
       }
 
-      if(dialogResult == JOptionPane.YES_OPTION){
+      if (dialogResult == JOptionPane.YES_OPTION) {
         JLabel labelMessage;
         if (user.removeUserAppointment(appointment)) {
           labelMessage = getRemoveSuccessfulMessage("นัดแพทย์");
@@ -683,9 +906,11 @@ public class GUI implements ActionListener, KeyListener {
         try {
           Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
           Icon icon = new ImageIcon(img);
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์", JOptionPane.INFORMATION_MESSAGE, icon);
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์",
+              JOptionPane.INFORMATION_MESSAGE, icon);
         } catch (Exception ignored) {
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์", JOptionPane.INFORMATION_MESSAGE);
+          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์",
+              JOptionPane.INFORMATION_MESSAGE);
         }
       }
     });
@@ -694,7 +919,7 @@ public class GUI implements ActionListener, KeyListener {
     Browser browser = new Browser();
     BrowserView view = new BrowserView(browser);
     // Load URL that query the hospital around the current position
-    browser.loadURL("https://www.google.co.th/maps/search/"+ appointment.getHospitalName());
+    browser.loadURL("https://www.google.co.th/maps/search/" + appointment.getHospitalName());
 
     panelTitle.add(btnBack);
     panelSub.add(makeLabel("แพทย์ผู้นัด: " + doctorName));
@@ -950,7 +1175,7 @@ public class GUI implements ActionListener, KeyListener {
 
   private void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
-    buttons = new JButton[] {
+    buttons = new JButton[]{
         makeLeftNavigationButton("ภาพรวม"),
         makeLeftNavigationButton("ยาทั้งหมด"),
         makeLeftNavigationButton("นัดแพทย์"),
@@ -972,7 +1197,7 @@ public class GUI implements ActionListener, KeyListener {
     gbc.gridx = 0;
 
     int tempCount = 0;
-    for(JButton button: buttons){
+    for (JButton button : buttons) {
       button.setHorizontalAlignment(SwingConstants.LEFT);
       paintButton();
       if (tempCount == 0) {
@@ -980,7 +1205,7 @@ public class GUI implements ActionListener, KeyListener {
       }
       // Switch between sub panels
       button.addActionListener(e -> {
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        CardLayout cl = (CardLayout) (panelRight.getLayout());
         cl.show(panelRight, e.getActionCommand());
         paintButton();
         if (e.getActionCommand().equals(button.getText())) {
@@ -1047,23 +1272,21 @@ public class GUI implements ActionListener, KeyListener {
 
   private void makeLabelClickable(JLabel label, String href) {
     /* Works like <a> */
-    label.addMouseListener(new MouseAdapter()
-    {
-      public void mouseClicked(MouseEvent e)
-      {
-        if (href.equals("ลงทะเบียน") || href.equals("ยังไม่ได้เข้าสู่ระบบ") ) {
+    label.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (href.equals("ลงทะเบียน") || href.equals("ยังไม่ได้เข้าสู่ระบบ")) {
           if (frameWelcome == null) {
             initWelcome();
           }
           frameWelcome.setVisible(true);
-          CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+          CardLayout cl = (CardLayout) (panelWelcome.getLayout());
           cl.show(panelWelcome, href);
           try {
             frameMain.setVisible(false);
           } catch (NullPointerException ignored) {
           }
         } else {
-          CardLayout cl = (CardLayout)(panelRight.getLayout());
+          CardLayout cl = (CardLayout) (panelRight.getLayout());
           cl.show(panelRight, href);
         }
       }
@@ -1078,7 +1301,8 @@ public class GUI implements ActionListener, KeyListener {
     try {
       Image img = ImageIO.read(new File("src/GUI/img/back.png"));
       button.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) { }
+    } catch (Exception ignored) {
+    }
     button.setOpaque(false);
     button.setContentAreaFilled(false);
     button.setBorderPainted(false);
@@ -1098,12 +1322,13 @@ public class GUI implements ActionListener, KeyListener {
     try {
       Image img = ImageIO.read(new File("src/GUI/img/add.png"));
       btnNew.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) { }
+    } catch (Exception ignored) {
+    }
     btnNew.setAlignmentX(Component.LEFT_ALIGNMENT);
     btnNew.setHorizontalAlignment(SwingConstants.LEFT);
     btnNew.setFont(new Font("TH Sarabun New", Font.BOLD, 28));
     btnNew.addActionListener(e -> {
-      CardLayout cl = (CardLayout)(panelRight.getLayout());
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
       cl.show(panelRight, e.getActionCommand());
     });
     btnNew.setOpaque(false);
@@ -1118,10 +1343,10 @@ public class GUI implements ActionListener, KeyListener {
   private void backTo(String backTo) {
     /* Navigates user back to some page */
     if (backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
-      CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+      CardLayout cl = (CardLayout) (panelWelcome.getLayout());
       cl.show(panelWelcome, "ยังไม่ได้เข้าสู่ระบบ");
     } else {
-      CardLayout cl = (CardLayout)(panelRight.getLayout());
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
       cl.show(panelRight, backTo);
     }
   }
@@ -1129,9 +1354,11 @@ public class GUI implements ActionListener, KeyListener {
   private JPanel makeMedCard(Medicine medicine) {
     /* Creates a card that will be used on the All medicines panel only. */
     Date medEXP = medicine.getMedEXP();
-    String medTitle = medicine.getMedName()+" ("+medicine.getMedDescription()+")";
-    String medShortInfo = "เหลืออยู่ "+medicine.getMedRemaining()+" "+medicine.getMedUnit()+" หมดอายุ "+GUIHelper.formatDMY
-        .format(medEXP);
+    String medTitle = medicine.getMedName() + " (" + medicine.getMedDescription() + ")";
+    String medShortInfo =
+        "เหลืออยู่ " + medicine.getMedRemaining() + " " + medicine.getMedUnit() + " หมดอายุ "
+            + GUIHelper.formatDMY
+            .format(medEXP);
     JLabel labelTitle = makeBoldLabel(medTitle);
     JLabel labelShortInfo = makeLabel(medShortInfo);
     JLabel labelPic = medUtil.getMedIcon(medicine);
@@ -1156,12 +1383,10 @@ public class GUI implements ActionListener, KeyListener {
     panelLoopInfo.add(panelInfo);
     panelLoopInfo.add(Box.createHorizontalGlue());
 
-    panelLoopInfo.addMouseListener(new MouseAdapter()
-    {
-      public void mouseClicked(MouseEvent e)
-      {
+    panelLoopInfo.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
         panelRight.add(panelViewMedicine(medicine), medicine.getMedName());
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        CardLayout cl = (CardLayout) (panelRight.getLayout());
         cl.show(panelRight, medicine.getMedName());
       }
     });
@@ -1189,7 +1414,8 @@ public class GUI implements ActionListener, KeyListener {
     try {
       Image img = ImageIO.read(new File("src/GUI/img/doctor.png"));
       labelPic.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) { }
+    } catch (Exception ignored) {
+    }
 
     panelPic.add(labelPic);
     panelInfo.add(labelTitle);
@@ -1202,12 +1428,10 @@ public class GUI implements ActionListener, KeyListener {
     panelLoopInfo.add(panelInfo);
     panelLoopInfo.add(Box.createHorizontalGlue());
 
-    panelLoopInfo.addMouseListener(new MouseAdapter()
-    {
-      public void mouseClicked(MouseEvent e)
-      {
+    panelLoopInfo.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
         panelRight.add(panelViewDoctor(doctor), doctor.getName());
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        CardLayout cl = (CardLayout) (panelRight.getLayout());
         cl.show(panelRight, doctor.getName());
       }
     });
@@ -1225,7 +1449,8 @@ public class GUI implements ActionListener, KeyListener {
     Doctor appDr = appointment.getDoctor();
 
     String title = date + " เวลา " + timeStart + " น. - " + timeEnd + " น.";
-    String shortInfo = appDr.getPrefix() + " " + appDr.getName() + " " + appointment.getHospitalName();
+    String shortInfo =
+        appDr.getPrefix() + " " + appDr.getName() + " " + appointment.getHospitalName();
 
     JLabel labelTitle = makeBoldLabel(title);
     JLabel labelShortInfo = makeLabel(shortInfo);
@@ -1243,7 +1468,8 @@ public class GUI implements ActionListener, KeyListener {
     try {
       Image img = ImageIO.read(new File("src/GUI/img/calendar.png"));
       labelPic.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) { }
+    } catch (Exception ignored) {
+    }
 
     panelPic.add(labelPic);
     panelInfo.add(labelTitle);
@@ -1256,12 +1482,10 @@ public class GUI implements ActionListener, KeyListener {
     panelLoopInfo.add(panelInfo);
     panelLoopInfo.add(Box.createHorizontalGlue());
 
-    panelLoopInfo.addMouseListener(new MouseAdapter()
-    {
-      public void mouseClicked(MouseEvent e)
-      {
+    panelLoopInfo.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
         panelRight.add(panelViewAppointment(appointment), title);
-        CardLayout cl = (CardLayout)(panelRight.getLayout());
+        CardLayout cl = (CardLayout) (panelRight.getLayout());
         cl.show(panelRight, title);
       }
     });
@@ -1404,10 +1628,10 @@ public class GUI implements ActionListener, KeyListener {
               frameWelcome.setVisible(false);
               frameMain.setVisible(true);
               frameWelcome = null;
-              CardLayout cl = (CardLayout)(panelRight.getLayout());
+              CardLayout cl = (CardLayout) (panelRight.getLayout());
               cl.show(panelRight, "ภาพรวม");
             } else {
-              CardLayout cl = (CardLayout)(panelWelcome.getLayout());
+              CardLayout cl = (CardLayout) (panelWelcome.getLayout());
               cl.show(panelWelcome, "เพิ่มยาตัวแรก");
             }
           }
@@ -1425,7 +1649,7 @@ public class GUI implements ActionListener, KeyListener {
       case "บันทึกยา":
       case "ข้ามขั้นตอนนี้":
         if (frameWelcome == null) {
-          CardLayout cl = (CardLayout)(panelRight.getLayout());
+          CardLayout cl = (CardLayout) (panelRight.getLayout());
           cl.show(panelRight, "ยาทั้งหมด");
         } else {
           frameWelcome.setVisible(false);
@@ -1472,7 +1696,8 @@ public class GUI implements ActionListener, KeyListener {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    Medicine prednisolone = new Medicine("Prednisolone", "tablet", "white", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 20, dateEXP);
+    Medicine prednisolone = new Medicine("Prednisolone", "tablet", "white", "ยาแก้อักเสบ",
+        sampleMedTime, sampleMedDoseStr, 1, 20, dateEXP);
     user.addUserMedicine(prednisolone);
   }
 
@@ -1487,7 +1712,8 @@ public class GUI implements ActionListener, KeyListener {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    Medicine chlopheniramine = new Medicine("Chlopheniramine", "tablet", "yellow", "ยาแก้แพ้", sampleMedTime, sampleMedDoseStr, 1, 50, dateEXP);
+    Medicine chlopheniramine = new Medicine("Chlopheniramine", "tablet", "yellow", "ยาแก้แพ้",
+        sampleMedTime, sampleMedDoseStr, 1, 50, dateEXP);
     user.addUserMedicine(chlopheniramine);
   }
 
@@ -1502,7 +1728,8 @@ public class GUI implements ActionListener, KeyListener {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "", "ยาแก้อักเสบ", sampleMedTime, sampleMedDoseStr, 1, 7, dateEXP);
+    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "", "ยาแก้อักเสบ", sampleMedTime,
+        sampleMedDoseStr, 1, 7, dateEXP);
     user.addUserMedicine(amoxicillin);
   }
 
