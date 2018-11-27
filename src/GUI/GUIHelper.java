@@ -43,12 +43,12 @@ import mdlaf.utils.MaterialColors;
 
 public class GUIHelper {
 
-  static DateFormat formatHM = new SimpleDateFormat("HH.mm");
-  static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
-  static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy",
+  public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
+  public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
+  public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy",
       new Locale("th", "TH"));
   public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
-  static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm",
+  public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm",
       new Locale("th", "TH"));
 
   public static String imgPath = "src/GUI/img";
