@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class AppointmentDB {
 
   private static Connection connection;
-  private static DateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss");
+  private static DateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
   static {
     try {
