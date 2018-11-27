@@ -2,6 +2,7 @@ package api;
 
 import static api.MedicineDB.getAllMedicine;
 import static api.DoctorDB.getAllDoctor;
+import static api.AppointmentDB.getAllAppointment;
 import static core.Utils.sha256;
 
 import core.Database;
@@ -11,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 
 
 public class Login {
@@ -27,7 +29,7 @@ public class Login {
 
 
   public static User doSignIn(String username, char[] password)
-      throws NoSuchAlgorithmException, SQLException, LoginException {
+      throws NoSuchAlgorithmException, SQLException, LoginException, ParseException {
     String encrypted = sha256(String.valueOf(password));
 
     String SQLCommand = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -46,6 +48,7 @@ public class Login {
 
       user.setUserMedicines(getAllMedicine(user.getUserId()));
       user.setUserDoctors(getAllDoctor(user.getUserId()));
+      user.setUserAppointments(getAllAppointment(user.getUserId()));
 
       return user;
     }
