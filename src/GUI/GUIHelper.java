@@ -47,7 +47,7 @@ public class GUIHelper {
   static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
   static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy",
       new Locale("th", "TH"));
-  static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
+  public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
   static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm",
       new Locale("th", "TH"));
 

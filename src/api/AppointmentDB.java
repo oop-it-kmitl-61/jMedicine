@@ -1,5 +1,6 @@
 package api;
 
+import static GUI.GUIHelper.formatDMYHM;
 import static api.DoctorDB.getDoctorInfo;
 
 import core.Appointment;
@@ -10,9 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 public class AppointmentDB {
 
   private static Connection connection;
-  private static DateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
   static {
     try {
@@ -47,8 +45,8 @@ public class AppointmentDB {
       ArrayList<String> time = Arrays.stream((Object[]) result.getArray("time").getArray())
           .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
 
-      Date timeStart = dateFormatter.parse(time.get(0));
-      Date timeEnd = dateFormatter.parse(time.get(1));
+      Date timeStart = formatDMYHM.parse(time.get(0));
+      Date timeEnd = formatDMYHM.parse(time.get(1));
       Doctor doctor = getDoctorInfo(result.getString("doctor"));
 
       results.add(
