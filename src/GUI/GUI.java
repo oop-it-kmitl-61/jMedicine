@@ -4,6 +4,7 @@ import static GUI.GUIHelper.*;
 import static api.Login.*;
 
 import api.LoginException;
+import api.MedicineDB;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
@@ -28,7 +29,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -39,9 +39,8 @@ import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import javax.imageio.ImageIO;
@@ -132,7 +131,7 @@ public class GUI implements ActionListener, KeyListener {
      */
 
     // Init title panel displaying title label
-    panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelTitle = newFlowLayout();
     String today = GUIHelper.formatDMYFull.format(new Date());
     panelTitle.add(makeTitleLabel(today));
     setPadding(panelTitle, 0, 0, 0, 2);
@@ -285,12 +284,7 @@ public class GUI implements ActionListener, KeyListener {
     Browser browser = new Browser();
     BrowserView view = new BrowserView(browser);
     // Try to grant the geolocation permission
-    browser.setPermissionHandler(new PermissionHandler() {
-      @Override
-      public PermissionStatus onRequestPermission(PermissionRequest request) {
-        return PermissionStatus.GRANTED;
-      }
-    });
+    browser.setPermissionHandler(request -> PermissionStatus.GRANTED);
     // Load URL that query the hospital around the current position
     browser.loadURL(
         "https://www.google.co.th/maps/search/hospitals/@" + location[0] + "," + location[1]
@@ -329,39 +323,39 @@ public class GUI implements ActionListener, KeyListener {
 
     makeLabelClickable(labelSignOut, "ยังไม่ได้เข้าสู่ระบบ");
 
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ผู้ใช้งานปัจจุบัน"));
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelUserName);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ตั้งค่าผู้ใช้งาน"));
     panelBody.add(panelSub);
 
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelEdit);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelSignOut);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ตั้งค่าโปรแกรม"));
     panelBody.add(panelSub);
 
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(toggleNoti);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("เวอร์ชั่น 0.6.3"));
     panelBody.add(panelSub);
 
@@ -406,15 +400,15 @@ public class GUI implements ActionListener, KeyListener {
     JPanel panelBody = new JPanel();
     JPanel panelButtons = new JPanel(new BorderLayout());
     panelTitle = new JPanel(new BorderLayout());
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelSubMorning = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelSubAfternoon = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelSubEvening = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelSubBed = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelTabletColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelCapsuleColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelLiquidColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
+    JPanel panelSubMorning = newFlowLayout();
+    JPanel panelSubAfternoon = newFlowLayout();
+    JPanel panelSubEvening = newFlowLayout();
+    JPanel panelSubBed = newFlowLayout();
+    JPanel panelColor = newFlowLayout();
+    JPanel panelTabletColor = newFlowLayout();
+    JPanel panelCapsuleColor = newFlowLayout();
+    JPanel panelLiquidColor = newFlowLayout();
 
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขยา", medicine.getMedName());
@@ -574,11 +568,8 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnSave.addActionListener(e -> {
-      panelRight.remove(panelViewMedicine(medicine));
-      panelRight.add(panelViewMedicine(medicine), medicine.getMedName());
-      CardLayout cl = (CardLayout) (panelRight.getLayout());
-      cl.show(panelRight, medicine.getMedName());
-      panelRight.remove(panelEditMedicine(medicine));
+      saveSwitcher(panelRight, panelEditMedicine(medicine), panelViewMedicine(medicine),
+          medicine.getMedName());
     });
     medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
         labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
@@ -614,7 +605,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(btnBack);
     panelTitle.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("ชื่อยา"));
     panelSub.add(tfMedName);
     panelSub.add(makeLabel("ประเภท"));
@@ -636,16 +627,16 @@ public class GUI implements ActionListener, KeyListener {
     panelLiquidColor.add(cbLiquidColor);
     panelBody.add(panelLiquidColor);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("คำอธิบายยา (เช่น ยาแก้ปวด)"));
     panelSub.add(tfMedDescription);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("เวลาที่ต้องรับประทาน"));
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbMorning);
     panelSubMorning.add(rbMorningBefore);
     panelSubMorning.add(rbMorningAfter);
@@ -656,7 +647,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(panelSubMorning);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbAfternoon);
     panelSubAfternoon.add(rbAfternoonBefore);
     panelSubAfternoon.add(rbAfternoonAfter);
@@ -667,7 +658,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(panelSubAfternoon);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbEvening);
     panelSubEvening.add(rbEveningBefore);
     panelSubEvening.add(rbEveningAfter);
@@ -678,7 +669,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(panelSubEvening);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbBed);
     panelSubBed.add(makeLabel("จำนวน"));
     panelSubBed.add(tfAmountBed);
@@ -686,13 +677,13 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(panelSubBed);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
     panelSub.add(tfTotalMeds);
     panelSub.add(labelUnit);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("วันหมดอายุ"));
     panelSub.add(tfMedEXP);
     panelBody.add(panelSub);
@@ -709,71 +700,6 @@ public class GUI implements ActionListener, KeyListener {
     panelEditMed.add(scrollPane, BorderLayout.CENTER);
     panelEditMed.add(panelButtons, BorderLayout.SOUTH);
     return panelEditMed;
-  }
-
-  private void medTimeRadioHandler(Medicine medicine, JRadioButton rbMorningBefore,
-      JRadioButton rbMorningAfter, int i) {
-    if (medicine.getMedDoseStr().get(i).equals("ก่อนอาหาร")) {
-      rbMorningBefore.setSelected(true);
-    } else if (medicine.getMedDoseStr().get(i).equals("หลังอาหาร")) {
-      rbMorningAfter.setSelected(true);
-    } else {
-      rbMorningBefore.setSelected(true);
-    }
-  }
-
-  private void medTypeUIHandler(JPanel panelColor, JPanel panelTabletColor,
-      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit, JLabel labelUnitMorning,
-      JLabel labelUnitAfternoon, JLabel labelUnitEvening, JLabel labelUnitBed,
-      JComboBox cbMedType) {
-    cbMedType.addActionListener(e -> {
-      switch (cbMedType.getSelectedIndex()) {
-        case 0:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(true);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(false);
-          labelUnit.setText("เม็ด");
-          labelUnitMorning.setText("เม็ด");
-          labelUnitAfternoon.setText("เม็ด");
-          labelUnitEvening.setText("เม็ด");
-          labelUnitBed.setText("เม็ด");
-          break;
-        case 1:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(true);
-          panelLiquidColor.setVisible(false);
-          labelUnit.setText("แคปซูล");
-          labelUnitMorning.setText("แคปซูล");
-          labelUnitAfternoon.setText("แคปซูล");
-          labelUnitEvening.setText("แคปซูล");
-          labelUnitBed.setText("แคปซูล");
-          break;
-        case 2:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(true);
-          labelUnit.setText("มิลลิลิตร");
-          labelUnitMorning.setText("มิลลิลิตร");
-          labelUnitAfternoon.setText("มิลลิลิตร");
-          labelUnitEvening.setText("มิลลิลิตร");
-          labelUnitBed.setText("มิลลิลิตร");
-          break;
-        default:
-          panelColor.setVisible(false);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(false);
-          labelUnit.setText("cc");
-          labelUnitMorning.setText("cc");
-          labelUnitAfternoon.setText("cc");
-          labelUnitEvening.setText("cc");
-          labelUnitBed.setText("cc");
-          break;
-      }
-    });
   }
 
   private JPanel panelViewMedicine(Medicine medicine) {
@@ -804,9 +730,7 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnEdit.addActionListener(e -> {
-      panelRight.add(panelEditMedicine(medicine), "แก้ไขยา");
-      CardLayout cl = (CardLayout) (panelRight.getLayout());
-      cl.show(panelRight, "แก้ไขยา");
+      editSwitcher(panelRight, panelEditMedicine(medicine));
     });
     btnRemove.addActionListener(e -> {
       int dialogResult = 0;
@@ -827,77 +751,66 @@ public class GUI implements ActionListener, KeyListener {
       }
 
       if (dialogResult == JOptionPane.YES_OPTION) {
-        JLabel labelMessage;
+        String labelMessage;
         if (user.removeUserMedicine(medicine)) {
           labelMessage = getRemoveSuccessfulMessage("ยา");
         } else {
           labelMessage = getRemoveFailedMessage("ยา");
         }
-        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllMedicines());
         panelSub02 = null;
         panelSub02 = new JPanel(new BorderLayout());
         panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
         backTo("ยาทั้งหมด");
-        try {
-          beep("success");
-          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
-          Icon icon = new ImageIcon(img);
-          JOptionPane
-              .showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE,
-                  icon);
-        } catch (Exception ignored) {
-          JOptionPane
-              .showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE);
-        }
+        fireSuccessDialog(labelMessage);
       }
     });
 
     panelTitle.add(labelTitle);
     panelTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ลักษณะยา"));
     panelBody.add(panelSub);
 
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelPic);
     setPadding(panelSub, 6, 0, 10);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ข้อมูลพื้นฐาน"));
     panelBody.add(panelSub);
 
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ชื่อยา: "));
     panelSub.add(makeLabel(medName));
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("คำอธิบาย: "));
     panelSub.add(makeLabel(medicine.getMedDescription()));
     setPadding(panelSub, -10, 0, 0);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("จำนวนยาที่เหลือ: "));
     panelSub.add(makeLabel(String.valueOf(medicine.getMedRemaining())));
     setPadding(panelSub, -10, 0, 10);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("เวลาที่ต้องรับประทาน"));
     panelBody.add(panelSub);
 
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
     for (int i = 0; i < medicine.getMedTime().size(); i++) {
-      panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+      panelSub = newFlowLayout();
       JLabel labelMedTime = makeLabel(medicine.getMedTime().get(i));
       JLabel labelMedDoseStr = makeLabel(medicine.getMedDoseStr().get(i));
       panelSub.add(labelMedDoseStr);
@@ -907,26 +820,26 @@ public class GUI implements ActionListener, KeyListener {
       panelBody.add(panelSub);
     }
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ข้อมูลอื่น ๆ"));
     setPadding(panelSub, 20, 0, 0);
     panelBody.add(panelSub);
 
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("วันที่เพิ่มยา: "));
     panelSub.add(makeLabel(GUIHelper.formatDMY.format(medicine.getDateAdded())));
     setPadding(panelSub, 0, 0, -10);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("จำนวนยาเริ่มต้น: "));
     panelSub.add(makeLabel(String.valueOf(medicine.getMedTotal())));
     setPadding(panelSub, 0, 0, -10);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("วันหมดอายุ: "));
     panelSub.add(makeLabel(GUIHelper.formatDMY.format(medicine.getMedEXP())));
     panelBody.add(panelSub);
@@ -949,7 +862,7 @@ public class GUI implements ActionListener, KeyListener {
     // JPanels
     JPanel panelAddDoctor = new JPanel(new BorderLayout());
     JPanel panelBody = new JPanel();
-    panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelTitle = newFlowLayout();
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มแพทย์ใหม่", "แพทย์");
@@ -1039,30 +952,30 @@ public class GUI implements ActionListener, KeyListener {
 
     panelTitle.add(btnBack);
 
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
     panelSub.add(makeLabel("คำนำหน้า"));
     panelSub.add(cbPrefix);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("ชื่อ"));
     panelSub.add(tfDoctorName);
     panelSub.add(makeLabel("นามสกุล"));
     panelSub.add(tfDoctorSurName);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("แผนก"));
     panelSub.add(tfDoctorWard);
     panelSub.add(makeLabel("ชื่อสถานพยาบาล"));
     panelSub.add(tfDoctorHospital);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("วันและเวลาที่เข้าตรวจ"));
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbSunday);
     panelSub.add(sundayStartLabel);
     panelSub.add(sundayStartPicker);
@@ -1070,7 +983,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(sundayEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbMonday);
     panelSub.add(mondayStartLabel);
     panelSub.add(mondayStartPicker);
@@ -1078,7 +991,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(mondayEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbTuesday);
     panelSub.add(tuesStartLabel);
     panelSub.add(tuesStartPicker);
@@ -1086,7 +999,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(tuesEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbWednesday);
     panelSub.add(wedStartLabel);
     panelSub.add(wedStartPicker);
@@ -1094,7 +1007,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(wedEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbThursday);
     panelSub.add(thurStartLabel);
     panelSub.add(thurStartPicker);
@@ -1102,7 +1015,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(thurEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbFriday);
     panelSub.add(fridayStartLabel);
     panelSub.add(fridayStartPicker);
@@ -1110,7 +1023,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(fridayEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbSaturday);
     panelSub.add(satStartLabel);
     panelSub.add(satStartPicker);
@@ -1133,7 +1046,7 @@ public class GUI implements ActionListener, KeyListener {
     // JPanels
     JPanel panelAddDoctor = new JPanel(new BorderLayout());
     JPanel panelBody = new JPanel();
-    panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelTitle = newFlowLayout();
 
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขแพทย์", DoctorUtil.getDoctorFullName(doctor));
@@ -1275,11 +1188,8 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnSave.addActionListener(e -> {
-      panelRight.remove(panelViewDoctor(doctor));
-      panelRight.add(panelViewDoctor(doctor), DoctorUtil.getDoctorFullName(doctor));
-      CardLayout cl = (CardLayout) (panelRight.getLayout());
-      cl.show(panelRight, DoctorUtil.getDoctorFullName(doctor));
-      panelRight.remove(panelEditDoctor(doctor));
+      saveSwitcher(panelRight, panelEditDoctor(doctor), panelViewDoctor(doctor),
+          DoctorUtil.getDoctorFullName(doctor));
     });
 
     workTimeCheckBoxUIHandler(cbSunday, sundayStartPicker, sundayEndPicker, sundayStartLabel,
@@ -1311,30 +1221,30 @@ public class GUI implements ActionListener, KeyListener {
 
     panelTitle.add(btnBack);
 
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
     panelSub.add(makeLabel("คำนำหน้า"));
     panelSub.add(cbPrefix);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("ชื่อ"));
     panelSub.add(tfDoctorName);
     panelSub.add(makeLabel("นามสกุล"));
     panelSub.add(tfDoctorSurName);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("แผนก"));
     panelSub.add(tfDoctorWard);
     panelSub.add(makeLabel("ชื่อสถานพยาบาล"));
     panelSub.add(tfDoctorHospital);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("วันและเวลาที่เข้าตรวจ"));
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbSunday);
     panelSub.add(sundayStartLabel);
     panelSub.add(sundayStartPicker);
@@ -1342,7 +1252,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(sundayEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbMonday);
     panelSub.add(mondayStartLabel);
     panelSub.add(mondayStartPicker);
@@ -1350,7 +1260,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(mondayEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbTuesday);
     panelSub.add(tuesStartLabel);
     panelSub.add(tuesStartPicker);
@@ -1358,7 +1268,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(tuesEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbWednesday);
     panelSub.add(wedStartLabel);
     panelSub.add(wedStartPicker);
@@ -1366,7 +1276,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(wedEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbThursday);
     panelSub.add(thurStartLabel);
     panelSub.add(thurStartPicker);
@@ -1374,7 +1284,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(thurEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbFriday);
     panelSub.add(fridayStartLabel);
     panelSub.add(fridayStartPicker);
@@ -1382,7 +1292,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(fridayEndPicker);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbSaturday);
     panelSub.add(satStartLabel);
     panelSub.add(satStartPicker);
@@ -1440,10 +1350,9 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnEdit.addActionListener(e -> {
-      panelRight.add(panelEditDoctor(doctor), "แก้ไขแพทย์");
-      CardLayout cl = (CardLayout) (panelRight.getLayout());
-      cl.show(panelRight, "แก้ไขแพทย์");
+      editSwitcher(panelRight, panelEditDoctor(doctor));
     });
+
     btnRemove.addActionListener(e -> {
       JLabel labelConfirm = makeLabel(
           "ต้องการลบแพทย์คนนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
@@ -1462,27 +1371,18 @@ public class GUI implements ActionListener, KeyListener {
       }
 
       if (dialogResult == JOptionPane.YES_OPTION) {
-        JLabel labelMessage;
+        String labelMessage;
         if (user.removeUserDoctor(doctor)) {
           labelMessage = getRemoveSuccessfulMessage("แพทย์");
         } else {
           labelMessage = getRemoveFailedMessage("แพทย์");
         }
-        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllDoctors());
         panelSub04 = null;
         panelSub04 = new JPanel(new BorderLayout());
         panelRight.add(panelAllDoctors(), "แพทย์");
         backTo("แพทย์");
-        try {
-          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
-          Icon icon = new ImageIcon(img);
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์",
-              JOptionPane.INFORMATION_MESSAGE, icon);
-        } catch (Exception ignored) {
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์",
-              JOptionPane.INFORMATION_MESSAGE);
-        }
+        fireSuccessDialog(labelMessage);
       }
     });
 
@@ -1540,10 +1440,9 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnEdit.addActionListener(e -> {
-      panelRight.add(panelEditAppointment(appointment), "แก้ไขนัด");
-      CardLayout cl = (CardLayout) (panelRight.getLayout());
-      cl.show(panelRight, "แก้ไขนัด");
+      editSwitcher(panelRight, panelEditAppointment(appointment));
     });
+
     btnRemove.addActionListener(e -> {
       JLabel labelConfirm = makeLabel(
           "ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
@@ -1562,27 +1461,18 @@ public class GUI implements ActionListener, KeyListener {
       }
 
       if (dialogResult == JOptionPane.YES_OPTION) {
-        JLabel labelMessage;
+        String labelMessage;
         if (user.removeUserAppointment(appointment)) {
           labelMessage = getRemoveSuccessfulMessage("นัดแพทย์");
         } else {
           labelMessage = getRemoveFailedMessage("นัดแพทย์");
         }
-        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllAppointments());
         panelSub03 = null;
         panelSub03 = new JPanel(new BorderLayout());
         panelRight.add(panelAllAppointments(), "นัดแพทย์");
         backTo("นัดแพทย์");
-        try {
-          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
-          Icon icon = new ImageIcon(img);
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์",
-              JOptionPane.INFORMATION_MESSAGE, icon);
-        } catch (Exception ignored) {
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์",
-              JOptionPane.INFORMATION_MESSAGE);
-        }
+        fireSuccessDialog(labelMessage);
       }
     });
 
@@ -1594,19 +1484,19 @@ public class GUI implements ActionListener, KeyListener {
 
     panelTitle.add(btnBack);
 
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
     panelSub.add(makeLabel("แพทย์ผู้นัด: " + doctorName));
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("โรงพยาบาล: " + appointment.getHospitalName()));
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("กำหนดนัด: " + title));
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelButtons.add(btnEdit, BorderLayout.CENTER);
     panelButtons.add(btnRemove, BorderLayout.EAST);
     panelSub.add(panelButtons);
@@ -1623,7 +1513,7 @@ public class GUI implements ActionListener, KeyListener {
 
     // JPanels
     JPanel panelEditAppointment = new JPanel(new BorderLayout());
-    JPanel panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelTitle = newFlowLayout();
     JPanel panelBody = new JPanel();
 
     // JButtons
@@ -1658,17 +1548,14 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listener
     btnSave.addActionListener(e -> {
-      panelRight.remove(panelViewAppointment(app));
-      panelRight.add(panelViewAppointment(app), AppointmentUtil.getTitle(app));
-      CardLayout cl = (CardLayout) (panelRight.getLayout());
-      cl.show(panelRight, AppointmentUtil.getTitle(app));
-      panelRight.remove(panelEditAppointment(app));
+      saveSwitcher(panelRight, panelEditAppointment(app), panelViewAppointment(app),
+          AppointmentUtil.getTitle(app));
     });
 
     // Panel Title
     panelTitle.add(btnBack);
 
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
     panelSub.add(labelDateTitle);
     DatePicker datePicker1 = new DatePicker();
     panelSub.add(datePicker1);
@@ -1681,27 +1568,27 @@ public class GUI implements ActionListener, KeyListener {
     setPadding(panelSub, 0, 0, 10, 0);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelDoctor);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(tfDoctor);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelHospital);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(tfHospital);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelNote);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(tfNote);
     panelBody.add(panelSub);
 
@@ -1716,7 +1603,7 @@ public class GUI implements ActionListener, KeyListener {
 
     // JPanels
     JPanel panelAddAppointment = new JPanel(new BorderLayout());
-    JPanel panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelTitle = newFlowLayout();
     JPanel panelBody = new JPanel();
 
     // JButtons
@@ -1749,7 +1636,7 @@ public class GUI implements ActionListener, KeyListener {
     // Panel Title
     panelTitle.add(btnBack);
 
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
     panelSub.add(labelDateTitle);
     DatePicker datePicker1 = new DatePicker();
     panelSub.add(datePicker1);
@@ -1762,27 +1649,27 @@ public class GUI implements ActionListener, KeyListener {
     setPadding(panelSub, 0, 0, 10, 0);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelDoctor);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(tfDoctor);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelHospital);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(tfHospital);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(labelNote);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(tfNote);
     panelBody.add(panelSub);
 
@@ -2008,8 +1895,8 @@ public class GUI implements ActionListener, KeyListener {
     // JPanels
     JPanel panelLoopInfo = new JPanel(new BorderLayout());
     JPanel panelCard = new JPanel();
-    JPanel panelTime = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelMed = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelTime = newFlowLayout();
+    JPanel panelMed = newFlowLayout();
     JPanel panelMedInfo = new JPanel();
 
     // JLabels
@@ -2271,15 +2158,15 @@ public class GUI implements ActionListener, KeyListener {
 
     // JPanels
     JPanel panelAddMedGUI = new JPanel();
-    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelSubMorning = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelSubAfternoon = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelSubEvening = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelSubBed = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelTabletColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelCapsuleColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JPanel panelLiquidColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSub = newFlowLayout();
+    JPanel panelSubMorning = newFlowLayout();
+    JPanel panelSubAfternoon = newFlowLayout();
+    JPanel panelSubEvening = newFlowLayout();
+    JPanel panelSubBed = newFlowLayout();
+    JPanel panelColor = newFlowLayout();
+    JPanel panelTabletColor = newFlowLayout();
+    JPanel panelCapsuleColor = newFlowLayout();
+    JPanel panelLiquidColor = newFlowLayout();
 
     // JTextFields
     JTextField tfMedName = makeTextField(20);
@@ -2289,7 +2176,6 @@ public class GUI implements ActionListener, KeyListener {
     JTextField tfAmountEvening = makeTextField(2);
     JTextField tfAmountBed = makeTextField(2);
     JTextField tfTotalMeds = makeTextField(2);
-    JTextField tfMedEXP = makeTextField(10);
 
     // JLabels
     JLabel labelUnit = makeLabel(medUnit);
@@ -2360,6 +2246,8 @@ public class GUI implements ActionListener, KeyListener {
     bgEvening.add(rbEveningAfter);
     bgEvening.add(rbEveningImme);
 
+    DatePicker picker = new DatePicker();
+
     // Styling
     panelAddMedGUI.setLayout(new BoxLayout(panelAddMedGUI, BoxLayout.PAGE_AXIS));
     setPadding(panelAddMedGUI, 0, 0, 40);
@@ -2371,7 +2259,56 @@ public class GUI implements ActionListener, KeyListener {
     panelSubBed.setVisible(false);
 
     // Listeners
-    btnSave.addActionListener(this);
+    btnSave.addActionListener(e -> {
+      String selectedMedType = medUtil.getMedType()[cbMedType.getSelectedIndex()];
+      String selectedColor = "";
+      if (selectedMedType.equals("ยาแคปซูล")) {
+        selectedColor = medUtil.getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
+        selectedColor += "-";
+        selectedColor += medUtil.getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
+      } else if (selectedMedType.equals("ยาเม็ด")) {
+        selectedColor = medUtil.getTabletColor()[cbTabletColor.getSelectedIndex()];
+      } else if (selectedMedType.equals("ยาน้ำ")) {
+        selectedColor = medUtil.getLiquidColor()[cbLiquidColor.getSelectedIndex()];
+      }
+      int dose = 0;
+      ArrayList<String> selectedMedTime = new ArrayList<>();
+      ArrayList<String> selectedDoseStr = new ArrayList<>();
+      if (cbMorning.isSelected()) {
+        selectedMedTime.add("เช้า");
+        medTimeAdder(rbMorningBefore, rbMorningAfter, rbMorningImme, selectedDoseStr);
+        dose = Integer.valueOf(tfAmountMorning.getText());
+      }
+      if (cbAfternoon.isSelected()) {
+        selectedMedTime.add("กลางวัน");
+        medTimeAdder(rbAfternoonBefore, rbAfternoonAfter, rbAfternoonImme, selectedDoseStr);
+        dose = Integer.valueOf(tfAmountAfternoon.getText());
+      }
+      if (cbEvening.isSelected()) {
+        selectedMedTime.add("เย็น");
+        medTimeAdder(rbEveningBefore, rbEveningAfter, rbEveningImme, selectedDoseStr);
+        dose = Integer.valueOf(tfAmountEvening.getText());
+      }
+      if (cbBed.isSelected()) {
+        selectedMedTime.add("ก่อนนอน");
+        selectedDoseStr.add("");
+        dose = Integer.valueOf(tfAmountBed.getText());
+      }
+      Date exp = Date.from(picker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+      Medicine med = new Medicine(tfMedName.getText(), selectedMedType, selectedColor,
+          tfMedDescription.getText(), selectedMedTime, selectedDoseStr, dose,
+          Integer.valueOf(tfTotalMeds.getText()), exp);
+      try {
+        MedicineDB.addMedicine(med, user.getUserId());
+        fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
+        saveSwitcher(panelRight, panelAddMedicine(), panelAllMedicines(), "ยาทั้้งหมด");
+      } catch (SQLException e1) {
+        fireErrorDialog("เกิดความผิดพลาดกับฐานข้อมูล โปรดลองอีกครั้ง");
+        e1.printStackTrace();
+      }
+    });
+
     medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
         labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
     cbAfternoon.addActionListener(e -> {
@@ -2424,16 +2361,16 @@ public class GUI implements ActionListener, KeyListener {
     panelLiquidColor.add(cbLiquidColor);
     panelAddMedGUI.add(panelLiquidColor);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("คำอธิบายยา (เช่น ยาแก้ปวด)"));
     panelSub.add(tfMedDescription);
     panelAddMedGUI.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("เวลาที่ต้องรับประทาน"));
     panelAddMedGUI.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbMorning);
     panelSubMorning.add(rbMorningBefore);
     panelSubMorning.add(rbMorningAfter);
@@ -2444,7 +2381,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(panelSubMorning);
     panelAddMedGUI.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbAfternoon);
     panelSubAfternoon.add(rbAfternoonBefore);
     panelSubAfternoon.add(rbAfternoonAfter);
@@ -2455,7 +2392,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(panelSubAfternoon);
     panelAddMedGUI.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbEvening);
     panelSubEvening.add(rbEveningBefore);
     panelSubEvening.add(rbEveningAfter);
@@ -2466,7 +2403,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(panelSubEvening);
     panelAddMedGUI.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(cbBed);
     panelSubBed.add(makeLabel("จำนวน"));
     panelSubBed.add(tfAmountBed);
@@ -2474,15 +2411,15 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(panelSubBed);
     panelAddMedGUI.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
     panelSub.add(tfTotalMeds);
     panelSub.add(labelUnit);
     panelAddMedGUI.add(panelSub);
 
-    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("วันหมดอายุ"));
-    panelSub.add(tfMedEXP);
+    panelSub.add(picker);
     panelAddMedGUI.add(panelSub);
 
     panelSub = new JPanel();

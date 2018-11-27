@@ -1,8 +1,11 @@
 package GUI;
 
+import core.Medicine;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -24,11 +27,13 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -70,6 +75,103 @@ public class GUIHelper {
     }
   }
 
+  static void medTimeRadioHandler(Medicine medicine, JRadioButton rbMorningBefore,
+      JRadioButton rbMorningAfter, int i) {
+    if (medicine.getMedDoseStr().get(i).equals("ก่อนอาหาร")) {
+      rbMorningBefore.setSelected(true);
+    } else if (medicine.getMedDoseStr().get(i).equals("หลังอาหาร")) {
+      rbMorningAfter.setSelected(true);
+    } else {
+      rbMorningBefore.setSelected(true);
+    }
+  }
+
+  static void medTypeUIHandler(JPanel panelColor, JPanel panelTabletColor,
+      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit, JLabel labelUnitMorning,
+      JLabel labelUnitAfternoon, JLabel labelUnitEvening, JLabel labelUnitBed,
+      JComboBox cbMedType) {
+    cbMedType.addActionListener(e -> {
+      switch (cbMedType.getSelectedIndex()) {
+        case 0:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(true);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("เม็ด");
+          labelUnitMorning.setText("เม็ด");
+          labelUnitAfternoon.setText("เม็ด");
+          labelUnitEvening.setText("เม็ด");
+          labelUnitBed.setText("เม็ด");
+          break;
+        case 1:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(true);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("แคปซูล");
+          labelUnitMorning.setText("แคปซูล");
+          labelUnitAfternoon.setText("แคปซูล");
+          labelUnitEvening.setText("แคปซูล");
+          labelUnitBed.setText("แคปซูล");
+          break;
+        case 2:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(true);
+          labelUnit.setText("มิลลิลิตร");
+          labelUnitMorning.setText("มิลลิลิตร");
+          labelUnitAfternoon.setText("มิลลิลิตร");
+          labelUnitEvening.setText("มิลลิลิตร");
+          labelUnitBed.setText("มิลลิลิตร");
+          break;
+        default:
+          panelColor.setVisible(false);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("cc");
+          labelUnitMorning.setText("cc");
+          labelUnitAfternoon.setText("cc");
+          labelUnitEvening.setText("cc");
+          labelUnitBed.setText("cc");
+          break;
+      }
+    });
+  }
+
+  static void fireErrorDialog(String message) {
+    JLabel labelMessage = makeLabel(message);
+    setPadding(labelMessage, 0, 10, 0, 0);
+    try {
+      beep("success");
+      Image img = ImageIO.read(new File(imgPath + "/system/error.png"));
+      Icon icon = new ImageIcon(img);
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE,
+              icon);
+    } catch (Exception ignored) {
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
+  static void fireSuccessDialog(String message) {
+    JLabel labelMessage = makeLabel(message);
+    setPadding(labelMessage, 0, 10, 0, 0);
+    try {
+      beep("success");
+      Image img = ImageIO.read(new File(imgSuccessSrc));
+      Icon icon = new ImageIcon(img);
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE,
+              icon);
+    } catch (Exception ignored) {
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
   static void beep(String type) {
     String path = "src/GUI/sounds/" + type + ".wav";
     File f = new File(path);
@@ -82,12 +184,12 @@ public class GUIHelper {
     }
   }
 
-  static JLabel getRemoveSuccessfulMessage(String type) {
-    return makeLabel("ลบ" + type + "เรียบร้อยแล้ว");
+  static String getRemoveSuccessfulMessage(String type) {
+    return "ลบ" + type + "เรียบร้อยแล้ว";
   }
 
-  static JLabel getRemoveFailedMessage(String type) {
-    return makeLabel("ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ" + type + "ได้");
+  static String getRemoveFailedMessage(String type) {
+    return "ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ" + type + "ได้";
   }
 
   static JPanel getLoadingPanel(boolean withBG) {
@@ -155,6 +257,35 @@ public class GUIHelper {
     panelError.add(labelPic);
     panelError.add(labelError);
     return panelError;
+  }
+
+  static void medTimeAdder(JRadioButton rbMorningBefore, JRadioButton rbMorningAfter,
+      JRadioButton rbMorningImme, ArrayList<String> selectedDoseStr) {
+    if (rbMorningBefore.isSelected()) {
+      selectedDoseStr.add("ก่อนอาหาร");
+    } else if (rbMorningAfter.isSelected()) {
+      selectedDoseStr.add("หลังอาหาร");
+    } else if (rbMorningImme.isSelected()) {
+      selectedDoseStr.add("หลังอาหารทันที / พร้อมอาหาร");
+    }
+  }
+
+  static void saveSwitcher(JPanel origin, JPanel current, JPanel switchTo, String switchToName) {
+    origin.remove(switchTo);
+    origin.add(switchTo, switchToName);
+    CardLayout cl = (CardLayout) (origin.getLayout());
+    cl.show(origin, switchToName);
+    origin.remove(current);
+  }
+
+  static void editSwitcher(JPanel origin, JPanel switchTo) {
+    origin.add(switchTo, "แก้ไข");
+    CardLayout cl = (CardLayout) (origin.getLayout());
+    cl.show(origin, "แก้ไข");
+  }
+
+  static JPanel newFlowLayout() {
+    return new JPanel(new FlowLayout(FlowLayout.LEFT));
   }
 
   static JScrollPane makeScrollPane(JPanel panel) {
