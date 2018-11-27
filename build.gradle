@@ -31,7 +31,6 @@ shadowJar {
 
     manifest {
         attributes 'Main-Class': 'main.Main'
-        attributes 'Class-Path': 'license.jar'
     }
 }
 

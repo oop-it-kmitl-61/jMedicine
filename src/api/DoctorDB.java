@@ -134,6 +134,10 @@ public class DoctorDB {
     pStatement.setArray(6, connection.createArrayOf("text", time.toArray()));
     pStatement.setObject(7, doctor.getId(), Types.OTHER);
 
+    pStatement.executeUpdate();
+
+    pStatement.close();
+
     return doctor;
   }
 
@@ -142,17 +146,12 @@ public class DoctorDB {
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
 
-    pStatement.setString(1, doctor.getId());
+    pStatement.setObject(1, doctor.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
+
+    pStatement.close();
   }
 
-  public static void main(String[] args) {
-    try {
-      getAllDoctor("67502c25-73a3-4c06-8b5d-97d3341ddd28");
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-  }
 
 }

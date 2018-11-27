@@ -3,6 +3,7 @@ package core;
 import java.util.Date;
 
 public class Appointment {
+
   private String id;
   private Date timeStart;
   private Date timeStop;
@@ -28,6 +29,10 @@ public class Appointment {
 
   public String getId() {
     return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 
   public Date getTimeStart() {
