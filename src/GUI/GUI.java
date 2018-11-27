@@ -13,6 +13,7 @@ import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.Appointment;
 import core.Doctor;
+import core.DoctorUtil;
 import core.Medicine;
 import core.MedicineUtil;
 import core.User;
@@ -360,7 +361,7 @@ public class GUI implements ActionListener, KeyListener {
     panelBody.add(panelSub);
 
     panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    panelSub.add(makeLabel("เวอร์ชั่น 0.6.1"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.6.2"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -1125,19 +1126,291 @@ public class GUI implements ActionListener, KeyListener {
     return panelAddDoctor;
   }
 
-  private void workTimeCheckBoxUIHandler(JCheckBox cbSunday, TimePicker sundayStartPicker,
-      TimePicker sundayEndPicker, JLabel sundayStartLabel, JLabel sundayEndLabel) {
-    cbSunday.addActionListener(e -> {
-      if (cbSunday.isSelected()) {
-        sundayStartLabel.setVisible(true);
-        sundayEndLabel.setVisible(true);
-        sundayStartPicker.setVisible(true);
-        sundayEndPicker.setVisible(true);
+  private JPanel panelEditDoctor(Doctor doctor) {
+    /* Creates GUI of the form for editing doctor. */
+
+    // JPanels
+    JPanel panelAddDoctor = new JPanel(new BorderLayout());
+    JPanel panelBody = new JPanel();
+    panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+    // JButtons
+    JButton btnBack = makeBackButton("แก้ไขแพทย์", DoctorUtil.getDoctorFullName(doctor));
+    JButton btnSave = makeButton("บันทึกแพทย์");
+
+    // JCheckBoxes
+    JCheckBox cbSunday = makeCheckBox("วันอาทิตย์");
+    JCheckBox cbMonday = makeCheckBox("วันจันทร์");
+    JCheckBox cbTuesday = makeCheckBox("วันอังคาร");
+    JCheckBox cbWednesday = makeCheckBox("วันพุธ");
+    JCheckBox cbThursday = makeCheckBox("วันพฤหัสบดี");
+    JCheckBox cbFriday = makeCheckBox("วันศุกร์");
+    JCheckBox cbSaturday = makeCheckBox("วันเสาร์");
+
+    // TimePickers
+    TimePicker sundayStartPicker = new TimePicker();
+    TimePicker sundayEndPicker = new TimePicker();
+    TimePicker mondayStartPicker = new TimePicker();
+    TimePicker mondayEndPicker = new TimePicker();
+    TimePicker tuesStartPicker = new TimePicker();
+    TimePicker tuesEndPicker = new TimePicker();
+    TimePicker wedStartPicker = new TimePicker();
+    TimePicker wedEndPicker = new TimePicker();
+    TimePicker thurStartPicker = new TimePicker();
+    TimePicker thurEndPicker = new TimePicker();
+    TimePicker fridayStartPicker = new TimePicker();
+    TimePicker fridayEndPicker = new TimePicker();
+    TimePicker satStartPicker = new TimePicker();
+    TimePicker satEndPicker = new TimePicker();
+    TimePicker[] timePickers = {sundayStartPicker, sundayEndPicker, mondayStartPicker,
+        mondayEndPicker, tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker,
+        thurStartPicker, thurEndPicker, fridayStartPicker, fridayEndPicker, satStartPicker,
+        satEndPicker};
+
+    // JLabels
+    JLabel sundayStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel sundayEndLabel = makeLabel("จนถึงเวลา");
+    JLabel mondayStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel mondayEndLabel = makeLabel("จนถึงเวลา");
+    JLabel tuesStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel tuesEndLabel = makeLabel("จนถึงเวลา");
+    JLabel wedStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel wedEndLabel = makeLabel("จนถึงเวลา");
+    JLabel thurStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel thurEndLabel = makeLabel("จนถึงเวลา");
+    JLabel fridayStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel fridayEndLabel = makeLabel("จนถึงเวลา");
+    JLabel satStartLabel = makeLabel("ตั้งแต่เวลา");
+    JLabel satEndLabel = makeLabel("จนถึงเวลา");
+    JLabel[] labels = {sundayStartLabel, sundayEndLabel, mondayStartLabel, mondayEndLabel,
+        tuesStartLabel, tuesEndLabel, wedStartLabel, wedEndLabel, thurStartLabel, thurEndLabel,
+        fridayStartLabel, fridayEndLabel, satStartLabel, satEndLabel};
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelTitle, 0, 0, 20);
+    setPadding(panelAddDoctor, -11, 0, 20, -18);
+    setPadding(panelBody, 0, 0, 10, 28);
+    for (JLabel label : labels) {
+      label.setVisible(false);
+    }
+    for (TimePicker tp : timePickers) {
+      tp.setVisible(false);
+    }
+
+    for (ArrayList<String> timeArray : doctor.getWorkTime()) {
+      switch (timeArray.get(0)) {
+        case "วันอาทิตย์":
+          cbSunday.setSelected(true);
+          sundayStartLabel.setVisible(true);
+          sundayEndLabel.setVisible(true);
+          sundayStartPicker.setVisible(true);
+          sundayEndPicker.setVisible(true);
+          sundayStartPicker.setText(timeArray.get(1));
+          sundayEndPicker.setText(timeArray.get(2));
+          break;
+
+        case "วันจันทร์":
+          cbMonday.setSelected(true);
+          mondayStartLabel.setVisible(true);
+          mondayEndLabel.setVisible(true);
+          mondayStartPicker.setVisible(true);
+          mondayEndPicker.setVisible(true);
+          mondayStartPicker.setText(timeArray.get(1));
+          mondayEndPicker.setText(timeArray.get(2));
+          break;
+
+        case "วันอังคาร":
+          cbTuesday.setSelected(true);
+          tuesStartLabel.setVisible(true);
+          tuesEndLabel.setVisible(true);
+          tuesStartPicker.setVisible(true);
+          tuesEndPicker.setVisible(true);
+          tuesStartPicker.setText(timeArray.get(1));
+          tuesEndPicker.setText(timeArray.get(2));
+          break;
+
+        case "วันพุธ":
+          cbWednesday.setSelected(true);
+          wedStartLabel.setVisible(true);
+          wedEndLabel.setVisible(true);
+          wedStartPicker.setVisible(true);
+          wedEndPicker.setVisible(true);
+          wedStartPicker.setText(timeArray.get(1));
+          wedEndPicker.setText(timeArray.get(2));
+          break;
+
+        case "วันพฤหัสบดี":
+          cbThursday.setSelected(true);
+          thurStartLabel.setVisible(true);
+          thurEndLabel.setVisible(true);
+          thurStartPicker.setVisible(true);
+          thurEndPicker.setVisible(true);
+          thurStartPicker.setText(timeArray.get(1));
+          thurEndPicker.setText(timeArray.get(2));
+          break;
+
+        case "วันศุกร์":
+          cbFriday.setSelected(true);
+          fridayStartLabel.setVisible(true);
+          fridayEndLabel.setVisible(true);
+          fridayStartPicker.setVisible(true);
+          fridayEndPicker.setVisible(true);
+          fridayStartPicker.setText(timeArray.get(1));
+          fridayEndPicker.setText(timeArray.get(2));
+          break;
+
+        case "วันเสาร์":
+          cbSaturday.setSelected(true);
+          satStartLabel.setVisible(true);
+          satEndLabel.setVisible(true);
+          satStartPicker.setVisible(true);
+          satEndPicker.setVisible(true);
+          satStartPicker.setText(timeArray.get(1));
+          satEndPicker.setText(timeArray.get(2));
+          break;
+      }
+    }
+
+    // Listeners
+    btnSave.addActionListener(e -> {
+      panelRight.remove(panelViewDoctor(doctor));
+      panelRight.add(panelViewDoctor(doctor), DoctorUtil.getDoctorFullName(doctor));
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, DoctorUtil.getDoctorFullName(doctor));
+      panelRight.remove(panelEditDoctor(doctor));
+    });
+
+    workTimeCheckBoxUIHandler(cbSunday, sundayStartPicker, sundayEndPicker, sundayStartLabel,
+        sundayEndLabel);
+    workTimeCheckBoxUIHandler(cbMonday, mondayStartPicker, mondayEndPicker, mondayStartLabel,
+        mondayEndLabel);
+    workTimeCheckBoxUIHandler(cbTuesday, tuesStartPicker, tuesEndPicker, tuesStartLabel,
+        tuesEndLabel);
+    workTimeCheckBoxUIHandler(cbWednesday, wedStartPicker, wedEndPicker, wedStartLabel,
+        wedEndLabel);
+    workTimeCheckBoxUIHandler(cbThursday, thurStartPicker, thurEndPicker, thurStartLabel,
+        thurEndLabel);
+    workTimeCheckBoxUIHandler(cbFriday, fridayStartPicker, fridayEndPicker, fridayStartLabel,
+        fridayEndLabel);
+    workTimeCheckBoxUIHandler(cbSaturday, satStartPicker, satEndPicker, satStartLabel, satEndLabel);
+
+    JTextField tfDoctorName = makeTextField(20);
+    JTextField tfDoctorSurName = makeTextField(20);
+    JTextField tfDoctorWard = makeTextField(16);
+    JTextField tfDoctorHospital = makeTextField(18);
+    String[] prefixes = DoctorUtil.getPrefixes();
+    JComboBox cbPrefix = makeComboBox(prefixes);
+
+    tfDoctorName.setText(doctor.getFirstName());
+    tfDoctorSurName.setText(doctor.getLastName());
+    tfDoctorWard.setText(doctor.getWard());
+    tfDoctorHospital.setText(doctor.getHospital());
+    cbPrefix.setSelectedIndex(DoctorUtil.getPrefixIndex(doctor.getPrefix()));
+
+    panelTitle.add(btnBack);
+
+    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("คำนำหน้า"));
+    panelSub.add(cbPrefix);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("ชื่อ"));
+    panelSub.add(tfDoctorName);
+    panelSub.add(makeLabel("นามสกุล"));
+    panelSub.add(tfDoctorSurName);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("แผนก"));
+    panelSub.add(tfDoctorWard);
+    panelSub.add(makeLabel("ชื่อสถานพยาบาล"));
+    panelSub.add(tfDoctorHospital);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("วันและเวลาที่เข้าตรวจ"));
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbSunday);
+    panelSub.add(sundayStartLabel);
+    panelSub.add(sundayStartPicker);
+    panelSub.add(sundayEndLabel);
+    panelSub.add(sundayEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbMonday);
+    panelSub.add(mondayStartLabel);
+    panelSub.add(mondayStartPicker);
+    panelSub.add(mondayEndLabel);
+    panelSub.add(mondayEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbTuesday);
+    panelSub.add(tuesStartLabel);
+    panelSub.add(tuesStartPicker);
+    panelSub.add(tuesEndLabel);
+    panelSub.add(tuesEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbWednesday);
+    panelSub.add(wedStartLabel);
+    panelSub.add(wedStartPicker);
+    panelSub.add(wedEndLabel);
+    panelSub.add(wedEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbThursday);
+    panelSub.add(thurStartLabel);
+    panelSub.add(thurStartPicker);
+    panelSub.add(thurEndLabel);
+    panelSub.add(thurEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbFriday);
+    panelSub.add(fridayStartLabel);
+    panelSub.add(fridayStartPicker);
+    panelSub.add(fridayEndLabel);
+    panelSub.add(fridayEndPicker);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbSaturday);
+    panelSub.add(satStartLabel);
+    panelSub.add(satStartPicker);
+    panelSub.add(satEndLabel);
+    panelSub.add(satEndPicker);
+    panelBody.add(panelSub);
+
+    JScrollPane scrollPane = makeScrollPane(panelBody);
+
+    panelAddDoctor.add(panelTitle, BorderLayout.NORTH);
+    panelAddDoctor.add(scrollPane, BorderLayout.CENTER);
+    panelAddDoctor.add(btnSave, BorderLayout.SOUTH);
+
+    return panelAddDoctor;
+  }
+
+  private void workTimeCheckBoxUIHandler(JCheckBox checkBox, TimePicker startPicker,
+      TimePicker endPicker, JLabel startLabel, JLabel endLabel) {
+    checkBox.addActionListener(e -> {
+      if (checkBox.isSelected()) {
+        startLabel.setVisible(true);
+        endLabel.setVisible(true);
+        startPicker.setVisible(true);
+        endPicker.setVisible(true);
       } else {
-        sundayStartLabel.setVisible(false);
-        sundayEndLabel.setVisible(false);
-        sundayStartPicker.setVisible(false);
-        sundayEndPicker.setVisible(false);
+        startLabel.setVisible(false);
+        endLabel.setVisible(false);
+        startPicker.setVisible(false);
+        endPicker.setVisible(false);
       }
     });
   }
@@ -1151,7 +1424,7 @@ public class GUI implements ActionListener, KeyListener {
     JPanel panelButtons = new JPanel(new BorderLayout());
     panelTitle = new JPanel(new BorderLayout());
 
-    String doctorName = doctor.getPrefix() + " " + doctor.getName();
+    String doctorName = DoctorUtil.getDoctorFullName(doctor);
 
     // JButtons
     JButton btnEdit = makeButton("แก้ไขข้อมูลแพทย์");
@@ -1165,6 +1438,11 @@ public class GUI implements ActionListener, KeyListener {
     setPadding(panelView, 0, 0, 0, -20);
 
     // Listeners
+    btnEdit.addActionListener(e -> {
+      panelRight.add(panelEditDoctor(doctor), "แก้ไขแพทย์");
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, "แก้ไขแพทย์");
+    });
     btnRemove.addActionListener(e -> {
       JLabel labelConfirm = makeLabel(
           "ต้องการลบแพทย์คนนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
@@ -1791,7 +2069,7 @@ public class GUI implements ActionListener, KeyListener {
 
   private JPanel makeDoctorCard(Doctor doctor) {
     /* Creates a card that will be used on the All doctors panel only. */
-    String doctorName = doctor.getPrefix() + " " + doctor.getName();
+    String doctorName = DoctorUtil.getDoctorFullName(doctor);
     JLabel labelTitle = makeBoldLabel(doctorName);
     String doctorShortInfo = "แผนก " + doctor.getWard() + " โรงพยาบาล" + doctor.getHospital();
     JLabel labelShortInfo = makeLabel(doctorShortInfo);
@@ -1825,9 +2103,9 @@ public class GUI implements ActionListener, KeyListener {
 
     panelLoopInfo.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-        panelRight.add(panelViewDoctor(doctor), doctor.getName());
+        panelRight.add(panelViewDoctor(doctor), doctorName);
         CardLayout cl = (CardLayout) (panelRight.getLayout());
-        cl.show(panelRight, doctor.getName());
+        cl.show(panelRight, doctorName);
       }
     });
 
