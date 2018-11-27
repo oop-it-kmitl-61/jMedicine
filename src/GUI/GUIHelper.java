@@ -1,8 +1,11 @@
 package GUI;
 
+import core.Medicine;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -68,6 +71,71 @@ public class GUIHelper {
     } catch (UnsupportedLookAndFeelException | IOException | FontFormatException ex) {
       ex.printStackTrace();
     }
+  }
+
+  static void medTimeRadioHandler(Medicine medicine, JRadioButton rbMorningBefore,
+      JRadioButton rbMorningAfter, int i) {
+    if (medicine.getMedDoseStr().get(i).equals("ก่อนอาหาร")) {
+      rbMorningBefore.setSelected(true);
+    } else if (medicine.getMedDoseStr().get(i).equals("หลังอาหาร")) {
+      rbMorningAfter.setSelected(true);
+    } else {
+      rbMorningBefore.setSelected(true);
+    }
+  }
+
+  static void medTypeUIHandler(JPanel panelColor, JPanel panelTabletColor,
+      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit, JLabel labelUnitMorning,
+      JLabel labelUnitAfternoon, JLabel labelUnitEvening, JLabel labelUnitBed,
+      JComboBox cbMedType) {
+    cbMedType.addActionListener(e -> {
+      switch (cbMedType.getSelectedIndex()) {
+        case 0:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(true);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("เม็ด");
+          labelUnitMorning.setText("เม็ด");
+          labelUnitAfternoon.setText("เม็ด");
+          labelUnitEvening.setText("เม็ด");
+          labelUnitBed.setText("เม็ด");
+          break;
+        case 1:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(true);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("แคปซูล");
+          labelUnitMorning.setText("แคปซูล");
+          labelUnitAfternoon.setText("แคปซูล");
+          labelUnitEvening.setText("แคปซูล");
+          labelUnitBed.setText("แคปซูล");
+          break;
+        case 2:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(true);
+          labelUnit.setText("มิลลิลิตร");
+          labelUnitMorning.setText("มิลลิลิตร");
+          labelUnitAfternoon.setText("มิลลิลิตร");
+          labelUnitEvening.setText("มิลลิลิตร");
+          labelUnitBed.setText("มิลลิลิตร");
+          break;
+        default:
+          panelColor.setVisible(false);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("cc");
+          labelUnitMorning.setText("cc");
+          labelUnitAfternoon.setText("cc");
+          labelUnitEvening.setText("cc");
+          labelUnitBed.setText("cc");
+          break;
+      }
+    });
   }
 
   static void beep(String type) {
@@ -155,6 +223,24 @@ public class GUIHelper {
     panelError.add(labelPic);
     panelError.add(labelError);
     return panelError;
+  }
+
+  static void saveSwitcher(JPanel origin, JPanel current, JPanel switchTo, String switchToName) {
+    origin.remove(switchTo);
+    origin.add(switchTo, switchToName);
+    CardLayout cl = (CardLayout) (origin.getLayout());
+    cl.show(origin, switchToName);
+    origin.remove(current);
+  }
+
+  static void editSwitcher(JPanel origin, JPanel switchTo) {
+    origin.add(switchTo, "แก้ไข");
+    CardLayout cl = (CardLayout) (origin.getLayout());
+    cl.show(origin, "แก้ไข");
+  }
+
+  static JPanel newFlowLayout() {
+    return new JPanel(new FlowLayout(FlowLayout.LEFT));
   }
 
   static JScrollPane makeScrollPane(JPanel panel) {
