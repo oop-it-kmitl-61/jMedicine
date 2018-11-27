@@ -56,6 +56,30 @@ public class DoctorDB {
     return results;
   }
 
+  public static Doctor getDoctorInfo(String doctorId) throws SQLException {
+    String SQLCommand = "SELECT * FROM doctors WHERE \"id\" = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setObject(1, doctorId, Types.OTHER);
+
+    ResultSet result = pStatement.executeQuery();
+
+    result.next();
+
+    ArrayList<ArrayList> time = new ArrayList<>();
+
+    Arrays.stream((Object[]) result.getArray("time").getArray()).forEach(obj -> {
+      ArrayList<String> t = new ArrayList<>();
+      t.addAll(Arrays.asList((String[]) obj));
+      time.add(t);
+    });
+
+    return new Doctor(result.getString("id"), result.getString("title"),
+        result.getString("firstname"), result.getString("lastname"), result.getString("ward"),
+        result.getString("hospital"), time);
+
+  }
+
   public static Doctor addDoctor(Doctor doctor, String userId) throws SQLException {
 
     ArrayList time = new ArrayList();
