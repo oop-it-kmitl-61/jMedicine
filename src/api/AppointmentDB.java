@@ -33,7 +33,7 @@ public class AppointmentDB {
 
   public static ArrayList<Appointment> getAllAppointment(String userId)
       throws SQLException, ParseException {
-    String SQLCommand = "SELECT * FROM doctors WHERE \"user\" = ?";
+    String SQLCommand = "SELECT * FROM appointments WHERE \"user\" = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
