@@ -86,7 +86,7 @@ public class MedicineDB {
     String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (user, name, type, color, description, dose, total, \"doseStr\", expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
-    pStatement.setString(1, userId);
+    pStatement.setObject(1, userId, Types.OTHER);
     pStatement.setString(2, medicine.getMedName());
     pStatement.setString(3, medicine.getMedType());
     pStatement.setString(4, medicine.getMedColor());
