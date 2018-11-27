@@ -55,7 +55,6 @@ public class MedicineDB {
     }
 
     pStatement.close();
-    connection.close();
 
     return results;
   }
@@ -121,7 +120,7 @@ public class MedicineDB {
     pStatement.setInt(6, medicine.getMedTotal());
     pStatement.setArray(7, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
     pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
-    pStatement.setString(9, medicine.getId());
+    pStatement.setObject(9, medicine.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 
@@ -134,8 +133,10 @@ public class MedicineDB {
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
 
-    pStatement.setString(1, medicine.getId());
+    pStatement.setObject(1, medicine.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
+
+    pStatement.close();
   }
 }

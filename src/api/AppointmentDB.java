@@ -57,5 +57,63 @@ public class AppointmentDB {
     return results;
   }
 
+  public static Appointment addAppointment(Appointment appointment, String userId)
+      throws SQLException {
+    ArrayList<String> time = new ArrayList<>();
+    time.add(formatDMYHM.format(appointment.getTimeStart()));
+    time.add(formatDMYHM.format(appointment.getTimeStop()));
+    String doctorId = appointment.getDoctor().getId();
+
+    String SQLCommand = "WITH ROW AS ( INSERT INTO appointments (\"user\", doctor, \"time\") VALUES (?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setObject(1, userId, Types.OTHER);
+    pStatement.setObject(2, appointment.getDoctor().getId(), Types.OTHER);
+    pStatement.setArray(3, connection.createArrayOf("text", time.toArray()));
+
+    ResultSet result = pStatement.executeQuery();
+
+    result.next();
+
+    appointment.setId(result.getString("id"));
+
+    pStatement.close();
+
+    return appointment;
+  }
+
+  public static Appointment updateAppointment(Appointment appointment) throws SQLException {
+    ArrayList<String> time = new ArrayList<>();
+    time.add(formatDMYHM.format(appointment.getTimeStart()));
+    time.add(formatDMYHM.format(appointment.getTimeStop()));
+    String doctorId = appointment.getDoctor().getId();
+
+    String SQLCommand = "UPDATE appointments SET doctor = ?, \"time\" = ? WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setObject(1, doctorId, Types.OTHER);
+    pStatement.setArray(2, connection.createArrayOf("text", time.toArray()));
+    pStatement.setObject(3, appointment.getId(), Types.OTHER);
+
+    pStatement.executeUpdate();
+
+    pStatement.close();
+
+    return appointment;
+  }
+
+
+  public static void removeAppointment(Appointment appointment) throws SQLException {
+    String SQLCommand = "DELETE FROM appointments WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+
+    pStatement.setObject(1, appointment.getId(), Types.OTHER);
+
+    pStatement.executeUpdate();
+
+    pStatement.close();
+  }
+
 
 }

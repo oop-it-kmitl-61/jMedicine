@@ -1,8 +1,8 @@
 package api;
 
-import static api.MedicineDB.getAllMedicine;
-import static api.DoctorDB.getAllDoctor;
 import static api.AppointmentDB.getAllAppointment;
+import static api.DoctorDB.getAllDoctor;
+import static api.MedicineDB.getAllMedicine;
 import static core.Utils.sha256;
 
 import core.Database;
