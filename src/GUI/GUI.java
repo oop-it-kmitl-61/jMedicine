@@ -50,7 +50,6 @@ import mdlaf.shadows.DropShadowBorder;
 
 /**
  * GUI class creates all graphic user interface, all in javax.swing.
- *
  */
 
 public class GUI implements ActionListener, KeyListener {
@@ -1247,13 +1246,9 @@ public class GUI implements ActionListener, KeyListener {
     Doctor appointmentDr = appointment.getDoctor();
     String doctorName = appointmentDr.getPrefix() + " " + appointmentDr.getName();
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    String date = dateFormat.format(appointment.getTimeStart());
-    dateFormat = new SimpleDateFormat("HH.mm");
-    String timeStart = dateFormat.format(appointment.getTimeStart());
-    String timeEnd = dateFormat.format(appointment.getTimeStop());
-
-    String title = date + " เวลา " + timeStart + " น. - " + timeEnd + " น.";
+    String title = formatDMY.format(appointment.getTimeStart())
+        + " เวลา " + formatHM.format(appointment.getTimeStart()) + " น. - "
+        + formatHM.format(appointment.getTimeStop()) + " น.";
 
     // JButtons
     JButton btnEdit = makeButton("แก้ไขนัดแพทย์");
