@@ -103,6 +103,11 @@ public class AppointmentDB {
   }
 
 
+  /**
+   * Appointment database interface use to remove appointment data
+   *
+   * @param appointment appointment object with data you need to update
+   */
   public static void removeAppointment(Appointment appointment) throws SQLException {
     String SQLCommand = "DELETE FROM appointments WHERE id = ?";
 
