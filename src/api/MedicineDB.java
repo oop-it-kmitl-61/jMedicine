@@ -1,5 +1,6 @@
 package api;
 
+import static GUI.GUIHelper.formatDMYHM;
 
 import core.Database;
 import core.Medicine;
@@ -118,7 +119,7 @@ public class MedicineDB {
 
 
   public static Medicine updateMedicine(Medicine medicine) throws SQLException {
-    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ? WHERE id = ?";
+    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ?, \"time\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, medicine.getMedName());
@@ -128,8 +129,9 @@ public class MedicineDB {
     pStatement.setInt(5, medicine.getMedDose());
     pStatement.setInt(6, medicine.getMedTotal());
     pStatement.setArray(7, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
-    pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
-    pStatement.setObject(9, medicine.getId(), Types.OTHER);
+    pStatement.setString(8, formatDMYHM.format(medicine.getMedEXP()));
+    pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedTime().toArray()));
+    pStatement.setObject(10, medicine.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 
