@@ -32,6 +32,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import mdlaf.MaterialLookAndFeel;
@@ -219,6 +220,12 @@ public class GUIHelper {
     button.setMaximumSize(new Dimension(200, 60));
     MaterialUIMovement.add(button, MaterialColors.LIGHT_BLUE_600);
     return button;
+  }
+
+  static JToggleButton makeToggle(String toggleText, boolean selected) {
+    JToggleButton toggleButton = new JToggleButton(toggleText, selected);
+    toggleButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    return toggleButton;
   }
 
   static JLabel makeTitleLabel(String labelText) {
