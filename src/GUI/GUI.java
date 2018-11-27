@@ -26,6 +26,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -42,7 +43,6 @@ import java.util.Date;
 import java.util.Locale;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
 import core.LocationHelper;
 import mdlaf.shadows.DropShadowBorder;
 
@@ -360,6 +360,10 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(toggleNoti);
     panelBody.add(panelSub);
 
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.6.1"));
+    panelBody.add(panelSub);
+
     // Add all sub panels into the main panel
     panelSub06.add(panelTitle, BorderLayout.NORTH);
     panelSub06.add(panelBody);
@@ -397,7 +401,8 @@ public class GUI implements ActionListener, KeyListener {
 
     // JPanels
     JPanel panelView = new JPanel(new BorderLayout());
-    JPanel panelSub = new JPanel();
+    JPanel panelBody = new JPanel();
+    JPanel panelButtons = new JPanel(new BorderLayout());
     panelTitle = new JPanel(new BorderLayout());
 
     // JLabels
@@ -405,14 +410,16 @@ public class GUI implements ActionListener, KeyListener {
     String medName = medicine.getMedName();
 
     // JButtons
-    JButton btnRemove = makeButton("ลบยาตัวนี้");
+    JButton btnEdit = makeButton("แก้ไขข้อมูล");
+    JButton btnRemove = makeRemoveButton();
     JButton labelTitle = makeBackButton(medName, "ยาทั้งหมด");
 
     // Styling
-    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    //panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
     setPadding(labelPic, 0, 0, 10);
     setPadding(panelTitle, -6, 0, 20, 8);
-    setPadding(panelSub, 0, 0, 0, 65);
+    setPadding(panelBody, 0, 0, 0, 38);
     setPadding(panelView, 0, 0, 0, -20);
 
     // Listeners
@@ -464,33 +471,89 @@ public class GUI implements ActionListener, KeyListener {
     panelTitle.add(labelTitle);
     panelTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    // MedTime is an ArrayList, convert it into a printable format.
-    StringBuilder sbMedTime = new StringBuilder();
-    for (String medTime : medicine.getMedTime()) {
-      sbMedTime.append(medTime).append(" ");
-    }
+    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("ลักษณะยา"));
+    panelBody.add(panelSub);
 
-    // DoseStr is an ArrayList, convert it into a printable format.
-    StringBuilder sbDoseStr = new StringBuilder();
-    for (String dose : medicine.getMedDoseStr()) {
-      sbDoseStr.append(dose).append(" ");
-    }
+    panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
     panelSub.add(labelPic);
-    panelSub.add(makeLabel("ชื่อยา: " + medName));
-    panelSub.add(makeLabel("คำอธิบาย: " + medicine.getMedDescription()));
-    panelSub.add(makeLabel("เวลาที่ต้องทาน: " + sbMedTime + " " + sbDoseStr));
-    panelSub
-        .add(makeLabel("ขนาดรับประทาน: " + medicine.getMedDose() + " " + medicine.getMedUnit()));
-    panelSub
-        .add(makeLabel("วันที่เพิ่มยา: " + GUIHelper.formatDMY.format(medicine.getDateAdded())));
-    panelSub.add(makeLabel("จำนวนยาเริ่มต้น: " + medicine.getMedRemaining()));
-    panelSub.add(makeLabel("จำนวนยาที่เหลือ: " + medicine.getMedRemaining()));
-    panelSub.add(makeLabel("วันหมดอายุ: " + GUIHelper.formatDMY.format(medicine.getMedEXP())));
+    setPadding(panelSub, 6, 0, 10);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("ข้อมูลพื้นฐาน"));
+    panelBody.add(panelSub);
+
+    panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("ชื่อยา: "));
+    panelSub.add(makeLabel(medName));
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("คำอธิบาย: "));
+    panelSub.add(makeLabel(medicine.getMedDescription()));
+    setPadding(panelSub, -10, 0, 0);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("จำนวนยาที่เหลือ: "));
+    panelSub.add(makeLabel(String.valueOf(medicine.getMedRemaining())));
+    setPadding(panelSub, -10, 0, 10);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("เวลาที่ต้องรับประทาน"));
+    panelBody.add(panelSub);
+
+    panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
+
+    for (int i = 0; i < medicine.getMedTime().size(); i++) {
+      panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+      JLabel labelMedTime = makeLabel(medicine.getMedTime().get(i));
+      JLabel labelMedDoseStr = makeLabel(medicine.getMedDoseStr().get(i));
+      panelSub.add(labelMedDoseStr);
+      panelSub.add(labelMedTime);
+      panelSub.add(makeLabel(medicine.getMedDose() + " " + medicine.getMedUnit()));
+      setPadding(panelSub, 0, 20, -10);
+      panelBody.add(panelSub);
+    }
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("ข้อมูลอื่น ๆ"));
+    setPadding(panelSub, 20, 0, 0);
+    panelBody.add(panelSub);
+
+    panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("วันที่เพิ่มยา: "));
+    panelSub.add(makeLabel(GUIHelper.formatDMY.format(medicine.getDateAdded())));
+    setPadding(panelSub, 0, 0, -10);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("จำนวนยาเริ่มต้น: "));
+    panelSub.add(makeLabel(String.valueOf(medicine.getMedTotal())));
+    setPadding(panelSub, 0, 0, -10);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("วันหมดอายุ: "));
+    panelSub.add(makeLabel(GUIHelper.formatDMY.format(medicine.getMedEXP())));
+    panelBody.add(panelSub);
+
+    panelButtons.add(btnEdit, BorderLayout.CENTER);
+    panelButtons.add(btnRemove, BorderLayout.EAST);
+
+    JScrollPane scrollPane = makeScrollPane(panelBody);
 
     panelView.add(panelTitle, BorderLayout.NORTH);
-    panelView.add(panelSub, BorderLayout.CENTER);
-    panelView.add(btnRemove, BorderLayout.SOUTH);
+    panelView.add(scrollPane, BorderLayout.CENTER);
+    panelView.add(panelButtons, BorderLayout.SOUTH);
 
     return panelView;
   }
@@ -754,9 +817,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(satEndPicker);
     panelBody.add(panelSub);
 
-    //TODO:JScrollPane bug
-    JScrollPane scrollPane = new JScrollPane(panelBody);
-    setPadding(scrollPane, 0, 0, 20, 0);
+    JScrollPane scrollPane = makeScrollPane(panelBody);
 
     panelAddDoctor.add(panelTitle, BorderLayout.NORTH);
     panelAddDoctor.add(scrollPane, BorderLayout.CENTER);
@@ -770,19 +831,21 @@ public class GUI implements ActionListener, KeyListener {
 
     // JPanels
     JPanel panelView = new JPanel(new BorderLayout());
-    JPanel panelSub = new JPanel();
+    JPanel panelBody = new JPanel();
+    JPanel panelButtons = new JPanel(new BorderLayout());
     panelTitle = new JPanel(new BorderLayout());
 
     String doctorName = doctor.getPrefix() + " " + doctor.getName();
 
     // JButtons
-    JButton btnRemove = makeButton("ลบแพทย์");
+    JButton btnEdit = makeButton("แก้ไขข้อมูลแพทย์");
+    JButton btnRemove = makeRemoveButton();
     JButton btnBack = makeBackButton(doctorName, "แพทย์");
 
     // Styling
-    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
     setPadding(panelTitle, -6, 0, 20, 8);
-    setPadding(panelSub, 0, 0, 0, 65);
+    setPadding(panelBody, 0, 0, 0, 38);
     setPadding(panelView, 0, 0, 0, -20);
 
     // Listeners
@@ -829,25 +892,28 @@ public class GUI implements ActionListener, KeyListener {
     });
 
     panelTitle.add(btnBack);
-    panelSub.add(makeLabel("ชื่อแพทย์: " + doctorName));
+    panelBody.add(makeLabel("ชื่อแพทย์: " + doctorName));
     if (doctor.getWard() != null) {
-      panelSub.add(makeLabel("แผนก: " + doctor.getWard()));
+      panelBody.add(makeLabel("แผนก: " + doctor.getWard()));
     }
-    panelSub.add(makeLabel("โรงพยาบาล: " + doctor.getHospital()));
+    panelBody.add(makeLabel("โรงพยาบาล: " + doctor.getHospital()));
     if (doctor.getWorkTime() != null) {
-      panelSub.add(makeLabel("เวลาเข้าตรวจ:"));
+      panelBody.add(makeLabel("เวลาเข้าตรวจ:"));
       // WorkTime is an ArrayList, convert it to a printable format
       for (ArrayList<String> workTime : doctor.getWorkTime()) {
         JLabel labelWorkTime = makeLabel(
             workTime.get(0) + " เวลา " + workTime.get(1) + " น. - " + workTime.get(2) + " น.");
         setPadding(labelWorkTime, 0, 20);
-        panelSub.add(labelWorkTime);
+        panelBody.add(labelWorkTime);
       }
     }
 
+    panelButtons.add(btnEdit, BorderLayout.CENTER);
+    panelButtons.add(btnRemove, BorderLayout.EAST);
+
     panelView.add(panelTitle, BorderLayout.NORTH);
-    panelView.add(panelSub, BorderLayout.CENTER);
-    panelView.add(btnRemove, BorderLayout.SOUTH);
+    panelView.add(panelBody, BorderLayout.CENTER);
+    panelView.add(panelButtons, BorderLayout.SOUTH);
 
     return panelView;
   }
@@ -857,7 +923,8 @@ public class GUI implements ActionListener, KeyListener {
 
     // JPanels
     JPanel panelView = new JPanel(new BorderLayout());
-    JPanel panelSub = new JPanel();
+    JPanel panelBody = new JPanel();
+    JPanel panelButtons = new JPanel(new BorderLayout());
     panelTitle = new JPanel(new BorderLayout());
 
     Doctor appointmentDr = appointment.getDoctor();
@@ -872,13 +939,13 @@ public class GUI implements ActionListener, KeyListener {
     String title = date + " เวลา " + timeStart + " น. - " + timeEnd + " น.";
 
     // JButtons
-    JButton btnRemove = makeButton("ลบนัดแพทย์");
+    JButton btnEdit = makeButton("แก้ไขนัดแพทย์");
+    JButton btnRemove = makeRemoveButton();
     JButton btnBack = makeBackButton(title, "นัดแพทย์");
 
     // Styling
-    panelSub.setLayout(new BoxLayout(panelSub, BoxLayout.PAGE_AXIS));
-    setPadding(panelTitle, 0, 0, 20);
-    setPadding(panelSub, 20, 0, 0, 45);
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelBody, 20, 0, 0, 45);
 
     // Listeners
     btnRemove.addActionListener(e -> {
@@ -930,14 +997,28 @@ public class GUI implements ActionListener, KeyListener {
     browser.loadURL("https://www.google.co.th/maps/search/" + appointment.getHospitalName());
 
     panelTitle.add(btnBack);
+
+    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
     panelSub.add(makeLabel("แพทย์ผู้นัด: " + doctorName));
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
     panelSub.add(makeLabel("โรงพยาบาล: " + appointment.getHospitalName()));
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
     panelSub.add(makeLabel("กำหนดนัด: " + title));
-    panelSub.add(btnRemove);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelButtons.add(btnEdit, BorderLayout.CENTER);
+    panelButtons.add(btnRemove, BorderLayout.EAST);
+    panelSub.add(panelButtons);
+    panelBody.add(panelSub);
 
     panelView.add(panelTitle, BorderLayout.NORTH);
     panelView.add(view, BorderLayout.CENTER);
-    panelView.add(panelSub, BorderLayout.SOUTH);
+    panelView.add(panelBody, BorderLayout.SOUTH);
 
     return panelView;
   }
@@ -1255,6 +1336,7 @@ public class GUI implements ActionListener, KeyListener {
         new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true, true));
     setPadding(labelPic, 6, 0, 0, 8);
     setPadding(labelMedName, 6, 0, -10, 0);
+    setPadding(labelAmount, 0, 0, 2, 0);
     setPadding(panelLoopInfo, 0, 0, 20);
 
     panelMedInfo.add(labelMedName);
@@ -1743,7 +1825,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(btnSave);
     panelAddMedGUI.add(panelSub);
 
-    JScrollPane scrollPane = new JScrollPane(panelAddMedGUI);
+    JScrollPane scrollPane = makeScrollPane(panelAddMedGUI);
 
     return scrollPane;
   }
@@ -1844,13 +1926,15 @@ public class GUI implements ActionListener, KeyListener {
     sampleMedTime.add("เย็น");
     ArrayList<String> sampleMedDoseStr = new ArrayList<>();
     sampleMedDoseStr.add("หลังอาหาร");
+    sampleMedDoseStr.add("หลังอาหาร");
+    sampleMedDoseStr.add("หลังอาหาร");
     Date dateEXP = new Date();
     try {
       dateEXP = GUIHelper.formatDMY.parse("28/02/2019");
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    Medicine prednisolone = new Medicine("Prednisolone", "tablet", "white", "ยาแก้อักเสบ",
+    Medicine prednisolone = new Medicine("Prednisolone", "tablet", "white", "ยาแก้อักเสบ SAMPLE",
         sampleMedTime, sampleMedDoseStr, 1, 20, dateEXP);
     user.addUserMedicine(prednisolone);
   }
@@ -1866,7 +1950,8 @@ public class GUI implements ActionListener, KeyListener {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    Medicine chlopheniramine = new Medicine("Chlopheniramine", "tablet", "yellow", "ยาแก้แพ้",
+    Medicine chlopheniramine = new Medicine("Chlopheniramine", "tablet", "yellow",
+        "ยาแก้แพ้ SAMPLE",
         sampleMedTime, sampleMedDoseStr, 1, 50, dateEXP);
     user.addUserMedicine(chlopheniramine);
   }
@@ -1882,7 +1967,8 @@ public class GUI implements ActionListener, KeyListener {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "green-orange", "ยาแก้อักเสบ",
+    Medicine amoxicillin = new Medicine("Amoxicillin", "capsule", "green-orange",
+        "ยาแก้อักเสบ SAMPLE",
         sampleMedTime,
         sampleMedDoseStr, 1, 7, dateEXP);
     user.addUserMedicine(amoxicillin);
