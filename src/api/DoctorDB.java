@@ -87,7 +87,7 @@ public class DoctorDB {
       time.add(connection.createArrayOf("text", t.toArray()));
     }
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO doctors (user, title, firstname, lastname, ward, hospital, time) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO doctors (\"user\", title, firstname, lastname, ward, hospital, time) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
@@ -142,7 +142,7 @@ public class DoctorDB {
   }
 
   public static void removeDoctor(Doctor doctor) throws SQLException {
-    String SQLCommand = "DELETE FROM doctors WHERE id = ?";
+    String SQLCommand = "DELETE FROM doctors WHERE \"id\" = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
 
