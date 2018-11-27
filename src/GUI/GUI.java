@@ -4,6 +4,7 @@ import static GUI.GUIHelper.*;
 import static api.Login.*;
 
 import api.LoginException;
+import api.MedicineDB;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
@@ -38,6 +39,7 @@ import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -749,29 +751,18 @@ public class GUI implements ActionListener, KeyListener {
       }
 
       if (dialogResult == JOptionPane.YES_OPTION) {
-        JLabel labelMessage;
+        String labelMessage;
         if (user.removeUserMedicine(medicine)) {
           labelMessage = getRemoveSuccessfulMessage("ยา");
         } else {
           labelMessage = getRemoveFailedMessage("ยา");
         }
-        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllMedicines());
         panelSub02 = null;
         panelSub02 = new JPanel(new BorderLayout());
         panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
         backTo("ยาทั้งหมด");
-        try {
-          beep("success");
-          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
-          Icon icon = new ImageIcon(img);
-          JOptionPane
-              .showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE,
-                  icon);
-        } catch (Exception ignored) {
-          JOptionPane
-              .showMessageDialog(null, labelMessage, "ผลการลบยา", JOptionPane.INFORMATION_MESSAGE);
-        }
+        fireSuccessDialog(labelMessage);
       }
     });
 
@@ -1380,27 +1371,18 @@ public class GUI implements ActionListener, KeyListener {
       }
 
       if (dialogResult == JOptionPane.YES_OPTION) {
-        JLabel labelMessage;
+        String labelMessage;
         if (user.removeUserDoctor(doctor)) {
           labelMessage = getRemoveSuccessfulMessage("แพทย์");
         } else {
           labelMessage = getRemoveFailedMessage("แพทย์");
         }
-        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllDoctors());
         panelSub04 = null;
         panelSub04 = new JPanel(new BorderLayout());
         panelRight.add(panelAllDoctors(), "แพทย์");
         backTo("แพทย์");
-        try {
-          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
-          Icon icon = new ImageIcon(img);
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์",
-              JOptionPane.INFORMATION_MESSAGE, icon);
-        } catch (Exception ignored) {
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบแพทย์",
-              JOptionPane.INFORMATION_MESSAGE);
-        }
+        fireSuccessDialog(labelMessage);
       }
     });
 
@@ -1479,27 +1461,18 @@ public class GUI implements ActionListener, KeyListener {
       }
 
       if (dialogResult == JOptionPane.YES_OPTION) {
-        JLabel labelMessage;
+        String labelMessage;
         if (user.removeUserAppointment(appointment)) {
           labelMessage = getRemoveSuccessfulMessage("นัดแพทย์");
         } else {
           labelMessage = getRemoveFailedMessage("นัดแพทย์");
         }
-        setPadding(labelMessage, 0, 10, 0, 0);
         panelRight.remove(panelAllAppointments());
         panelSub03 = null;
         panelSub03 = new JPanel(new BorderLayout());
         panelRight.add(panelAllAppointments(), "นัดแพทย์");
         backTo("นัดแพทย์");
-        try {
-          Image img = ImageIO.read(new File(GUIHelper.imgSuccessSrc));
-          Icon icon = new ImageIcon(img);
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์",
-              JOptionPane.INFORMATION_MESSAGE, icon);
-        } catch (Exception ignored) {
-          JOptionPane.showMessageDialog(null, labelMessage, "ผลการลบนัดแพทย์",
-              JOptionPane.INFORMATION_MESSAGE);
-        }
+        fireSuccessDialog(labelMessage);
       }
     });
 
@@ -2203,7 +2176,6 @@ public class GUI implements ActionListener, KeyListener {
     JTextField tfAmountEvening = makeTextField(2);
     JTextField tfAmountBed = makeTextField(2);
     JTextField tfTotalMeds = makeTextField(2);
-    JTextField tfMedEXP = makeTextField(10);
 
     // JLabels
     JLabel labelUnit = makeLabel(medUnit);
@@ -2274,6 +2246,8 @@ public class GUI implements ActionListener, KeyListener {
     bgEvening.add(rbEveningAfter);
     bgEvening.add(rbEveningImme);
 
+    DatePicker picker = new DatePicker();
+
     // Styling
     panelAddMedGUI.setLayout(new BoxLayout(panelAddMedGUI, BoxLayout.PAGE_AXIS));
     setPadding(panelAddMedGUI, 0, 0, 40);
@@ -2285,7 +2259,56 @@ public class GUI implements ActionListener, KeyListener {
     panelSubBed.setVisible(false);
 
     // Listeners
-    btnSave.addActionListener(this);
+    btnSave.addActionListener(e -> {
+      String selectedMedType = medUtil.getMedType()[cbMedType.getSelectedIndex()];
+      String selectedColor = "";
+      if (selectedMedType.equals("ยาแคปซูล")) {
+        selectedColor = medUtil.getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
+        selectedColor += "-";
+        selectedColor += medUtil.getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
+      } else if (selectedMedType.equals("ยาเม็ด")) {
+        selectedColor = medUtil.getTabletColor()[cbTabletColor.getSelectedIndex()];
+      } else if (selectedMedType.equals("ยาน้ำ")) {
+        selectedColor = medUtil.getLiquidColor()[cbLiquidColor.getSelectedIndex()];
+      }
+      int dose = 0;
+      ArrayList<String> selectedMedTime = new ArrayList<>();
+      ArrayList<String> selectedDoseStr = new ArrayList<>();
+      if (cbMorning.isSelected()) {
+        selectedMedTime.add("เช้า");
+        medTimeAdder(rbMorningBefore, rbMorningAfter, rbMorningImme, selectedDoseStr);
+        dose = Integer.valueOf(tfAmountMorning.getText());
+      }
+      if (cbAfternoon.isSelected()) {
+        selectedMedTime.add("กลางวัน");
+        medTimeAdder(rbAfternoonBefore, rbAfternoonAfter, rbAfternoonImme, selectedDoseStr);
+        dose = Integer.valueOf(tfAmountAfternoon.getText());
+      }
+      if (cbEvening.isSelected()) {
+        selectedMedTime.add("เย็น");
+        medTimeAdder(rbEveningBefore, rbEveningAfter, rbEveningImme, selectedDoseStr);
+        dose = Integer.valueOf(tfAmountEvening.getText());
+      }
+      if (cbBed.isSelected()) {
+        selectedMedTime.add("ก่อนนอน");
+        selectedDoseStr.add("");
+        dose = Integer.valueOf(tfAmountBed.getText());
+      }
+      Date exp = Date.from(picker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+      Medicine med = new Medicine(tfMedName.getText(), selectedMedType, selectedColor,
+          tfMedDescription.getText(), selectedMedTime, selectedDoseStr, dose,
+          Integer.valueOf(tfTotalMeds.getText()), exp);
+      try {
+        MedicineDB.addMedicine(med, user.getUserId());
+        fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
+        saveSwitcher(panelRight, panelAddMedicine(), panelAllMedicines(), "ยาทั้้งหมด");
+      } catch (SQLException e1) {
+        fireErrorDialog("เกิดความผิดพลาดกับฐานข้อมูล โปรดลองอีกครั้ง");
+        e1.printStackTrace();
+      }
+    });
+
     medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
         labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
     cbAfternoon.addActionListener(e -> {
@@ -2396,7 +2419,7 @@ public class GUI implements ActionListener, KeyListener {
 
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("วันหมดอายุ"));
-    panelSub.add(tfMedEXP);
+    panelSub.add(picker);
     panelAddMedGUI.add(panelSub);
 
     panelSub = new JPanel();

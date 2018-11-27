@@ -27,11 +27,13 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -138,6 +140,38 @@ public class GUIHelper {
     });
   }
 
+  static void fireErrorDialog(String message) {
+    JLabel labelMessage = makeLabel(message);
+    setPadding(labelMessage, 0, 10, 0, 0);
+    try {
+      beep("success");
+      Image img = ImageIO.read(new File(imgPath + "/system/error.png"));
+      Icon icon = new ImageIcon(img);
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE,
+              icon);
+    } catch (Exception ignored) {
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
+  static void fireSuccessDialog(String message) {
+    JLabel labelMessage = makeLabel(message);
+    setPadding(labelMessage, 0, 10, 0, 0);
+    try {
+      beep("success");
+      Image img = ImageIO.read(new File(imgSuccessSrc));
+      Icon icon = new ImageIcon(img);
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE,
+              icon);
+    } catch (Exception ignored) {
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
   static void beep(String type) {
     String path = "src/GUI/sounds/" + type + ".wav";
     File f = new File(path);
@@ -150,12 +184,12 @@ public class GUIHelper {
     }
   }
 
-  static JLabel getRemoveSuccessfulMessage(String type) {
-    return makeLabel("ลบ" + type + "เรียบร้อยแล้ว");
+  static String getRemoveSuccessfulMessage(String type) {
+    return "ลบ" + type + "เรียบร้อยแล้ว";
   }
 
-  static JLabel getRemoveFailedMessage(String type) {
-    return makeLabel("ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ" + type + "ได้");
+  static String getRemoveFailedMessage(String type) {
+    return "ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ" + type + "ได้";
   }
 
   static JPanel getLoadingPanel(boolean withBG) {
@@ -223,6 +257,17 @@ public class GUIHelper {
     panelError.add(labelPic);
     panelError.add(labelError);
     return panelError;
+  }
+
+  static void medTimeAdder(JRadioButton rbMorningBefore, JRadioButton rbMorningAfter,
+      JRadioButton rbMorningImme, ArrayList<String> selectedDoseStr) {
+    if (rbMorningBefore.isSelected()) {
+      selectedDoseStr.add("ก่อนอาหาร");
+    } else if (rbMorningAfter.isSelected()) {
+      selectedDoseStr.add("หลังอาหาร");
+    } else if (rbMorningImme.isSelected()) {
+      selectedDoseStr.add("หลังอาหารทันที / พร้อมอาหาร");
+    }
   }
 
   static void saveSwitcher(JPanel origin, JPanel current, JPanel switchTo, String switchToName) {

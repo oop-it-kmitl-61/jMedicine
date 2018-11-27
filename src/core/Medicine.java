@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Stores a medicine information.
- * Use a constructor to new a medicine.
+ * Stores a medicine information. Use a constructor to new a medicine.
  *
  * @param medName a name of medicine.
- * @param medType a string to classify the medicine,
- *        must be "tablet", "capsule", "liquid" or "Inject".
+ * @param medType a string to classify the medicine, must be "tablet", "capsule", "liquid" or
+ * "Inject".
  * @param medColor a string of color.
  * @param medDescription a description of medicine.
  * @param medTime an ArrayList of String, containing a time for having a medicine.
@@ -20,6 +19,7 @@ import java.util.Date;
  */
 
 public class Medicine {
+
   private String id;
   private String medName;
   private String medType;
@@ -59,7 +59,7 @@ public class Medicine {
         this.medUnit = "มิลลิลิตร";
         break;
       case "inject":
-        this.medUnit = "เข็ม";
+        this.medUnit = "cc";
         break;
     }
   }
@@ -90,7 +90,7 @@ public class Medicine {
         this.medUnit = "มิลลิลิตร";
         break;
       case "inject":
-        this.medUnit = "เข็ม";
+        this.medUnit = "cc";
         break;
     }
   }
@@ -147,5 +147,7 @@ public class Medicine {
     return medUnit;
   }
 
-  public int getMedTotal() { return medTotal; }
+  public int getMedTotal() {
+    return medTotal;
+  }
 }
