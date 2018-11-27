@@ -22,6 +22,7 @@ public class User {
   private ArrayList<Medicine> userMedicines;
   private ArrayList<Doctor> userDoctors;
   private ArrayList<Appointment> userAppointments;
+
   public User(String userName) {
     this.userName = userName;
     this.userMedicines = new ArrayList<>();
@@ -130,6 +131,10 @@ public class User {
     return userAppointments;
   }
 
+  public void setUserAppointments(ArrayList<Appointment> userAppointments) {
+    this.userAppointments = userAppointments;
+  }
+
   public ArrayList<Medicine> getUserMedicines() {
     return userMedicines;
   }
@@ -142,12 +147,12 @@ public class User {
     return userDoctors;
   }
 
-  public void addUserAppointment(Appointment appointment) {
-    this.userAppointments.add(appointment);
-  }
-
   public void setUserDoctors(ArrayList<Doctor> userDoctors) {
     this.userDoctors = userDoctors;
+  }
+
+  public void addUserAppointment(Appointment appointment) {
+    this.userAppointments.add(appointment);
   }
 
   public void addUserMedicine(Medicine medicine) {
