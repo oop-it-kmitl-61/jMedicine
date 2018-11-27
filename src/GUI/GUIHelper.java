@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import javax.imageio.ImageIO;
 import javax.print.attribute.standard.Media;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -155,6 +157,13 @@ public class GUIHelper {
     return panelError;
   }
 
+  static JScrollPane makeScrollPane(JPanel panel) {
+    JScrollPane scrollPane = new JScrollPane(panel);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+    setPadding(scrollPane, 0, 0, 10);
+    return scrollPane;
+  }
+
   static JTextField makeTextField(int columns) {
     JTextField textField = new JTextField(columns);
     textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
@@ -212,12 +221,26 @@ public class GUIHelper {
     return button;
   }
 
+  static JButton makeRemoveButton() {
+    JButton button = new JButton();
+    try {
+      Image img = ImageIO.read(new File(imgPath + "/system/remove.png"));
+      button.setIcon(new ImageIcon(img));
+    } catch (Exception ex) {
+      System.out.println(ex);
+    }
+    button.setBackground(MaterialColors.RED_900);
+    button.setMaximumSize(new Dimension(400, 60));
+    MaterialUIMovement.add(button, MaterialColors.RED_700);
+    return button;
+  }
+
   static JButton makeButton(String buttonText) {
     JButton button = new JButton(buttonText);
     button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
     button.setBackground(GUI.getMainBlue());
     button.setForeground(Color.WHITE);
-    button.setMaximumSize(new Dimension(200, 60));
+    button.setMaximumSize(new Dimension(400, 60));
     MaterialUIMovement.add(button, MaterialColors.LIGHT_BLUE_600);
     return button;
   }
