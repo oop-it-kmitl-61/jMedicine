@@ -140,11 +140,27 @@ public class GUIHelper {
     });
   }
 
+  static void fireDBErrorDialog() {
+    JLabel labelMessage = makeLabel("เกิดความผิดพลาดกับฐานข้อมูล โปรดลองอีกครั้ง");
+    setPadding(labelMessage, 0, 10, 0, 0);
+    try {
+      beep("warning");
+      Image img = ImageIO.read(new File(imgPath + "/system/error.png"));
+      Icon icon = new ImageIcon(img);
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE,
+              icon);
+    } catch (Exception ignored) {
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
   static void fireErrorDialog(String message) {
     JLabel labelMessage = makeLabel(message);
     setPadding(labelMessage, 0, 10, 0, 0);
     try {
-      beep("success");
+      beep("warning");
       Image img = ImageIO.read(new File(imgPath + "/system/error.png"));
       Icon icon = new ImageIcon(img);
       JOptionPane
@@ -270,12 +286,13 @@ public class GUIHelper {
     }
   }
 
-  static void saveSwitcher(JPanel origin, JPanel current, JPanel switchTo, String switchToName) {
-    origin.remove(switchTo);
-    origin.add(switchTo, switchToName);
-    CardLayout cl = (CardLayout) (origin.getLayout());
-    cl.show(origin, switchToName);
-    origin.remove(current);
+  static void saveSwitcher(JPanel panelRight, JPanel current, JPanel switchTo,
+      String switchToName) {
+    panelRight.remove(switchTo);
+    panelRight.add(switchTo, switchToName);
+    CardLayout cl = (CardLayout) (panelRight.getLayout());
+    cl.show(panelRight, switchToName);
+    panelRight.remove(current);
   }
 
   static void editSwitcher(JPanel origin, JPanel switchTo) {
