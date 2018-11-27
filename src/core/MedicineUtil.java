@@ -17,11 +17,9 @@ public class MedicineUtil {
 
   private String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "ยาแบบฉีด"};
   private String[] tabletColor = {"white", "blue", "green", "yellow", "red", "pink", "purple",
-      "orange",
-      "brown"};
+      "orange", "brown"};
   private String[] liquidColor = {"transparent", "white", "blue", "green", "yellow", "red", "pink",
-      "purple",
-      "orange", "brown", "black"};
+      "purple", "orange", "brown", "black"};
   private String[] medTime = {"เช้า", "กลางวัน", "เย็น", "ก่อนนอน"};
   private String[] medDoseStr = {"ก่อนอาหาร", "หลังอาหาร", "พร้อมอาหาร/หลังอาหารทันที"};
 
@@ -33,8 +31,26 @@ public class MedicineUtil {
     return tabletColor;
   }
 
+  public int getTabletColorIndex(String color) {
+    for (int i = 0; i < tabletColor.length; i++) {
+      if (tabletColor[i].equals(color)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   public String[] getLiquidColor() {
     return liquidColor;
+  }
+
+  public int getLiquidColorIndex(String color) {
+    for (int i = 0; i < liquidColor.length; i++) {
+      if (liquidColor[i].equals(color)) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public String[] getMedTime() {
