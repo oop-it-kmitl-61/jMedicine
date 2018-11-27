@@ -9,8 +9,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
+/**
+ * Doctor database class help GUI connect to database using JDBC
+ */
 public class DoctorDB {
 
   private static Connection connection;
@@ -81,6 +83,44 @@ public class DoctorDB {
     pStatement.close();
 
     return doctor;
+  }
+
+  /**
+   * Doctor database interface use to update doctor data
+   *
+   * @param doctor doctor object with data you need to update
+   * @return Doctor object which updated
+   */
+
+  public static Doctor updateDoctor(Doctor doctor) throws SQLException {
+    ArrayList time = new ArrayList();
+    for (ArrayList t : doctor.getWorkTime()) {
+      time.add(connection.createArrayOf("text", t.toArray()));
+    }
+
+    String SQLCommand = "UPDATE doctors SET title = ?, firstname = ?, lastname = ?, ward = ?, hospital = ?, time = ? WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+
+    pStatement.setString(1, doctor.getPrefix());
+    pStatement.setString(2, doctor.getFirstName());
+    pStatement.setString(3, doctor.getLastName());
+    pStatement.setString(4, doctor.getWard());
+    pStatement.setString(5, doctor.getHospital());
+    pStatement.setArray(6, connection.createArrayOf("text", time.toArray()));
+    pStatement.setObject(7, doctor.getId(), Types.OTHER);
+
+    return doctor;
+  }
+
+  public static void removeDoctor(Doctor doctor) throws SQLException {
+    String SQLCommand = "DELETE FROM doctors WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+
+    pStatement.setString(1, doctor.getId());
+
+    pStatement.executeUpdate();
   }
 
   public static void main(String[] args) {
