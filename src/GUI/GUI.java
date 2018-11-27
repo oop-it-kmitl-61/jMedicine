@@ -12,6 +12,7 @@ import com.teamdev.jxbrowser.chromium.PermissionRequest;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.Appointment;
+import core.AppointmentUtil;
 import core.Doctor;
 import core.DoctorUtil;
 import core.Medicine;
@@ -361,7 +362,7 @@ public class GUI implements ActionListener, KeyListener {
     panelBody.add(panelSub);
 
     panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    panelSub.add(makeLabel("เวอร์ชั่น 0.6.2"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.6.3"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -1538,6 +1539,11 @@ public class GUI implements ActionListener, KeyListener {
     setPadding(panelBody, 20, 0, 0, 45);
 
     // Listeners
+    btnEdit.addActionListener(e -> {
+      panelRight.add(panelEditAppointment(appointment), "แก้ไขนัด");
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, "แก้ไขนัด");
+    });
     btnRemove.addActionListener(e -> {
       JLabel labelConfirm = makeLabel(
           "ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
@@ -1611,6 +1617,99 @@ public class GUI implements ActionListener, KeyListener {
     panelView.add(panelBody, BorderLayout.SOUTH);
 
     return panelView;
+  }
+
+  private JPanel panelEditAppointment(Appointment app) {
+
+    // JPanels
+    JPanel panelEditAppointment = new JPanel(new BorderLayout());
+    JPanel panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelBody = new JPanel();
+
+    // JButtons
+    JButton btnBack = makeBackButton("แก้ไขนัด", AppointmentUtil.getTitle(app));
+    JButton btnSave = makeButton("บันทึก");
+
+    // JTextFields
+    // TODO: tfDoctor @ editAppointment
+    JTextField tfDoctor = makeTextField(30);
+    JTextField tfHospital = makeTextField(30);
+    JTextField tfNote = makeTextField(40);
+
+    tfDoctor.setText(DoctorUtil.getDoctorFullName(app.getDoctor()));
+    tfHospital.setText(app.getHospitalName());
+
+    // JLabels
+    JLabel labelDateTitle = makeLabel("วันที่นัด");
+    JLabel labelTimeStart = makeLabel("ตั้งแต่เวลา");
+    JLabel labelTimeEnd = makeLabel("จนถึงเวลา");
+    JLabel labelDoctor = makeLabel("แพทย์ที่นัด");
+    JLabel labelHospital = makeLabel("ชื่อสถานพยาบาล");
+    JLabel labelNote = makeLabel("หมายเหตุการนัด");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelEditAppointment, -11, 0, 20, -18);
+    setPadding(panelBody, 0, 0, 260, 28);
+    setPadding(panelTitle, 0, 0, 20);
+    setPadding(labelDoctor, 10, 0, -10, 0);
+    setPadding(labelHospital, 10, 0, -10, 0);
+    setPadding(labelNote, 10, 0, -10, 0);
+
+    // Listener
+    btnSave.addActionListener(e -> {
+      panelRight.remove(panelViewAppointment(app));
+      panelRight.add(panelViewAppointment(app), AppointmentUtil.getTitle(app));
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, AppointmentUtil.getTitle(app));
+      panelRight.remove(panelEditAppointment(app));
+    });
+
+    // Panel Title
+    panelTitle.add(btnBack);
+
+    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(labelDateTitle);
+    DatePicker datePicker1 = new DatePicker();
+    panelSub.add(datePicker1);
+    panelSub.add(labelTimeStart);
+    TimePicker timePicker1 = new TimePicker();
+    panelSub.add(timePicker1);
+    panelSub.add(labelTimeEnd);
+    TimePicker timePicker2 = new TimePicker();
+    panelSub.add(timePicker2);
+    setPadding(panelSub, 0, 0, 10, 0);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(labelDoctor);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(tfDoctor);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(labelHospital);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(tfHospital);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(labelNote);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(tfNote);
+    panelBody.add(panelSub);
+
+    panelEditAppointment.add(panelTitle, BorderLayout.NORTH);
+    panelEditAppointment.add(panelBody, BorderLayout.CENTER);
+    panelEditAppointment.add(btnSave, BorderLayout.SOUTH);
+
+    return panelEditAppointment;
   }
 
   private JPanel panelAddAppointment() {
@@ -2115,28 +2214,28 @@ public class GUI implements ActionListener, KeyListener {
   private JPanel makeAppointmentCard(Appointment appointment) {
     /* Creates a card that will be used on the All appointments panel only. */
 
-    String date = GUIHelper.formatDMY.format(appointment.getTimeStart());
-    String timeStart = GUIHelper.formatHM.format(appointment.getTimeStart());
-    String timeEnd = GUIHelper.formatHM.format(appointment.getTimeStop());
+    // JPanels
+    JPanel panelLoopInfo = new JPanel();
+    JPanel panelPic = new JPanel();
+    JPanel panelInfo = new JPanel();
 
     Doctor appDr = appointment.getDoctor();
 
-    String title = date + " เวลา " + timeStart + " น. - " + timeEnd + " น.";
+    // Strings
+    String title = AppointmentUtil.getTitle(appointment);
     String shortInfo =
         appDr.getPrefix() + " " + appDr.getName() + " " + appointment.getHospitalName();
 
+    // JLabels
     JLabel labelTitle = makeBoldLabel(title);
     JLabel labelShortInfo = makeLabel(shortInfo);
     JLabel labelPic = new JLabel();
-    JPanel panelLoopInfo = new JPanel();
+
+    // Styling
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
-    setPadding(panelLoopInfo, 5, 0, 20, 0);
-
-    JPanel panelPic = new JPanel();
     panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
-
-    JPanel panelInfo = new JPanel();
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
+    setPadding(panelLoopInfo, 5, 0, 20, 0);
 
     try {
       Image img = ImageIO.read(new File(imgPath + "/system/calendar.png"));
