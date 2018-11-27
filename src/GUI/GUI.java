@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import javax.imageio.ImageIO;
@@ -49,8 +50,6 @@ import mdlaf.shadows.DropShadowBorder;
 
 /**
  * GUI class creates all graphic user interface, all in javax.swing.
- *
- * @param windowSize a Dimension class consists of width and height.
  */
 
 public class GUI implements ActionListener, KeyListener {
@@ -396,6 +395,385 @@ public class GUI implements ActionListener, KeyListener {
     return panelAddMedicine;
   }
 
+  private JPanel panelEditMedicine(Medicine medicine) {
+    /* Creates GUI of the form for editing a new medicine. */
+    String medUnit = medicine.getMedUnit();
+
+    // JPanels
+    JPanel panelEditMed = new JPanel(new BorderLayout());
+    JPanel panelBody = new JPanel();
+    JPanel panelButtons = new JPanel(new BorderLayout());
+    panelTitle = new JPanel(new BorderLayout());
+    JPanel panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSubMorning = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSubAfternoon = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSubEvening = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelSubBed = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelTabletColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelCapsuleColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panelLiquidColor = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+    // JButtons
+    JButton btnBack = makeBackButton("แก้ไขยา", medicine.getMedName());
+    JButton btnSave = makeButton("บันทึก");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    panelCapsuleColor.setVisible(false);
+    panelLiquidColor.setVisible(false);
+    panelSubMorning.setVisible(false);
+    panelSubAfternoon.setVisible(false);
+    panelSubEvening.setVisible(false);
+    panelSubBed.setVisible(false);
+    setPadding(panelEditMed, -4, 0, 10, -18);
+    setPadding(panelBody, 0, 0, 20, 40);
+    setPadding(panelTitle, 0, 0, 20);
+
+    // JTextFields
+    JTextField tfMedName = makeTextField(20);
+    JTextField tfMedDescription = makeTextField(20);
+    JTextField tfAmountMorning = makeTextField(2);
+    JTextField tfAmountAfternoon = makeTextField(2);
+    JTextField tfAmountEvening = makeTextField(2);
+    JTextField tfAmountBed = makeTextField(2);
+    JTextField tfTotalMeds = makeTextField(2);
+    JTextField tfMedEXP = makeTextField(10);
+
+    tfMedName.setText(medicine.getMedName());
+    tfMedDescription.setText(medicine.getMedDescription());
+    tfTotalMeds.setText(String.valueOf(medicine.getMedTotal()));
+    tfMedEXP.setText(formatDMY.format(medicine.getMedEXP()));
+
+    // JLabels
+    JLabel labelUnit = makeLabel(medUnit);
+    JLabel labelUnitMorning = makeLabel(medUnit);
+    JLabel labelUnitAfternoon = makeLabel(medUnit);
+    JLabel labelUnitEvening = makeLabel(medUnit);
+    JLabel labelUnitBed = makeLabel(medUnit);
+
+    // Arrays
+    String[] medType = medUtil.getMedType();
+    String[] tabletColor = medUtil.getTabletColor();
+    String[] liquidColor = medUtil.getLiquidColor();
+    String[] medTime = medUtil.getMedTime();
+    String[] medDoseStr = medUtil.getMedDoseStr();
+    ArrayList<ImageIcon> tabletColorIcons = new ArrayList<>();
+    ArrayList<ImageIcon> liquidColorIcons = new ArrayList<>();
+
+    for (String color : tabletColor) {
+      tabletColorIcons.add(new ImageIcon(GUIHelper.imgPath + "/colors/" + color + ".png"));
+    }
+    for (String color : liquidColor) {
+      liquidColorIcons.add(new ImageIcon(GUIHelper.imgPath + "/colors/" + color + ".png"));
+    }
+
+    // JComboBoxes
+    JComboBox cbMedType = makeComboBox(medType);
+    JComboBox cbTabletColor = makeComboBox(tabletColorIcons);
+    JComboBox cbLiquidColor = makeComboBox(liquidColorIcons);
+    JComboBox cbCapsuleColor01 = makeComboBox(tabletColorIcons);
+    JComboBox cbCapsuleColor02 = makeComboBox(tabletColorIcons);
+
+    switch (medicine.getMedType()) {
+      case "tablet":
+        cbMedType.setSelectedIndex(0);
+        cbTabletColor.setSelectedIndex(medUtil.getTabletColorIndex(medicine.getMedColor()));
+        panelColor.setVisible(true);
+        panelTabletColor.setVisible(true);
+        panelCapsuleColor.setVisible(false);
+        panelLiquidColor.setVisible(false);
+        break;
+      case "capsule":
+        cbMedType.setSelectedIndex(1);
+        String[] currentColors = medicine.getMedColor().split("-");
+        cbCapsuleColor01.setSelectedIndex(medUtil.getTabletColorIndex(currentColors[0]));
+        cbCapsuleColor02.setSelectedIndex(medUtil.getTabletColorIndex(currentColors[1]));
+        panelColor.setVisible(true);
+        panelTabletColor.setVisible(false);
+        panelCapsuleColor.setVisible(true);
+        panelLiquidColor.setVisible(false);
+        break;
+      case "liquid":
+        cbMedType.setSelectedIndex(2);
+        cbLiquidColor.setSelectedIndex(medUtil.getLiquidColorIndex(medicine.getMedColor()));
+        panelColor.setVisible(true);
+        panelTabletColor.setVisible(false);
+        panelCapsuleColor.setVisible(false);
+        panelLiquidColor.setVisible(true);
+        break;
+      case "inject":
+        cbMedType.setSelectedIndex(3);
+    }
+
+    // JCheckBoxes
+    JCheckBox cbMorning = makeCheckBox(medTime[0]);
+    JCheckBox cbAfternoon = makeCheckBox(medTime[1]);
+    JCheckBox cbEvening = makeCheckBox(medTime[2]);
+    JCheckBox cbBed = makeCheckBox(medTime[3]);
+
+    // JRadioButtons
+    JRadioButton rbMorningBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbMorningAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbMorningImme = makeRadioButton(medDoseStr[2]);
+
+    JRadioButton rbAfternoonBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbAfternoonAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbAfternoonImme = makeRadioButton(medDoseStr[2]);
+
+    JRadioButton rbEveningBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbEveningAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbEveningImme = makeRadioButton(medDoseStr[2]);
+
+    // Radio Groups
+    ButtonGroup bgMorning = new ButtonGroup();
+    ButtonGroup bgAfternoon = new ButtonGroup();
+    ButtonGroup bgEvening = new ButtonGroup();
+
+    bgMorning.add(rbMorningBefore);
+    bgMorning.add(rbMorningAfter);
+    bgMorning.add(rbMorningImme);
+
+    bgAfternoon.add(rbAfternoonBefore);
+    bgAfternoon.add(rbAfternoonAfter);
+    bgAfternoon.add(rbAfternoonImme);
+
+    bgEvening.add(rbEveningBefore);
+    bgEvening.add(rbEveningAfter);
+    bgEvening.add(rbEveningImme);
+
+    for (int i = 0; i < medicine.getMedTime().size(); i++) {
+      switch (medicine.getMedTime().get(i)) {
+        case "เช้า":
+          cbMorning.setSelected(true);
+          medTimeRadioHandler(medicine, rbMorningBefore, rbMorningAfter, i);
+          tfAmountMorning.setText(String.valueOf(medicine.getMedDose()));
+          panelSubMorning.setVisible(true);
+          break;
+        case "กลางวัน":
+          cbAfternoon.setSelected(true);
+          medTimeRadioHandler(medicine, rbAfternoonBefore, rbAfternoonAfter, i);
+          tfAmountAfternoon.setText(String.valueOf(medicine.getMedDose()));
+          panelSubAfternoon.setVisible(true);
+          break;
+        case "เย็น":
+          cbEvening.setSelected(true);
+          medTimeRadioHandler(medicine, rbEveningBefore, rbEveningAfter, i);
+          tfAmountEvening.setText(String.valueOf(medicine.getMedDose()));
+          panelSubEvening.setVisible(true);
+          break;
+        case "ก่อนนอน":
+          cbBed.setSelected(true);
+          panelSubBed.setVisible(true);
+          tfAmountBed.setText(String.valueOf(medicine.getMedDose()));
+          break;
+      }
+    }
+
+    // Listeners
+    btnSave.addActionListener(e -> {
+      panelRight.remove(panelViewMedicine(medicine));
+      panelRight.add(panelViewMedicine(medicine), medicine.getMedName());
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, medicine.getMedName());
+      panelRight.remove(panelEditMedicine(medicine));
+    });
+    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
+        labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
+    cbAfternoon.addActionListener(e -> {
+      if (cbAfternoon.isSelected()) {
+        panelSubAfternoon.setVisible(true);
+      } else {
+        panelSubAfternoon.setVisible(false);
+      }
+    });
+    cbEvening.addActionListener(e -> {
+      if (cbEvening.isSelected()) {
+        panelSubEvening.setVisible(true);
+      } else {
+        panelSubEvening.setVisible(false);
+      }
+    });
+    cbBed.addActionListener(e -> {
+      if (cbBed.isSelected()) {
+        panelSubBed.setVisible(true);
+      } else {
+        panelSubBed.setVisible(false);
+      }
+    });
+    cbMorning.addActionListener(e -> {
+      if (cbMorning.isSelected()) {
+        panelSubMorning.setVisible(true);
+      } else {
+        panelSubMorning.setVisible(false);
+      }
+    });
+
+    panelSub.add(btnBack);
+    panelTitle.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("ชื่อยา"));
+    panelSub.add(tfMedName);
+    panelSub.add(makeLabel("ประเภท"));
+    panelSub.add(cbMedType);
+    panelBody.add(panelSub);
+
+    panelColor.add(makeBoldLabel("สีของยา"));
+    panelBody.add(panelColor);
+
+    panelTabletColor.add(cbTabletColor);
+    panelBody.add(panelTabletColor);
+
+    panelCapsuleColor.add(makeLabel("สีที่ 1"));
+    panelCapsuleColor.add(cbCapsuleColor01);
+    panelCapsuleColor.add(makeLabel("สีที่ 2"));
+    panelCapsuleColor.add(cbCapsuleColor02);
+    panelBody.add(panelCapsuleColor);
+
+    panelLiquidColor.add(cbLiquidColor);
+    panelBody.add(panelLiquidColor);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("คำอธิบายยา (เช่น ยาแก้ปวด)"));
+    panelSub.add(tfMedDescription);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeBoldLabel("เวลาที่ต้องรับประทาน"));
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbMorning);
+    panelSubMorning.add(rbMorningBefore);
+    panelSubMorning.add(rbMorningAfter);
+    panelSubMorning.add(rbMorningImme);
+    panelSubMorning.add(makeLabel("จำนวน"));
+    panelSubMorning.add(tfAmountMorning);
+    panelSubMorning.add(labelUnitMorning);
+    panelSub.add(panelSubMorning);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbAfternoon);
+    panelSubAfternoon.add(rbAfternoonBefore);
+    panelSubAfternoon.add(rbAfternoonAfter);
+    panelSubAfternoon.add(rbAfternoonImme);
+    panelSubAfternoon.add(makeLabel("จำนวน"));
+    panelSubAfternoon.add(tfAmountAfternoon);
+    panelSubAfternoon.add(labelUnitAfternoon);
+    panelSub.add(panelSubAfternoon);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbEvening);
+    panelSubEvening.add(rbEveningBefore);
+    panelSubEvening.add(rbEveningAfter);
+    panelSubEvening.add(rbEveningImme);
+    panelSubEvening.add(makeLabel("จำนวน"));
+    panelSubEvening.add(tfAmountEvening);
+    panelSubEvening.add(labelUnitEvening);
+    panelSub.add(panelSubEvening);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(cbBed);
+    panelSubBed.add(makeLabel("จำนวน"));
+    panelSubBed.add(tfAmountBed);
+    panelSubBed.add(labelUnitBed);
+    panelSub.add(panelSubBed);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
+    panelSub.add(tfTotalMeds);
+    panelSub.add(labelUnit);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    panelSub.add(makeLabel("วันหมดอายุ"));
+    panelSub.add(tfMedEXP);
+    panelBody.add(panelSub);
+
+    panelSub = new JPanel();
+    panelSub.add(btnSave);
+    panelBody.add(panelSub);
+
+    panelButtons.add(btnSave);
+
+    JScrollPane scrollPane = makeScrollPane(panelBody);
+
+    panelEditMed.add(panelTitle, BorderLayout.NORTH);
+    panelEditMed.add(scrollPane, BorderLayout.CENTER);
+    panelEditMed.add(panelButtons, BorderLayout.SOUTH);
+    return panelEditMed;
+  }
+
+  private void medTimeRadioHandler(Medicine medicine, JRadioButton rbMorningBefore,
+      JRadioButton rbMorningAfter, int i) {
+    if (medicine.getMedDoseStr().get(i).equals("ก่อนอาหาร")) {
+      rbMorningBefore.setSelected(true);
+    } else if (medicine.getMedDoseStr().get(i).equals("หลังอาหาร")) {
+      rbMorningAfter.setSelected(true);
+    } else {
+      rbMorningBefore.setSelected(true);
+    }
+  }
+
+  private void medTypeUIHandler(JPanel panelColor, JPanel panelTabletColor,
+      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit, JLabel labelUnitMorning,
+      JLabel labelUnitAfternoon, JLabel labelUnitEvening, JLabel labelUnitBed,
+      JComboBox cbMedType) {
+    cbMedType.addActionListener(e -> {
+      switch (cbMedType.getSelectedIndex()) {
+        case 0:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(true);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("เม็ด");
+          labelUnitMorning.setText("เม็ด");
+          labelUnitAfternoon.setText("เม็ด");
+          labelUnitEvening.setText("เม็ด");
+          labelUnitBed.setText("เม็ด");
+          break;
+        case 1:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(true);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("แคปซูล");
+          labelUnitMorning.setText("แคปซูล");
+          labelUnitAfternoon.setText("แคปซูล");
+          labelUnitEvening.setText("แคปซูล");
+          labelUnitBed.setText("แคปซูล");
+          break;
+        case 2:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(true);
+          labelUnit.setText("มิลลิลิตร");
+          labelUnitMorning.setText("มิลลิลิตร");
+          labelUnitAfternoon.setText("มิลลิลิตร");
+          labelUnitEvening.setText("มิลลิลิตร");
+          labelUnitBed.setText("มิลลิลิตร");
+          break;
+        default:
+          panelColor.setVisible(false);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          labelUnit.setText("cc");
+          labelUnitMorning.setText("cc");
+          labelUnitAfternoon.setText("cc");
+          labelUnitEvening.setText("cc");
+          labelUnitBed.setText("cc");
+          break;
+      }
+    });
+  }
+
   private JPanel panelViewMedicine(Medicine medicine) {
     /* Creates GUI displaying all information of a single medicine */
 
@@ -423,6 +801,11 @@ public class GUI implements ActionListener, KeyListener {
     setPadding(panelView, 0, 0, 0, -20);
 
     // Listeners
+    btnEdit.addActionListener(e -> {
+      panelRight.add(panelEditMedicine(medicine), "แก้ไขยา");
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, "แก้ไขยา");
+    });
     btnRemove.addActionListener(e -> {
       int dialogResult = 0;
       JLabel labelConfirm = makeLabel(
@@ -518,7 +901,7 @@ public class GUI implements ActionListener, KeyListener {
       panelSub.add(labelMedDoseStr);
       panelSub.add(labelMedTime);
       panelSub.add(makeLabel(medicine.getMedDose() + " " + medicine.getMedUnit()));
-      setPadding(panelSub, 0, 20, -10);
+      setPadding(panelSub, 0, 0, -10);
       panelBody.add(panelSub);
     }
 
@@ -631,103 +1014,19 @@ public class GUI implements ActionListener, KeyListener {
     }
 
     // Listeners
-    cbSunday.addActionListener(e -> {
-      if (cbSunday.isSelected()) {
-        sundayStartLabel.setVisible(true);
-        sundayEndLabel.setVisible(true);
-        sundayStartPicker.setVisible(true);
-        sundayEndPicker.setVisible(true);
-      } else {
-        sundayStartLabel.setVisible(false);
-        sundayEndLabel.setVisible(false);
-        sundayStartPicker.setVisible(false);
-        sundayEndPicker.setVisible(false);
-      }
-    });
-
-    cbMonday.addActionListener(e -> {
-      if (cbMonday.isSelected()) {
-        mondayStartLabel.setVisible(true);
-        mondayEndLabel.setVisible(true);
-        mondayStartPicker.setVisible(true);
-        mondayEndPicker.setVisible(true);
-      } else {
-        mondayStartLabel.setVisible(false);
-        mondayEndLabel.setVisible(false);
-        mondayStartPicker.setVisible(false);
-        mondayEndPicker.setVisible(false);
-      }
-    });
-
-    cbTuesday.addActionListener(e -> {
-      if (cbTuesday.isSelected()) {
-        tuesStartLabel.setVisible(true);
-        tuesEndLabel.setVisible(true);
-        tuesStartPicker.setVisible(true);
-        tuesEndPicker.setVisible(true);
-      } else {
-        tuesStartLabel.setVisible(false);
-        tuesEndLabel.setVisible(false);
-        tuesStartPicker.setVisible(false);
-        tuesEndPicker.setVisible(false);
-      }
-    });
-
-    cbWednesday.addActionListener(e -> {
-      if (cbWednesday.isSelected()) {
-        wedStartLabel.setVisible(true);
-        wedEndLabel.setVisible(true);
-        wedStartPicker.setVisible(true);
-        wedEndPicker.setVisible(true);
-      } else {
-        wedStartLabel.setVisible(false);
-        wedEndLabel.setVisible(false);
-        wedStartPicker.setVisible(false);
-        wedEndPicker.setVisible(false);
-      }
-    });
-
-    cbThursday.addActionListener(e -> {
-      if (cbThursday.isSelected()) {
-        thurStartLabel.setVisible(true);
-        thurEndLabel.setVisible(true);
-        thurStartPicker.setVisible(true);
-        thurEndPicker.setVisible(true);
-      } else {
-        thurStartLabel.setVisible(false);
-        thurEndLabel.setVisible(false);
-        thurStartPicker.setVisible(false);
-        thurEndPicker.setVisible(false);
-      }
-    });
-
-    cbFriday.addActionListener(e -> {
-      if (cbFriday.isSelected()) {
-        fridayStartLabel.setVisible(true);
-        fridayEndLabel.setVisible(true);
-        fridayStartPicker.setVisible(true);
-        fridayEndPicker.setVisible(true);
-      } else {
-        fridayStartLabel.setVisible(false);
-        fridayEndLabel.setVisible(false);
-        fridayStartPicker.setVisible(false);
-        fridayEndPicker.setVisible(false);
-      }
-    });
-
-    cbSaturday.addActionListener(e -> {
-      if (cbSaturday.isSelected()) {
-        satStartLabel.setVisible(true);
-        satEndLabel.setVisible(true);
-        satStartPicker.setVisible(true);
-        satEndPicker.setVisible(true);
-      } else {
-        satStartLabel.setVisible(false);
-        satEndLabel.setVisible(false);
-        satStartPicker.setVisible(false);
-        satEndPicker.setVisible(false);
-      }
-    });
+    workTimeCheckBoxUIHandler(cbSunday, sundayStartPicker, sundayEndPicker, sundayStartLabel,
+        sundayEndLabel);
+    workTimeCheckBoxUIHandler(cbMonday, mondayStartPicker, mondayEndPicker, mondayStartLabel,
+        mondayEndLabel);
+    workTimeCheckBoxUIHandler(cbTuesday, tuesStartPicker, tuesEndPicker, tuesStartLabel,
+        tuesEndLabel);
+    workTimeCheckBoxUIHandler(cbWednesday, wedStartPicker, wedEndPicker, wedStartLabel,
+        wedEndLabel);
+    workTimeCheckBoxUIHandler(cbThursday, thurStartPicker, thurEndPicker, thurStartLabel,
+        thurEndLabel);
+    workTimeCheckBoxUIHandler(cbFriday, fridayStartPicker, fridayEndPicker, fridayStartLabel,
+        fridayEndLabel);
+    workTimeCheckBoxUIHandler(cbSaturday, satStartPicker, satEndPicker, satStartLabel, satEndLabel);
 
     JTextField tfDoctorName = makeTextField(20);
     JTextField tfDoctorSurName = makeTextField(20);
@@ -824,6 +1123,23 @@ public class GUI implements ActionListener, KeyListener {
     panelAddDoctor.add(btnAdd, BorderLayout.SOUTH);
 
     return panelAddDoctor;
+  }
+
+  private void workTimeCheckBoxUIHandler(JCheckBox cbSunday, TimePicker sundayStartPicker,
+      TimePicker sundayEndPicker, JLabel sundayStartLabel, JLabel sundayEndLabel) {
+    cbSunday.addActionListener(e -> {
+      if (cbSunday.isSelected()) {
+        sundayStartLabel.setVisible(true);
+        sundayEndLabel.setVisible(true);
+        sundayStartPicker.setVisible(true);
+        sundayEndPicker.setVisible(true);
+      } else {
+        sundayStartLabel.setVisible(false);
+        sundayEndLabel.setVisible(false);
+        sundayStartPicker.setVisible(false);
+        sundayEndPicker.setVisible(false);
+      }
+    });
   }
 
   private JPanel panelViewDoctor(Doctor doctor) {
@@ -930,13 +1246,9 @@ public class GUI implements ActionListener, KeyListener {
     Doctor appointmentDr = appointment.getDoctor();
     String doctorName = appointmentDr.getPrefix() + " " + appointmentDr.getName();
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    String date = dateFormat.format(appointment.getTimeStart());
-    dateFormat = new SimpleDateFormat("HH.mm");
-    String timeStart = dateFormat.format(appointment.getTimeStart());
-    String timeEnd = dateFormat.format(appointment.getTimeStop());
-
-    String title = date + " เวลา " + timeStart + " น. - " + timeEnd + " น.";
+    String title = formatDMY.format(appointment.getTimeStart())
+        + " เวลา " + formatHM.format(appointment.getTimeStart()) + " น. - "
+        + formatHM.format(appointment.getTimeStop()) + " น.";
 
     // JButtons
     JButton btnEdit = makeButton("แก้ไขนัดแพทย์");
@@ -1602,7 +1914,12 @@ public class GUI implements ActionListener, KeyListener {
     JTextField tfTotalMeds = makeTextField(2);
     JTextField tfMedEXP = makeTextField(10);
 
+    // JLabels
     JLabel labelUnit = makeLabel(medUnit);
+    JLabel labelUnitMorning = makeLabel(medUnit);
+    JLabel labelUnitAfternoon = makeLabel(medUnit);
+    JLabel labelUnitEvening = makeLabel(medUnit);
+    JLabel labelUnitBed = makeLabel(medUnit);
 
     // JButtons
     JButton btnSave = makeButton("บันทึกยา");
@@ -1678,38 +1995,8 @@ public class GUI implements ActionListener, KeyListener {
 
     // Listeners
     btnSave.addActionListener(this);
-    cbMedType.addActionListener(e -> {
-      switch (cbMedType.getSelectedIndex()) {
-        case 0:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(true);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(false);
-          labelUnit.setText("เม็ด");
-          break;
-        case 1:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(true);
-          panelLiquidColor.setVisible(false);
-          labelUnit.setText("แคปซูล");
-          break;
-        case 2:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(true);
-          labelUnit.setText("มิลลิลิตร");
-          break;
-        default:
-          panelColor.setVisible(false);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(false);
-          labelUnit.setText("มิลลิลิตร");
-          break;
-      }
-    });
+    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
+        labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
     cbAfternoon.addActionListener(e -> {
       if (cbAfternoon.isSelected()) {
         panelSubAfternoon.setVisible(true);
@@ -1776,7 +2063,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSubMorning.add(rbMorningImme);
     panelSubMorning.add(makeLabel("จำนวน"));
     panelSubMorning.add(tfAmountMorning);
-    panelSubMorning.add(labelUnit);
+    panelSubMorning.add(labelUnitMorning);
     panelSub.add(panelSubMorning);
     panelAddMedGUI.add(panelSub);
 
@@ -1787,7 +2074,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSubAfternoon.add(rbAfternoonImme);
     panelSubAfternoon.add(makeLabel("จำนวน"));
     panelSubAfternoon.add(tfAmountAfternoon);
-    panelSubAfternoon.add(labelUnit);
+    panelSubAfternoon.add(labelUnitAfternoon);
     panelSub.add(panelSubAfternoon);
     panelAddMedGUI.add(panelSub);
 
@@ -1798,7 +2085,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSubEvening.add(rbEveningImme);
     panelSubEvening.add(makeLabel("จำนวน"));
     panelSubEvening.add(tfAmountEvening);
-    panelSubEvening.add(labelUnit);
+    panelSubEvening.add(labelUnitEvening);
     panelSub.add(panelSubEvening);
     panelAddMedGUI.add(panelSub);
 
@@ -1806,7 +2093,7 @@ public class GUI implements ActionListener, KeyListener {
     panelSub.add(cbBed);
     panelSubBed.add(makeLabel("จำนวน"));
     panelSubBed.add(tfAmountBed);
-    panelSubBed.add(labelUnit);
+    panelSubBed.add(labelUnitBed);
     panelSub.add(panelSubBed);
     panelAddMedGUI.add(panelSub);
 
@@ -1882,7 +2169,6 @@ public class GUI implements ActionListener, KeyListener {
     String btnCommand = e.getActionCommand();
 
     switch (btnCommand) {
-      case "บันทึกยา":
       case "ข้ามขั้นตอนนี้":
         if (frameWelcome == null) {
           CardLayout cl = (CardLayout) (panelRight.getLayout());
