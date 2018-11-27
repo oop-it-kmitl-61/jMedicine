@@ -754,15 +754,16 @@ public class GUI implements ActionListener, KeyListener {
         String labelMessage;
         if (user.removeUserMedicine(medicine)) {
           labelMessage = getRemoveSuccessfulMessage("ยา");
+          fireSuccessDialog(labelMessage);
         } else {
           labelMessage = getRemoveFailedMessage("ยา");
+          fireErrorDialog(labelMessage);
         }
         panelRight.remove(panelAllMedicines());
         panelSub02 = null;
         panelSub02 = new JPanel(new BorderLayout());
         panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
         backTo("ยาทั้งหมด");
-        fireSuccessDialog(labelMessage);
       }
     });
 
@@ -2304,7 +2305,7 @@ public class GUI implements ActionListener, KeyListener {
         fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
         saveSwitcher(panelRight, panelAddMedicine(), panelAllMedicines(), "ยาทั้้งหมด");
       } catch (SQLException e1) {
-        fireErrorDialog("เกิดความผิดพลาดกับฐานข้อมูล โปรดลองอีกครั้ง");
+        fireDBErrorDialog();
         e1.printStackTrace();
       }
     });
