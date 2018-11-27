@@ -286,12 +286,13 @@ public class GUIHelper {
     }
   }
 
-  static void saveSwitcher(JPanel origin, JPanel current, JPanel switchTo, String switchToName) {
-    origin.remove(switchTo);
-    origin.add(switchTo, switchToName);
-    CardLayout cl = (CardLayout) (origin.getLayout());
-    cl.show(origin, switchToName);
-    origin.remove(current);
+  static void saveSwitcher(JPanel panelRight, JPanel current, JPanel switchTo,
+      String switchToName) {
+    panelRight.remove(switchTo);
+    panelRight.add(switchTo, switchToName);
+    CardLayout cl = (CardLayout) (panelRight.getLayout());
+    cl.show(panelRight, switchToName);
+    panelRight.remove(current);
   }
 
   static void editSwitcher(JPanel origin, JPanel switchTo) {

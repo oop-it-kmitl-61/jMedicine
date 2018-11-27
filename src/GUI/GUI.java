@@ -8,8 +8,6 @@ import api.MedicineDB;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
-import com.teamdev.jxbrowser.chromium.PermissionHandler;
-import com.teamdev.jxbrowser.chromium.PermissionRequest;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.Appointment;
@@ -752,18 +750,21 @@ public class GUI implements ActionListener, KeyListener {
 
       if (dialogResult == JOptionPane.YES_OPTION) {
         String labelMessage;
-        if (user.removeUserMedicine(medicine)) {
+        try {
+          MedicineDB.removeMedicine(medicine);
           labelMessage = getRemoveSuccessfulMessage("ยา");
           fireSuccessDialog(labelMessage);
-        } else {
+        } catch (SQLException ex) {
           labelMessage = getRemoveFailedMessage("ยา");
           fireErrorDialog(labelMessage);
         }
+
         panelRight.remove(panelAllMedicines());
         panelSub02 = null;
         panelSub02 = new JPanel(new BorderLayout());
         panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
         backTo("ยาทั้งหมด");
+        panelRight.remove(panelViewMedicine(medicine));
       }
     });
 
@@ -2262,15 +2263,21 @@ public class GUI implements ActionListener, KeyListener {
     // Listeners
     btnSave.addActionListener(e -> {
       String selectedMedType = medUtil.getMedType()[cbMedType.getSelectedIndex()];
+      String type = "";
       String selectedColor = "";
       if (selectedMedType.equals("ยาแคปซูล")) {
+        type = "capsule";
         selectedColor = medUtil.getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
         selectedColor += "-";
         selectedColor += medUtil.getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
       } else if (selectedMedType.equals("ยาเม็ด")) {
+        type = "tablet";
         selectedColor = medUtil.getTabletColor()[cbTabletColor.getSelectedIndex()];
       } else if (selectedMedType.equals("ยาน้ำ")) {
+        type = "liquid";
         selectedColor = medUtil.getLiquidColor()[cbLiquidColor.getSelectedIndex()];
+      } else {
+        type = "inject";
       }
       int dose = 0;
       ArrayList<String> selectedMedTime = new ArrayList<>();
@@ -2296,14 +2303,17 @@ public class GUI implements ActionListener, KeyListener {
         dose = Integer.valueOf(tfAmountBed.getText());
       }
       Date exp = Date.from(picker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-      Medicine med = new Medicine(tfMedName.getText(), selectedMedType, selectedColor,
+      Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
           tfMedDescription.getText(), selectedMedTime, selectedDoseStr, dose,
           Integer.valueOf(tfTotalMeds.getText()), exp);
       try {
         MedicineDB.addMedicine(med, user.getUserId());
         fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
-        saveSwitcher(panelRight, panelAddMedicine(), panelAllMedicines(), "ยาทั้้งหมด");
+        panelSub02 = null;
+        panelSub02 = new JPanel(new BorderLayout());
+        panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
+        backTo("ยาทั้งหมด");
+        panelRight.remove(panelAddMedGUI);
       } catch (SQLException e1) {
         fireDBErrorDialog();
         e1.printStackTrace();
