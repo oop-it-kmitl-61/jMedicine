@@ -83,7 +83,7 @@ public class MedicineDB {
 
   public static Medicine addMedicine(Medicine medicine, String userId) throws SQLException {
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (user, name, type, color, description, dose, total, \"doseStr\", expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (\"user\", name, type, color, description, dose, total, \"doseStr\", expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
