@@ -2472,6 +2472,8 @@ public class GUI implements ActionListener, KeyListener {
               CardLayout cl = (CardLayout) (panelWelcome.getLayout());
               cl.show(panelWelcome, "เพิ่มยาตัวแรก");
             }
+          } else {
+            fireErrorDialog("User ไม่ได้ถูกสร้าง");
           }
         }
       };
