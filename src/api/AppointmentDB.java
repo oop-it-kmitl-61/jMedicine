@@ -1,6 +1,7 @@
 package api;
 
 import static GUI.GUIHelper.formatDMYHM;
+import static GUI.GUIHelper.formatHM;
 import static api.DoctorDB.getDoctorInfo;
 
 import core.Appointment;
@@ -45,12 +46,15 @@ public class AppointmentDB {
       ArrayList<String> time = Arrays.stream((Object[]) result.getArray("time").getArray())
           .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
 
-      Date timeStart = formatDMYHM.parse(time.get(0));
-      Date timeEnd = formatDMYHM.parse(time.get(1));
+      String timeStart = time.get(0);
+      String timeEnd = time.get(1);
+      Date date = formatHM.parse(result.getString("date"));
+      String note = result.getString("note");
       Doctor doctor = getDoctorInfo(result.getString("doctor"));
 
       results.add(
-          new Appointment(result.getString("id"), timeStart, timeEnd, doctor, doctor.getHospital())
+          new Appointment(result.getString("id"), date, timeStart, timeEnd, doctor,
+              doctor.getHospital(), note)
       );
     }
 
@@ -60,16 +64,18 @@ public class AppointmentDB {
   public static Appointment addAppointment(Appointment appointment, String userId)
       throws SQLException {
     ArrayList<String> time = new ArrayList<>();
-    time.add(formatDMYHM.format(appointment.getTimeStart()));
-    time.add(formatDMYHM.format(appointment.getTimeStop()));
+    time.add(appointment.getTimeStart());
+    time.add(appointment.getTimeStop());
     String doctorId = appointment.getDoctor().getId();
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO appointments (\"user\", doctor, \"time\") VALUES (?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO appointments (\"user\", doctor, \"date\", \"time\", note) VALUES (?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
-    pStatement.setObject(2, appointment.getDoctor().getId(), Types.OTHER);
-    pStatement.setArray(3, connection.createArrayOf("text", time.toArray()));
+    pStatement.setObject(2, doctorId, Types.OTHER);
+    pStatement.setDate(3, new java.sql.Date(appointment.getDate().getTime()));
+    pStatement.setArray(4, connection.createArrayOf("text", time.toArray()));
+    pStatement.setString(5, appointment.getNote());
 
     ResultSet result = pStatement.executeQuery();
 
