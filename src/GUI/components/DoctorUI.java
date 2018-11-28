@@ -2,15 +2,13 @@ package GUI.components;
 
 import static GUI.GUIHelper.*;
 import static GUI.GUI.*;
+import static core.Core.getUser;
 
-import GUI.GUIUtil;
 import com.github.lgooddatepicker.components.TimePicker;
 import core.Doctor;
 import core.DoctorUtil;
-import core.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -29,11 +27,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-public class doctorUI {
+/**
+ * All UIs and handler methods about a doctor will be written here.
+ *
+ * @author jMedicine
+ * @version 0.7.0
+ * @since 0.7.0
+ */
+
+public class DoctorUI {
 
   private static JPanel panelDoctors;
-  private static GUIUtil util = new GUIUtil();
-  private static User user = util.getSignedInUser();
 
   public static void panelAllDoctors() {
     /*
@@ -43,6 +47,7 @@ public class doctorUI {
      */
 
     // Init title panel displaying title label
+    panelDoctors = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
     JPanel panelLoop = newPanelLoop();
 
@@ -50,7 +55,7 @@ public class doctorUI {
     panelTitle.add(labelTitle);
 
     // Fetch all doctors
-    ArrayList<Doctor> userDoctors = user.getUserDoctors();
+    ArrayList<Doctor> userDoctors = getUser().getUserDoctors();
 
     // Init panel loop
 
@@ -69,7 +74,7 @@ public class doctorUI {
     // Add all panels into the main panel
     panelDoctors.add(panelLoop);
     panelDoctors.add(panelTitle, BorderLayout.NORTH);
-    panelDoctors.setBackground(Color.WHITE);
+
     panelRight.add(panelDoctors, "แพทย์");
     panelRight.add(panelAddDoctor(), "เพิ่มแพทย์ใหม่");
   }
@@ -577,7 +582,7 @@ public class doctorUI {
 
       if (dialogResult == JOptionPane.YES_OPTION) {
         String labelMessage;
-        if (user.removeUserDoctor(doctor)) {
+        if (getUser().removeUserDoctor(doctor)) {
           labelMessage = getRemoveSuccessfulMessage("แพทย์");
         } else {
           labelMessage = getRemoveFailedMessage("แพทย์");

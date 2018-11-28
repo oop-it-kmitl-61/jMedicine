@@ -1,10 +1,10 @@
 package GUI;
 
-import static GUI.GUIHelper.*;
 import static GUI.GUI.*;
 import static api.Login.doSignIn;
 
 import api.LoginException;
+import core.Core;
 import core.User;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -14,6 +14,14 @@ import java.awt.event.KeyListener;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import javax.swing.SwingWorker;
+
+/**
+ * An utility class for GUI.java
+ *
+ * @author jMedicine
+ * @version 0.7.0
+ * @since 0.7.0
+ */
 
 public class GUIUtil implements ActionListener, KeyListener {
 
@@ -43,6 +51,7 @@ public class GUIUtil implements ActionListener, KeyListener {
           char[] password = tfPassword.getPassword();
           try {
             user = doSignIn(username, password);
+            Core.setUser(user);
           } catch (LoginException ignored) {
             panelLoadingSignIn.setVisible(false);
             panelErrorSignIn.setVisible(true);
@@ -66,8 +75,6 @@ public class GUIUtil implements ActionListener, KeyListener {
               CardLayout cl = (CardLayout) (panelWelcome.getLayout());
               cl.show(panelWelcome, "เพิ่มยาตัวแรก");
             }
-          } else {
-            fireErrorDialog("User ไม่ได้ถูกสร้าง");
           }
         }
       };

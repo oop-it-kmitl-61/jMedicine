@@ -1,11 +1,11 @@
 package GUI;
 
 import static GUI.GUIHelper.*;
-import static GUI.components.appointmentUI.*;
-import static GUI.components.doctorUI.*;
-import static GUI.components.medicineUI.*;
+import static GUI.components.AppointmentUI.*;
+import static GUI.components.DoctorUI.*;
+import static GUI.components.MedicineUI.*;
 
-import GUI.components.medicineUI;
+import GUI.components.MedicineUI;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
@@ -28,7 +28,12 @@ import mdlaf.shadows.DropShadowBorder;
 
 
 /**
- * GUI class creates all graphic user interface, all in javax.swing.
+ * All GUIs will be centralized here. GUI that needed too much methods has been moved to
+ * /components
+ *
+ * @author jMedicine
+ * @version 0.7.0
+ * @since 0.1.0
  */
 
 public class GUI {
@@ -44,11 +49,10 @@ public class GUI {
   private static Dimension windowSize, minSize;
   private static Color mainBlue;
   private static GUIUtil util;
-  private static medicineUI medUI;
+  private static MedicineUI medUI;
 
   public GUI(Dimension windowSize) {
     GUI.util = new GUIUtil();
-    GUI.medUI = new medicineUI();
     GUI.windowSize = windowSize;
     GUI.minSize = new Dimension(800, 600);
     Locale locale = new Locale("th", "TH");
@@ -69,7 +73,7 @@ public class GUI {
 
     makeLeftNavigation();
     panelOverview();
-    medUI.panelAllMedicines();
+    panelAllMedicines();
     panelAllAppointments();
     panelAllDoctors();
     panelNearbyHospitals();
@@ -84,6 +88,7 @@ public class GUI {
     frameMain.add(panelMain);
     frameMain.setMinimumSize(minSize);
     frameMain.setSize(windowSize);
+    frameMain.setLocationRelativeTo(null);
     frameMain.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
   }
 
@@ -212,14 +217,14 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.6.4"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.0"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
     panelSettings.add(panelTitle, BorderLayout.NORTH);
     panelSettings.add(panelBody);
 
-    panelRight.add(panelSettings);
+    panelRight.add(panelSettings, "การตั้งค่า");
   }
 
   public static void initWelcome() {
@@ -375,6 +380,7 @@ public class GUI {
     frameWelcome.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frameWelcome.setMinimumSize(new Dimension(400, 600));
     frameWelcome.setSize(new Dimension(400, 720));
+    frameWelcome.setLocationRelativeTo(null);
     frameWelcome.setVisible(true);
   }
 
@@ -442,7 +448,7 @@ public class GUI {
     JLabel labelPic = MedicineUtil.getMedIcon(util.getSignedInUser().getUserMedicines().get(0));
     JLabel labelTime = makeBoldLabel(time);
     JLabel labelMedName = makeLabel(medName);
-    JLabel labelAmount = makeLabel("test");
+    JLabel labelAmount = makeLabel(dose);
 
     // Styling
     panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));

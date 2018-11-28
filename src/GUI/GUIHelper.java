@@ -49,6 +49,15 @@ import mdlaf.MaterialLookAndFeel;
 import mdlaf.animation.MaterialUIMovement;
 import mdlaf.utils.MaterialColors;
 
+/**
+ * Provides static methods and variables to GUI. Since the limitation of javax.swing, we have to
+ * make this class ourselves to help customizing the application design.
+ *
+ * @author jMedicine
+ * @version 0.7.0
+ * @since 0.3.0
+ */
+
 public class GUIHelper {
 
   public static DateFormat formatHM = new SimpleDateFormat("HH.mm");

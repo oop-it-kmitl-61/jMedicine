@@ -2,8 +2,8 @@ package GUI.components;
 
 import static GUI.GUIHelper.*;
 import static GUI.GUI.*;
+import static core.Core.getUser;
 
-import GUI.GUIUtil;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
@@ -12,10 +12,8 @@ import core.Appointment;
 import core.AppointmentUtil;
 import core.Doctor;
 import core.DoctorUtil;
-import core.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -31,10 +29,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class appointmentUI {
+/**
+ * All UIs and handler methods about an appointment will be written here.
+ *
+ * @author jMedicine
+ * @version 0.7.0
+ * @since 0.7.0
+ */
+
+public class AppointmentUI {
+
   private static JPanel panelAppointment;
-  private static GUIUtil util = new GUIUtil();
-  private static User user = util.getSignedInUser();
 
   public static void panelAllAppointments() {
     /*
@@ -44,6 +49,7 @@ public class appointmentUI {
      */
 
     // Init title panel displaying title label
+    panelAppointment = new JPanel(new BorderLayout());
     JPanel panelLoop = newPanelLoop();
     JPanel panelTitle = new JPanel(new BorderLayout());
 
@@ -51,10 +57,10 @@ public class appointmentUI {
     panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
 
     // Fetch all medicines from the records
-    ArrayList<Appointment> userAppointment = user.getUserAppointments();
+    ArrayList<Appointment> userAppointment = getUser().getUserAppointments();
 
     JLabel labelTitle = makeTitleLabel("นัดแพทย์");
-    
+
     if (userAppointment.isEmpty()) {
       labelTitle.setText("คุณยังไม่มีนัดแพทย์ที่บันทึกไว้");
     } else {
@@ -65,17 +71,16 @@ public class appointmentUI {
       }
     }
 
-    
     panelTitle.add(labelTitle);
-    
+
     // Add all panels into the main panel
     panelAppointment.add(panelLoop);
     panelAppointment.add(panelTitle, BorderLayout.NORTH);
-    panelAppointment.setBackground(Color.WHITE);
+
     panelRight.add(panelAppointment, "นัดแพทย์");
     panelRight.add(panelAddAppointment(), "เพิ่มนัดใหม่");
   }
-  
+
   private static JPanel panelViewAppointment(Appointment appointment) {
     /* Creates GUI displaying information of a single appointment. */
 
@@ -107,11 +112,12 @@ public class appointmentUI {
     });
 
     btnRemove.addActionListener(e -> {
-      int dialogResult = fireConfirmDialog("ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
+      int dialogResult = fireConfirmDialog(
+          "ต้องการลบนัดแพทย์นี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
 
       if (dialogResult == JOptionPane.YES_OPTION) {
         String labelMessage;
-        if (user.removeUserAppointment(appointment)) {
+        if (getUser().removeUserAppointment(appointment)) {
           labelMessage = getRemoveSuccessfulMessage("นัดแพทย์");
         } else {
           labelMessage = getRemoveFailedMessage("นัดแพทย์");
@@ -327,7 +333,7 @@ public class appointmentUI {
 
     return panelAddAppointment;
   }
-  
+
   private static JPanel makeAppointmentCard(Appointment appointment) {
     /* Creates a card that will be used on the All appointments panel only. */
 

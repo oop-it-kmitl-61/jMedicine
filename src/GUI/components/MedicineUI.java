@@ -3,9 +3,9 @@ package GUI.components;
 import static GUI.GUI.*;
 import static GUI.GUIHelper.*;
 import static core.MedicineUtil.*;
+import static core.Core.*;
 
 import GUI.GUIHelper;
-import GUI.GUIUtil;
 import api.MedicineDB;
 import com.github.lgooddatepicker.components.DatePicker;
 import core.Medicine;
@@ -34,11 +34,17 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class medicineUI {
+/**
+ * All UIs and handler methods about a medicine will be written here.
+ *
+ * @author jMedicine
+ * @version 0.7.0
+ * @since 0.7.0
+ */
 
-  private static ArrayList<Medicine> userMedicines;
+public class MedicineUI {
+
   private static JPanel panelMedicines;
-  private static GUIUtil util = new GUIUtil();
 
   public static void panelAllMedicines() {
     /*
@@ -55,10 +61,10 @@ public class medicineUI {
     JLabel labelTitle = makeTitleLabel("ยาทั้งหมด");
     panelTitle.add(labelTitle);
 
-    System.out.println(util.getSignedInUser().getUserId());
     // Fetch all medicines from the records
+    ArrayList<Medicine> userMedicines = null;
     try {
-      userMedicines = MedicineDB.getAllMedicine(util.getSignedInUser().getUserId());
+      userMedicines = MedicineDB.getAllMedicine(getUser().getUserId());
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -76,9 +82,11 @@ public class medicineUI {
       }
     }
 
+    JScrollPane scrollPane = makeScrollPane(panelLoop);
+
     // Add all panels into the main panel
     panelMedicines.add(panelTitle, BorderLayout.NORTH);
-    panelMedicines.add(panelLoop);
+    panelMedicines.add(scrollPane);
 
     panelRight.add(panelMedicines, "ยาทั้งหมด");
     panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
@@ -127,9 +135,7 @@ public class medicineUI {
         }
 
         panelRight.remove(panelMedicines);
-        panelMedicines = null;
-        panelMedicines = new JPanel(new BorderLayout());
-        panelRight.add(panelMedicines, "ยาทั้งหมด");
+        panelAllMedicines();
         backTo("ยาทั้งหมด");
         panelRight.remove(panelViewMedicine(medicine));
       }
@@ -403,10 +409,10 @@ public class medicineUI {
           tfMedDescription.getText(), selectedMedTime, selectedDoseStr, dose,
           Integer.valueOf(tfTotalMeds.getText()), exp);
       try {
-        MedicineDB.addMedicine(med, util.getSignedInUser().getUserId());
+        MedicineDB.addMedicine(med, getUser().getUserId());
         fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
-        panelMedicines = new JPanel(new BorderLayout());
-        panelRight.add(panelMedicines, "ยาทั้งหมด");
+        panelRight.remove(panelMedicines);
+        panelAllMedicines();
         backTo("ยาทั้งหมด");
         panelRight.remove(panelAddMedicine());
         panelRight.remove(panelAddMedGUI);
