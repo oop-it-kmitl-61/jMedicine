@@ -130,7 +130,7 @@ public class MedicineDB {
     pStatement.setInt(5, medicine.getMedDose());
     pStatement.setInt(6, medicine.getMedTotal());
     pStatement.setArray(7, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
-    pStatement.setString(8, formatDMYHM.format(medicine.getMedEXP()));
+    pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
     pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedTime().toArray()));
     pStatement.setObject(10, medicine.getId(), Types.OTHER);
 
