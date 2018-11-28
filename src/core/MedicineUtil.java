@@ -15,23 +15,25 @@ import javax.swing.JLabel;
 
 public class MedicineUtil {
 
-  private String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "ยาแบบฉีด"};
-  private String[] tabletColor = {"white", "blue", "green", "yellow", "red", "pink", "purple",
+  private static String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "ยาแบบฉีด"};
+  private static String[] tabletColor = {"white", "blue", "green", "yellow", "red", "pink",
+      "purple",
       "orange", "brown"};
-  private String[] liquidColor = {"transparent", "white", "blue", "green", "yellow", "red", "pink",
+  private static String[] liquidColor = {"transparent", "white", "blue", "green", "yellow", "red",
+      "pink",
       "purple", "orange", "brown", "black"};
-  private String[] medTime = {"เช้า", "กลางวัน", "เย็น", "ก่อนนอน"};
-  private String[] medDoseStr = {"ก่อนอาหาร", "หลังอาหาร", "พร้อมอาหาร/หลังอาหารทันที"};
+  private static String[] medTime = {"เช้า", "กลางวัน", "เย็น", "ก่อนนอน"};
+  private static String[] medDoseStr = {"ก่อนอาหาร", "หลังอาหาร", "พร้อมอาหาร/หลังอาหารทันที"};
 
-  public String[] getMedType() {
+  public static String[] getMedType() {
     return medType;
   }
 
-  public String[] getTabletColor() {
+  public static String[] getTabletColor() {
     return tabletColor;
   }
 
-  public int getTabletColorIndex(String color) {
+  public static int getTabletColorIndex(String color) {
     for (int i = 0; i < tabletColor.length; i++) {
       if (tabletColor[i].equals(color)) {
         return i;
@@ -40,11 +42,11 @@ public class MedicineUtil {
     return -1;
   }
 
-  public String[] getLiquidColor() {
+  public static String[] getLiquidColor() {
     return liquidColor;
   }
 
-  public int getLiquidColorIndex(String color) {
+  public static int getLiquidColorIndex(String color) {
     for (int i = 0; i < liquidColor.length; i++) {
       if (liquidColor[i].equals(color)) {
         return i;
@@ -53,15 +55,15 @@ public class MedicineUtil {
     return -1;
   }
 
-  public String[] getMedTime() {
+  public static String[] getMedTime() {
     return medTime;
   }
 
-  public String[] getMedDoseStr() {
+  public static String[] getMedDoseStr() {
     return medDoseStr;
   }
 
-  public JLabel getMedIcon(Medicine medicine) {
+  public static JLabel getMedIcon(Medicine medicine) {
     String imgURL = "";
     JLabel labelPic = new JLabel();
     boolean urlFinished = false;
