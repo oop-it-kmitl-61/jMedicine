@@ -89,7 +89,7 @@ public class DoctorUI {
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มแพทย์ใหม่", "แพทย์");
-    JButton btnAdd = makeButton("บันทึกแพทย์");
+    JButton btnAdd = makeBlueButton("บันทึกแพทย์");
 
     // JCheckBoxes
     JCheckBox cbSunday = makeCheckBox("วันอาทิตย์");
@@ -273,7 +273,7 @@ public class DoctorUI {
 
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขแพทย์", DoctorUtil.getDoctorFullName(doctor));
-    JButton btnSave = makeButton("บันทึกแพทย์");
+    JButton btnSave = makeBlueButton("บันทึกแพทย์");
 
     // JCheckBoxes
     JCheckBox cbSunday = makeCheckBox("วันอาทิตย์");
@@ -561,7 +561,7 @@ public class DoctorUI {
     String doctorName = DoctorUtil.getDoctorFullName(doctor);
 
     // JButtons
-    JButton btnEdit = makeButton("แก้ไขข้อมูลแพทย์");
+    JButton btnEdit = makeBlueButton("แก้ไขข้อมูลแพทย์");
     JButton btnRemove = makeRemoveButton();
     JButton btnBack = makeBackButton(doctorName, "แพทย์");
 

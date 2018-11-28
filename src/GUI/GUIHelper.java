@@ -62,6 +62,7 @@ public class GUIHelper {
 
   public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
+  public static DateFormat formatDatePicker = new SimpleDateFormat("dd MMMM, yyyy");
   public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy",
       new Locale("th", "TH"));
   public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
@@ -138,9 +139,11 @@ public class GUIHelper {
   public static int fireConfirmDialog(String message) {
     JLabel labelMessage = makeLabel(message);
     setPadding(labelMessage, 0, 10, 0, 0);
-    beep("warning");
+
     int dialogResult;
+
     try {
+      beep("warning");
       Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
       Icon icon = new ImageIcon(img);
       dialogResult = JOptionPane
@@ -170,7 +173,7 @@ public class GUIHelper {
   }
 
   public static String getRemoveFailedMessage(String type) {
-    return "ไมีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ" + type + "ได้";
+    return "มีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ" + type + "ได้";
   }
 
   public static JPanel getLoadingPanel(boolean withBG) {
@@ -429,13 +432,21 @@ public class GUIHelper {
     return button;
   }
 
-  public static JButton makeButton(String buttonText) {
+  public static JButton makeRedButton(String buttonText) {
+    return makeButton(buttonText, MaterialColors.RED_900, MaterialColors.RED_700);
+  }
+
+  public static JButton makeBlueButton(String buttonText) {
+    return makeButton(buttonText, GUI.getMainBlue(), MaterialColors.LIGHT_BLUE_600);
+  }
+
+  private static JButton makeButton(String buttonText, Color bgColor, Color hoverColor) {
     JButton button = new JButton(buttonText);
-    button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
-    button.setBackground(GUI.getMainBlue());
+    button.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    button.setBackground(bgColor);
     button.setForeground(Color.WHITE);
     button.setMaximumSize(new Dimension(400, 60));
-    MaterialUIMovement.add(button, MaterialColors.LIGHT_BLUE_600);
+    MaterialUIMovement.add(button, hoverColor);
     return button;
   }
 
