@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -104,7 +105,7 @@ public class MedicineDB {
     pStatement.setInt(7, medicine.getMedTotal());
     pStatement.setArray(8, connection.createArrayOf("text", medicine.getMedTime().toArray()));
     pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
-    pStatement.setDate(10, new Date(medicine.getMedEXP().getTime()));
+    pStatement.setString(10, new SimpleDateFormat("yyyy-MM-dd").format(medicine.getMedEXP()));
 
     ResultSet result = pStatement.executeQuery();
 
