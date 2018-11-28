@@ -15,7 +15,7 @@ import javax.swing.JLabel;
 
 public class MedicineUtil {
 
-  private static String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "ยาแบบฉีด"};
+  private static String[] medType = {"ยาเม็ด", "ยาแคปซูล", "ยาน้ำ", "สเปรย์"};
   private static String[] tabletColor = {"white", "blue", "green", "yellow", "red", "pink",
       "purple",
       "orange", "brown"};
@@ -77,8 +77,8 @@ public class MedicineUtil {
       case "liquid":
         imgURL += "/liquids/liquid-";
         break;
-      case "inject":
-        imgURL += "/inject.png";
+      case "spray":
+        imgURL += "/spray.png";
         urlFinished = true;
         break;
     }

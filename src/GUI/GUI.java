@@ -254,13 +254,13 @@ public class GUI {
     JLabel labelPasswordConfirm = makeBoldLabel("กรอก Password อีกครั้ง");
 
     // JTextFields
-    tfUserName = makeTextField(20);
-    tfPassword = makePasswordField(20);
-    tfPasswordConfirm = makePasswordField(20);
+    tfUserName = makeTextField(10);
+    tfPassword = makePasswordField(10);
+    tfPasswordConfirm = makePasswordField(10);
 
     // JButtons
-    btnSignIn = makeButton("เข้าสู่ระบบ");
-    btnSignUp = makeButton("ลงทะเบียน");
+    btnSignIn = makeBlueButton("เข้าสู่ระบบ");
+    btnSignUp = makeBlueButton("ลงทะเบียน");
 
     // Styling
     setPadding(labelUsername, 0, 0, -16, 0);
@@ -358,7 +358,7 @@ public class GUI {
 
     // FirstMed Panel
     JLabel labelTitle = makeTitleLabel("เพิ่มยาตัวแรกของคุณ");
-    btnSkip = makeButton("ข้ามขั้นตอนนี้");
+    btnSkip = makeBlueButton("ข้ามขั้นตอนนี้");
     setPadding(labelTitle, 0, 0, 30);
     btnSkip.setAlignmentX(Component.CENTER_ALIGNMENT);
 

@@ -98,7 +98,7 @@ public class AppointmentUI {
         + formatHM.format(appointment.getTimeStop()) + " น.";
 
     // JButtons
-    JButton btnEdit = makeButton("แก้ไขนัดแพทย์");
+    JButton btnEdit = makeBlueButton("แก้ไขนัดแพทย์");
     JButton btnRemove = makeRemoveButton();
     JButton btnBack = makeBackButton(title, "นัดแพทย์");
 
@@ -172,7 +172,7 @@ public class AppointmentUI {
 
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขนัด", AppointmentUtil.getTitle(app));
-    JButton btnSave = makeButton("บันทึก");
+    JButton btnSave = makeBlueButton("บันทึก");
 
     // JTextFields
     // TODO: tfDoctor @ editAppointment
@@ -262,7 +262,7 @@ public class AppointmentUI {
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มนัดใหม่", "นัดแพทย์");
-    JButton btnAdd = makeButton("บันทึกนัด");
+    JButton btnAdd = makeBlueButton("บันทึกนัด");
 
     // JTextFields
     // TODO: tfDoctor @ addAppointment

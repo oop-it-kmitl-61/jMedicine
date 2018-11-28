@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * @param medName a name of medicine.
  * @param medType a string to classify the medicine, must be "tablet", "capsule", "liquid" or
- * "Inject".
+ * "spray".
  * @param medColor a string of color.
  * @param medDescription a description of medicine.
  * @param medTime an ArrayList of String, containing a time for having a medicine.
@@ -58,8 +58,8 @@ public class Medicine {
       case "liquid":
         this.medUnit = "มิลลิลิตร";
         break;
-      case "inject":
-        this.medUnit = "cc";
+      case "spray":
+        this.medUnit = "มิลลิลิตร";
         break;
     }
   }
@@ -89,8 +89,8 @@ public class Medicine {
       case "liquid":
         this.medUnit = "มิลลิลิตร";
         break;
-      case "inject":
-        this.medUnit = "cc";
+      case "spray":
+        this.medUnit = "มิลลิลิตร";
         break;
     }
   }
