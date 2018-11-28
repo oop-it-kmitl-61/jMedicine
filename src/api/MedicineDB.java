@@ -1,5 +1,6 @@
 package api;
 
+import static GUI.GUIHelper.formatDMYHM;
 
 import core.Database;
 import core.Medicine;
@@ -39,9 +40,17 @@ public class MedicineDB {
     ArrayList<Medicine> results = new ArrayList<>();
 
     while (result.next()) {
+      if (result.getArray("time") == null) {
+        throw new MedicineException("Time is null");
+      }
+
       ArrayList<String> time;
       time = Arrays.stream((Object[]) result.getArray("time").getArray())
           .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+      if (result.getArray("doseStr") == null) {
+        throw new MedicineException("Dose is null");
+      }
 
       ArrayList<String> doseStr;
       doseStr = Arrays.stream((Object[]) result.getArray("doseStr").getArray())
@@ -83,7 +92,7 @@ public class MedicineDB {
 
   public static Medicine addMedicine(Medicine medicine, String userId) throws SQLException {
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (\"user\", name, type, color, description, dose, total, \"doseStr\", expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (\"user\", name, type, color, description, dose, total,\"time\", \"doseStr\", expire) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
@@ -93,8 +102,9 @@ public class MedicineDB {
     pStatement.setString(5, medicine.getMedDescription());
     pStatement.setInt(6, medicine.getMedDose());
     pStatement.setInt(7, medicine.getMedTotal());
-    pStatement.setArray(8, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
-    pStatement.setDate(9, new Date(medicine.getMedEXP().getTime()));
+    pStatement.setArray(8, connection.createArrayOf("text", medicine.getMedTime().toArray()));
+    pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
+    pStatement.setDate(10, new Date(medicine.getMedEXP().getTime()));
 
     ResultSet result = pStatement.executeQuery();
 
@@ -109,7 +119,7 @@ public class MedicineDB {
 
 
   public static Medicine updateMedicine(Medicine medicine) throws SQLException {
-    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ? WHERE id = ?";
+    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ?, \"time\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, medicine.getMedName());
@@ -119,8 +129,9 @@ public class MedicineDB {
     pStatement.setInt(5, medicine.getMedDose());
     pStatement.setInt(6, medicine.getMedTotal());
     pStatement.setArray(7, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
-    pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
-    pStatement.setObject(9, medicine.getId(), Types.OTHER);
+    pStatement.setString(8, formatDMYHM.format(medicine.getMedEXP()));
+    pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedTime().toArray()));
+    pStatement.setObject(10, medicine.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 

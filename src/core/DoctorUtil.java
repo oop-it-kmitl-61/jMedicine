@@ -18,6 +18,6 @@ public class DoctorUtil {
   }
 
   public static String getDoctorFullName(Doctor doctor) {
-    return doctor.getPrefix() + " " + doctor.getName() + " " + doctor.getLastName();
+    return doctor.getPrefix() + " " + doctor.getFirstName() + " " + doctor.getLastName();
   }
 }
