@@ -188,6 +188,24 @@ public class GUIHelper {
     }
   }
 
+  static int fireConfirmDialog(String message) {
+    JLabel labelMessage = makeLabel(message);
+    setPadding(labelMessage, 0, 10, 0, 0);
+    beep("warning");
+    int dialogResult;
+    try {
+      Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
+      Icon icon = new ImageIcon(img);
+      dialogResult = JOptionPane
+          .showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION,
+              JOptionPane.WARNING_MESSAGE, icon);
+    } catch (Exception ignored) {
+      dialogResult = JOptionPane
+          .showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION);
+    }
+    return dialogResult;
+  }
+
   static void beep(String type) {
     String path = "src/GUI/sounds/" + type + ".wav";
     File f = new File(path);

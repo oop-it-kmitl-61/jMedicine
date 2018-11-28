@@ -167,7 +167,12 @@ public class GUI implements ActionListener, KeyListener {
     panelTitle.add(labelTitle);
 
     // Fetch all medicines from the records
-    ArrayList<Medicine> userMedicines = user.getUserMedicines();
+    ArrayList<Medicine> userMedicines = null;
+    try {
+      userMedicines = MedicineDB.getAllMedicine(user.getUserId());
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
 
     // Init panel loop
     panelLoop = newPanelLoop();
@@ -354,7 +359,7 @@ public class GUI implements ActionListener, KeyListener {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.6.3"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.6.4"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -727,27 +732,10 @@ public class GUI implements ActionListener, KeyListener {
     setPadding(panelView, 0, 0, 0, -20);
 
     // Listeners
-    btnEdit.addActionListener(e -> {
-      editSwitcher(panelRight, panelEditMedicine(medicine));
-    });
+    btnEdit.addActionListener(e -> editSwitcher(panelRight, panelEditMedicine(medicine)));
     btnRemove.addActionListener(e -> {
-      int dialogResult = 0;
-      JLabel labelConfirm = makeLabel(
+      int dialogResult = fireConfirmDialog(
           "ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
-      setPadding(labelConfirm, 0, 16, 0, 0);
-
-      beep("warning");
-      try {
-        Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
-        Icon icon = new ImageIcon(img);
-        dialogResult = JOptionPane
-            .showConfirmDialog(null, labelConfirm, "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE, icon);
-      } catch (Exception ignored) {
-        dialogResult = JOptionPane
-            .showConfirmDialog(null, labelConfirm, "คุณกำลังทำการลบยา", JOptionPane.YES_NO_OPTION);
-      }
-
       if (dialogResult == JOptionPane.YES_OPTION) {
         String labelMessage;
         try {
@@ -2309,11 +2297,12 @@ public class GUI implements ActionListener, KeyListener {
       try {
         MedicineDB.addMedicine(med, user.getUserId());
         fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
-        panelSub02 = null;
         panelSub02 = new JPanel(new BorderLayout());
         panelRight.add(panelAllMedicines(), "ยาทั้งหมด");
         backTo("ยาทั้งหมด");
+        panelRight.remove(panelAddMedicine());
         panelRight.remove(panelAddMedGUI);
+        panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
       } catch (SQLException e1) {
         fireDBErrorDialog();
         e1.printStackTrace();
