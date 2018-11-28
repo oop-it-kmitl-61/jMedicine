@@ -5,26 +5,32 @@ import java.util.Date;
 public class Appointment {
 
   private String id;
-  private Date timeStart;
-  private Date timeStop;
+  private Date date;
+  private String timeStart;
+  private String timeStop;
   private Doctor doctor;
   private String hospitalName;
+  private String note;
 
-  public Appointment(Date timeStart, Date timeEnd, Doctor doctor,
-      String hospitalName) {
-    this.timeStart = timeStart;
-    this.timeStop = timeEnd;
-    this.doctor = doctor;
-    this.hospitalName = hospitalName;
-  }
-
-  public Appointment(String id, Date timeStart, Date timeStop, Doctor doctor,
-      String hospitalName) {
+  public Appointment(String id, Date date, String timeStart, String timeStop, Doctor doctor,
+      String hospitalName, String note) {
     this.id = id;
+    this.date = date;
     this.timeStart = timeStart;
     this.timeStop = timeStop;
     this.doctor = doctor;
     this.hospitalName = hospitalName;
+    this.note = note;
+  }
+
+  public Appointment(Date date, String timeStart, String timeStop, Doctor doctor,
+      String hospitalName, String note) {
+    this.date = date;
+    this.timeStart = timeStart;
+    this.timeStop = timeStop;
+    this.doctor = doctor;
+    this.hospitalName = hospitalName;
+    this.note = note;
   }
 
   public String getId() {
@@ -35,19 +41,27 @@ public class Appointment {
     this.id = id;
   }
 
-  public Date getTimeStart() {
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public String getTimeStart() {
     return timeStart;
   }
 
-  public void setTimeStart(Date timeStart) {
+  public void setTimeStart(String timeStart) {
     this.timeStart = timeStart;
   }
 
-  public Date getTimeStop() {
+  public String getTimeStop() {
     return timeStop;
   }
 
-  public void setTimeStop(Date timeStop) {
+  public void setTimeStop(String timeStop) {
     this.timeStop = timeStop;
   }
 
@@ -65,5 +79,13 @@ public class Appointment {
 
   public void setHospitalName(String hospitalName) {
     this.hospitalName = hospitalName;
+  }
+
+  public String getNote() {
+    return note;
+  }
+
+  public void setNote(String note) {
+    this.note = note;
   }
 }

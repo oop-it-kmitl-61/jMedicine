@@ -2,6 +2,10 @@ package GUI;
 
 import static GUI.GUI.*;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.components.TimePicker;
+import com.github.lgooddatepicker.components.TimePickerSettings;
 import core.Medicine;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -54,20 +58,22 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.0
+ * @version 0.7.1
  * @since 0.3.0
  */
 
 public class GUIHelper {
 
+  public static Locale locale = new Locale("th", "TH");
+  public static Color mainBlue = new Color(20, 101, 155);
+
   public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
+  public static DateFormat formatTimePicker = new SimpleDateFormat("HH:mm");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
-  public static DateFormat formatDatePicker = new SimpleDateFormat("dd MMMM, yyyy");
-  public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy",
-      new Locale("th", "TH"));
+  public static DateFormat formatDatePicker = new SimpleDateFormat("MMMM dd, yyyy");
+  public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy", locale);
   public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
-  public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm",
-      new Locale("th", "TH"));
+  public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm", locale);
 
   public static String imgPath = "src/GUI/img";
   static String imgSuccessSrc = imgPath + "/system/success.png";
@@ -273,6 +279,17 @@ public class GUIHelper {
     return new JPanel(new FlowLayout(FlowLayout.LEFT));
   }
 
+  public static DatePicker makeDatePicker() {
+    DatePicker datePicker = new DatePicker();
+    return datePicker;
+  }
+
+  public static TimePicker makeTimePicker() {
+    TimePickerSettings timeSettings = new TimePickerSettings(locale);
+    TimePicker timePicker = new TimePicker(timeSettings);
+    return timePicker;
+  }
+
   public static JScrollPane makeScrollPane(JPanel panel) {
     JScrollPane scrollPane = new JScrollPane(panel);
     scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -432,12 +449,56 @@ public class GUIHelper {
     return button;
   }
 
+  public static JButton makeGreyToRedButton(String buttonText) {
+    JButton button = new JButton(buttonText);
+    button.setFont(new Font("TH Sarabun New", Font.PLAIN, 21));
+    button.setBackground(MaterialColors.GRAY_100);
+    button.setForeground(Color.BLACK);
+    button.setMaximumSize(new Dimension(400, 60));
+    button.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseEntered(MouseEvent e) {
+        button.setBackground(MaterialColors.RED_700);
+        button.setForeground(Color.WHITE);
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+        button.setBackground(MaterialColors.GRAY_100);
+        button.setForeground(Color.BLACK);
+      }
+    });
+    return button;
+  }
+
+  public static JButton makeGreyToBlueButton(String buttonText) {
+    JButton button = new JButton(buttonText);
+    button.setFont(new Font("TH Sarabun New", Font.PLAIN, 21));
+    button.setBackground(MaterialColors.GRAY_100);
+    button.setForeground(Color.BLACK);
+    button.setMaximumSize(new Dimension(400, 60));
+    button.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseEntered(MouseEvent e) {
+        button.setBackground(mainBlue);
+        button.setForeground(Color.WHITE);
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+        button.setBackground(MaterialColors.GRAY_100);
+        button.setForeground(Color.BLACK);
+      }
+    });
+    return button;
+  }
+
   public static JButton makeRedButton(String buttonText) {
     return makeButton(buttonText, MaterialColors.RED_900, MaterialColors.RED_700);
   }
 
   public static JButton makeBlueButton(String buttonText) {
-    return makeButton(buttonText, GUI.getMainBlue(), MaterialColors.LIGHT_BLUE_600);
+    return makeButton(buttonText, mainBlue, MaterialColors.LIGHT_BLUE_600);
   }
 
   private static JButton makeButton(String buttonText, Color bgColor, Color hoverColor) {
@@ -474,6 +535,12 @@ public class GUIHelper {
     return label;
   }
 
+  public static JLabel makeSmallerLabel(String labelText) {
+    JLabel label = new JLabel(labelText);
+    label.setFont(new Font("TH Sarabun New", Font.PLAIN, 22));
+    return label;
+  }
+
   public static void makeLabelLeft(JLabel label) {
     label.setAlignmentX(Component.LEFT_ALIGNMENT);
   }
@@ -495,7 +562,7 @@ public class GUIHelper {
       button.setFont(new Font("TH Sarabun New", Font.PLAIN, 26));
       button.setBorderPainted(false);
       button.setFocusPainted(false);
-      button.setBackground(GUI.getMainBlue());
+      button.setBackground(mainBlue);
       button.setOpaque(false);
       button.setForeground(Color.WHITE);
     }

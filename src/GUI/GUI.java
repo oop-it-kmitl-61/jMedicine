@@ -12,7 +12,6 @@ import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.MedicineUtil;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -21,7 +20,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
-import java.util.Locale;
 import javax.swing.*;
 import core.LocationHelper;
 import mdlaf.shadows.DropShadowBorder;
@@ -32,7 +30,7 @@ import mdlaf.shadows.DropShadowBorder;
  * /components
  *
  * @author jMedicine
- * @version 0.7.0
+ * @version 0.7.1
  * @since 0.1.0
  */
 
@@ -47,7 +45,6 @@ public class GUI {
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp, btnSkip;
   private static Dimension windowSize, minSize;
-  private static Color mainBlue;
   private static GUIUtil util;
   private static MedicineUI medUI;
 
@@ -55,8 +52,6 @@ public class GUI {
     GUI.util = new GUIUtil();
     GUI.windowSize = windowSize;
     GUI.minSize = new Dimension(800, 600);
-    Locale locale = new Locale("th", "TH");
-    mainBlue = new Color(20, 101, 155);
     JOptionPane.setDefaultLocale(locale);
     GUIHelper.setup();
   }
@@ -217,7 +212,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.0"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.1"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -443,12 +438,17 @@ public class GUI {
     JPanel panelTime = newFlowLayout();
     JPanel panelMed = newFlowLayout();
     JPanel panelMedInfo = new JPanel();
+    JPanel panelBtn = newFlowLayout();
 
     // JLabels
-    JLabel labelPic = MedicineUtil.getMedIcon(util.getSignedInUser().getUserMedicines().get(0));
+    JLabel labelPic = MedicineUtil.getMedIcon(util.getSignedInUser().getUserMedicines().get(4));
     JLabel labelTime = makeBoldLabel(time);
-    JLabel labelMedName = makeLabel(medName);
-    JLabel labelAmount = makeLabel(dose);
+    JLabel labelMedName = makeBoldLabel(medName);
+    JLabel labelAmount = makeSmallerLabel(dose);
+
+    // JButtons
+    JButton btnAte = makeGreyToBlueButton("ทานแล้ว");
+    JButton btnSkip = makeGreyToRedButton("ข้ามเวลานี้");
 
     // Styling
     panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));
@@ -456,20 +456,28 @@ public class GUI {
     panelCard.setBorder(
         new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true, true));
     setPadding(labelPic, 6, 0, 0, 8);
-    setPadding(labelMedName, 6, 0, -10, 0);
+    setPadding(labelMedName, 7, 0, -12, 0);
     setPadding(labelAmount, 0, 0, 2, 0);
     setPadding(panelLoopInfo, 0, 0, 20);
+    setPadding(panelMed, 0, 0, 6, 0);
+    setPadding(panelBtn, 6, 0, 0, 0);
+
+    panelTime.add(labelTime);
 
     panelMedInfo.add(labelMedName);
     panelMedInfo.add(labelAmount);
 
     panelMed.add(labelPic);
     panelMed.add(panelMedInfo);
-
     panelCard.add(panelMed);
-    panelTime.add(labelTime);
+
+    panelBtn.add(btnAte);
+    panelBtn.add(btnSkip);
+    panelCard.add(new JSeparator(SwingConstants.HORIZONTAL));
+    panelCard.add(panelBtn);
 
     panelLoopInfo.add(panelTime, BorderLayout.NORTH);
+    panelLoopInfo.add(panelCard);
     panelLoopInfo.add(panelCard);
     return panelLoopInfo;
   }
@@ -478,7 +486,4 @@ public class GUI {
     return buttons;
   }
 
-  static Color getMainBlue() {
-    return mainBlue;
-  }
 }
