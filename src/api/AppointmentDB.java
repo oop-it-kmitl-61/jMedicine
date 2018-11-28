@@ -48,7 +48,7 @@ public class AppointmentDB {
 
       String timeStart = time.get(0);
       String timeEnd = time.get(1);
-      Date date = formatHM.parse(result.getString("date"));
+      Date date = result.getDate("date");
       String note = result.getString("note");
       Doctor doctor = getDoctorInfo(result.getString("doctor"));
 
