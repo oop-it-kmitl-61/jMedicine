@@ -3,7 +3,9 @@ package GUI.components;
 import static GUI.GUIHelper.*;
 import static GUI.GUI.*;
 import static core.Core.getUser;
+import static core.DoctorUtil.getPrefixes;
 
+import api.DoctorDB;
 import com.github.lgooddatepicker.components.TimePicker;
 import core.Doctor;
 import core.DoctorUtil;
@@ -13,6 +15,7 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -31,7 +34,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about a doctor will be written here.
  *
  * @author jMedicine
- * @version 0.7.0
+ * @version 0.7.1
  * @since 0.7.0
  */
 
@@ -74,6 +77,8 @@ public class DoctorUI {
     // Add all panels into the main panel
     panelDoctors.add(panelLoop);
     panelDoctors.add(panelTitle, BorderLayout.NORTH);
+    panelDoctors.repaint();
+    panelDoctors.revalidate();
 
     panelRight.add(panelDoctors, "แพทย์");
     panelRight.add(panelAddDoctor(), "เพิ่มแพทย์ใหม่");
@@ -101,20 +106,20 @@ public class DoctorUI {
     JCheckBox cbSaturday = makeCheckBox("วันเสาร์");
 
     // TimePickers
-    TimePicker sundayStartPicker = new TimePicker();
-    TimePicker sundayEndPicker = new TimePicker();
-    TimePicker mondayStartPicker = new TimePicker();
-    TimePicker mondayEndPicker = new TimePicker();
-    TimePicker tuesStartPicker = new TimePicker();
-    TimePicker tuesEndPicker = new TimePicker();
-    TimePicker wedStartPicker = new TimePicker();
-    TimePicker wedEndPicker = new TimePicker();
-    TimePicker thurStartPicker = new TimePicker();
-    TimePicker thurEndPicker = new TimePicker();
-    TimePicker fridayStartPicker = new TimePicker();
-    TimePicker fridayEndPicker = new TimePicker();
-    TimePicker satStartPicker = new TimePicker();
-    TimePicker satEndPicker = new TimePicker();
+    TimePicker sundayStartPicker = makeTimePicker();
+    TimePicker sundayEndPicker = makeTimePicker();
+    TimePicker mondayStartPicker = makeTimePicker();
+    TimePicker mondayEndPicker = makeTimePicker();
+    TimePicker tuesStartPicker = makeTimePicker();
+    TimePicker tuesEndPicker = makeTimePicker();
+    TimePicker wedStartPicker = makeTimePicker();
+    TimePicker wedEndPicker = makeTimePicker();
+    TimePicker thurStartPicker = makeTimePicker();
+    TimePicker thurEndPicker = makeTimePicker();
+    TimePicker fridayStartPicker = makeTimePicker();
+    TimePicker fridayEndPicker = makeTimePicker();
+    TimePicker satStartPicker = makeTimePicker();
+    TimePicker satEndPicker = makeTimePicker();
     TimePicker[] timePickers = {sundayStartPicker, sundayEndPicker, mondayStartPicker,
         mondayEndPicker, tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker,
         thurStartPicker, thurEndPicker, fridayStartPicker, fridayEndPicker, satStartPicker,
@@ -151,7 +156,6 @@ public class DoctorUI {
       tp.setVisible(false);
     }
 
-    // Listeners
     workTimeCheckBoxUIHandler(cbSunday, sundayStartPicker, sundayEndPicker, sundayStartLabel,
         sundayEndLabel);
     workTimeCheckBoxUIHandler(cbMonday, mondayStartPicker, mondayEndPicker, mondayStartLabel,
@@ -170,8 +174,16 @@ public class DoctorUI {
     JTextField tfDoctorSurName = makeTextField(20);
     JTextField tfDoctorWard = makeTextField(16);
     JTextField tfDoctorHospital = makeTextField(18);
-    String[] prefixes = {"นพ.", "พญ.", "ศ.นพ", "ผศ.นพ"};
+    String[] prefixes = getPrefixes();
     JComboBox cbPrefix = makeComboBox(prefixes);
+
+    // Listeners
+    fetchUserInput("add", panelAddDoctor, btnAdd, cbSunday, cbMonday, cbTuesday, cbWednesday,
+        cbThursday,
+        cbFriday, cbSaturday, sundayStartPicker, sundayEndPicker, mondayStartPicker,
+        mondayEndPicker, tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker,
+        thurStartPicker, thurEndPicker, fridayStartPicker, fridayEndPicker, tfDoctorName,
+        tfDoctorSurName, tfDoctorWard, tfDoctorHospital, cbPrefix);
 
     panelTitle.add(btnBack);
 
@@ -285,20 +297,20 @@ public class DoctorUI {
     JCheckBox cbSaturday = makeCheckBox("วันเสาร์");
 
     // TimePickers
-    TimePicker sundayStartPicker = new TimePicker();
-    TimePicker sundayEndPicker = new TimePicker();
-    TimePicker mondayStartPicker = new TimePicker();
-    TimePicker mondayEndPicker = new TimePicker();
-    TimePicker tuesStartPicker = new TimePicker();
-    TimePicker tuesEndPicker = new TimePicker();
-    TimePicker wedStartPicker = new TimePicker();
-    TimePicker wedEndPicker = new TimePicker();
-    TimePicker thurStartPicker = new TimePicker();
-    TimePicker thurEndPicker = new TimePicker();
-    TimePicker fridayStartPicker = new TimePicker();
-    TimePicker fridayEndPicker = new TimePicker();
-    TimePicker satStartPicker = new TimePicker();
-    TimePicker satEndPicker = new TimePicker();
+    TimePicker sundayStartPicker = makeTimePicker();
+    TimePicker sundayEndPicker = makeTimePicker();
+    TimePicker mondayStartPicker = makeTimePicker();
+    TimePicker mondayEndPicker = makeTimePicker();
+    TimePicker tuesStartPicker = makeTimePicker();
+    TimePicker tuesEndPicker = makeTimePicker();
+    TimePicker wedStartPicker = makeTimePicker();
+    TimePicker wedEndPicker = makeTimePicker();
+    TimePicker thurStartPicker = makeTimePicker();
+    TimePicker thurEndPicker = makeTimePicker();
+    TimePicker fridayStartPicker = makeTimePicker();
+    TimePicker fridayEndPicker = makeTimePicker();
+    TimePicker satStartPicker = makeTimePicker();
+    TimePicker satEndPicker = makeTimePicker();
     TimePicker[] timePickers = {sundayStartPicker, sundayEndPicker, mondayStartPicker,
         mondayEndPicker, tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker,
         thurStartPicker, thurEndPicker, fridayStartPicker, fridayEndPicker, satStartPicker,
@@ -409,12 +421,6 @@ public class DoctorUI {
       }
     }
 
-    // Listeners
-    btnSave.addActionListener(e -> {
-      saveSwitcher(panelRight, panelEditDoctor(doctor), panelViewDoctor(doctor),
-          DoctorUtil.getDoctorFullName(doctor));
-    });
-
     workTimeCheckBoxUIHandler(cbSunday, sundayStartPicker, sundayEndPicker, sundayStartLabel,
         sundayEndLabel);
     workTimeCheckBoxUIHandler(cbMonday, mondayStartPicker, mondayEndPicker, mondayStartLabel,
@@ -433,7 +439,7 @@ public class DoctorUI {
     JTextField tfDoctorSurName = makeTextField(20);
     JTextField tfDoctorWard = makeTextField(16);
     JTextField tfDoctorHospital = makeTextField(18);
-    String[] prefixes = DoctorUtil.getPrefixes();
+    String[] prefixes = getPrefixes();
     JComboBox cbPrefix = makeComboBox(prefixes);
 
     tfDoctorName.setText(doctor.getFirstName());
@@ -441,6 +447,16 @@ public class DoctorUI {
     tfDoctorWard.setText(doctor.getWard());
     tfDoctorHospital.setText(doctor.getHospital());
     cbPrefix.setSelectedIndex(DoctorUtil.getPrefixIndex(doctor.getPrefix()));
+
+    // Listeners
+    fetchUserInput("update", panelAddDoctor, btnSave, cbSunday, cbMonday, cbTuesday, cbWednesday,
+        cbThursday,
+        cbFriday, cbSaturday, sundayStartPicker, sundayEndPicker, mondayStartPicker,
+        mondayEndPicker,
+        tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker, thurStartPicker,
+        thurEndPicker,
+        fridayStartPicker, fridayEndPicker, tfDoctorName, tfDoctorSurName, tfDoctorWard,
+        tfDoctorHospital, cbPrefix);
 
     panelTitle.add(btnBack);
 
@@ -532,6 +548,113 @@ public class DoctorUI {
     return panelAddDoctor;
   }
 
+  private static void fetchUserInput(String type, JPanel panelAddDoctor, JButton btnSave,
+      JCheckBox cbSunday,
+      JCheckBox cbMonday, JCheckBox cbTuesday, JCheckBox cbWednesday, JCheckBox cbThursday,
+      JCheckBox cbFriday, JCheckBox cbSaturday, TimePicker sundayStartPicker,
+      TimePicker sundayEndPicker, TimePicker mondayStartPicker, TimePicker mondayEndPicker,
+      TimePicker tuesStartPicker, TimePicker tuesEndPicker, TimePicker wedStartPicker,
+      TimePicker wedEndPicker, TimePicker thurStartPicker, TimePicker thurEndPicker,
+      TimePicker fridayStartPicker, TimePicker fridayEndPicker, JTextField tfDoctorName,
+      JTextField tfDoctorSurName, JTextField tfDoctorWard, JTextField tfDoctorHospital,
+      JComboBox cbPrefix) {
+    btnSave.addActionListener(e -> {
+      String prefix = getPrefixes()[cbPrefix.getSelectedIndex()];
+      String fName = tfDoctorName.getText();
+      String sName = tfDoctorSurName.getText();
+      String ward = tfDoctorWard.getText();
+      String hospital = tfDoctorHospital.getText();
+      ArrayList<ArrayList> workTime = new ArrayList<>();
+      if (cbSunday.isSelected()) {
+        ArrayList<String> sunday = new ArrayList<>();
+        sunday.add("วันอาทิตย์");
+        sunday.add(sundayStartPicker.getText());
+        sunday.add(sundayEndPicker.getText());
+        workTime.add(sunday);
+      }
+      if (cbMonday.isSelected()) {
+        ArrayList<String> monday = new ArrayList<>();
+        monday.add("วันจันทร์");
+        monday.add(mondayStartPicker.getText());
+        monday.add(mondayEndPicker.getText());
+        workTime.add(monday);
+      }
+      if (cbTuesday.isSelected()) {
+        ArrayList<String> tues = new ArrayList<>();
+        tues.add("วันอังคาร");
+        tues.add(tuesStartPicker.getText());
+        tues.add(tuesEndPicker.getText());
+        workTime.add(tues);
+      }
+      if (cbWednesday.isSelected()) {
+        ArrayList<String> wed = new ArrayList<>();
+        wed.add("วันพุธ");
+        wed.add(wedStartPicker.getText());
+        wed.add(wedEndPicker.getText());
+        workTime.add(wed);
+      }
+      if (cbThursday.isSelected()) {
+        ArrayList<String> thur = new ArrayList<>();
+        thur.add("วันพฤหัสบดี");
+        thur.add(thurStartPicker.getText());
+        thur.add(thurEndPicker.getText());
+        workTime.add(thur);
+      }
+      if (cbFriday.isSelected()) {
+        ArrayList<String> friday = new ArrayList<>();
+        friday.add("วันศุกร์");
+        friday.add(fridayStartPicker.getText());
+        friday.add(fridayEndPicker.getText());
+        workTime.add(friday);
+      }
+      if (cbSaturday.isSelected()) {
+        ArrayList<String> sat = new ArrayList<>();
+        sat.add("วันเสาร์");
+        sat.add(fridayStartPicker.getText());
+        sat.add(fridayEndPicker.getText());
+        workTime.add(sat);
+      }
+      System.out.println(workTime);
+      Doctor doctor = new Doctor(prefix, fName, sName, ward, hospital, workTime);
+
+      switch (type) {
+        case "add":
+          try {
+            DoctorDB.addDoctor(doctor, getUser().getUserId());
+            fireSuccessDialog("เพิ่ม " + prefix + " " + fName + " เรียบร้อยแล้ว");
+            panelRight.remove(panelDoctors);
+            panelAllDoctors();
+            panelRight.validate();
+            panelRight.repaint();
+            backTo("แพทย์");
+            panelRight.remove(panelAddDoctor);
+            panelRight.add(panelAddDoctor);
+          } catch (SQLException e1) {
+            e1.printStackTrace();
+            fireDBErrorDialog();
+          }
+          break;
+        case "update":
+          try {
+            DoctorDB.updateDoctor(doctor);
+            fireSuccessDialog("แก้ไข " + prefix + " " + fName + " เรียบร้อยแล้ว");
+            panelRight.remove(panelDoctors);
+            panelAllDoctors();
+            panelRight.validate();
+            panelRight.repaint();
+            backTo("แพทย์");
+            panelRight.remove(panelEditDoctor(doctor));
+            panelRight.add(panelAddDoctor);
+          } catch (SQLException e1) {
+            e1.printStackTrace();
+            fireDBErrorDialog();
+          }
+          break;
+      }
+
+    });
+  }
+
   private static void workTimeCheckBoxUIHandler(JCheckBox checkBox, TimePicker startPicker,
       TimePicker endPicker, JLabel startLabel, JLabel endLabel) {
     checkBox.addActionListener(e -> {
@@ -582,17 +705,18 @@ public class DoctorUI {
 
       if (dialogResult == JOptionPane.YES_OPTION) {
         String labelMessage;
-        if (getUser().removeUserDoctor(doctor)) {
+        try {
+          DoctorDB.removeDoctor(doctor);
           labelMessage = getRemoveSuccessfulMessage("แพทย์");
-        } else {
+          fireSuccessDialog(labelMessage);
+          panelRight.remove(panelDoctors);
+          panelAllDoctors();
+          backTo("แพทย์");
+          panelRight.remove(panelViewDoctor(doctor));
+        } catch (SQLException e1) {
+          e1.printStackTrace();
           labelMessage = getRemoveFailedMessage("แพทย์");
         }
-        panelRight.remove(panelDoctors);
-        panelDoctors = null;
-        panelDoctors = new JPanel(new BorderLayout());
-        panelRight.add(panelDoctors, "แพทย์");
-        backTo("แพทย์");
-        fireSuccessDialog(labelMessage);
       }
     });
 

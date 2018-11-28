@@ -16,27 +16,17 @@ public class Doctor {
 
   private String id;
   private String prefix;
-  private String name;
   private String firstName;
   private String lastName;
   private String ward;
   private String hospital;
   private ArrayList<ArrayList> workTime;
 
-  public Doctor(String prefix, String name, String ward, String hospital,
-      ArrayList<ArrayList> workTime) {
+  public Doctor(String prefix, String firstName, String lastName, String ward,
+      String hospital, ArrayList<ArrayList> workTime) {
     this.prefix = prefix;
-    this.name = name;
-    this.ward = ward;
-    this.hospital = hospital;
-    this.workTime = workTime;
-  }
-
-  public Doctor(String id, String prefix, String name, String ward, String hospital,
-      ArrayList<ArrayList> workTime) {
-    this.id = id;
-    this.prefix = prefix;
-    this.name = name;
+    this.firstName = firstName;
+    this.lastName = lastName;
     this.ward = ward;
     this.hospital = hospital;
     this.workTime = workTime;
@@ -51,7 +41,6 @@ public class Doctor {
     this.ward = ward;
     this.hospital = hospital;
     this.workTime = workTime;
-    this.name = firstName + " " + lastName;
   }
 
   public String getFirstName() {
@@ -84,14 +73,6 @@ public class Doctor {
 
   public void setPrefix(String prefix) {
     this.prefix = prefix;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public String getWard() {

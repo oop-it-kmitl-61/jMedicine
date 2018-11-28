@@ -33,7 +33,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.7.0
+ * @version 0.7.1
  * @since 0.7.0
  */
 
@@ -90,8 +90,7 @@ public class AppointmentUI {
     JPanel panelButtons = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
 
-    Doctor appointmentDr = appointment.getDoctor();
-    String doctorName = appointmentDr.getPrefix() + " " + appointmentDr.getName();
+    String doctorName = DoctorUtil.getDoctorFullName(appointment.getDoctor());
 
     String title = formatDMY.format(appointment.getTimeStart())
         + " เวลา " + formatHM.format(appointment.getTimeStart()) + " น. - "
@@ -346,8 +345,7 @@ public class AppointmentUI {
 
     // Strings
     String title = AppointmentUtil.getTitle(appointment);
-    String shortInfo =
-        appDr.getPrefix() + " " + appDr.getName() + " " + appointment.getHospitalName();
+    String shortInfo = DoctorUtil.getDoctorFullName(appDr) + " " + appointment.getHospitalName();
 
     // JLabels
     JLabel labelTitle = makeBoldLabel(title);
