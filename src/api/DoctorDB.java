@@ -152,10 +152,12 @@ public class DoctorDB {
     ArrayList workDay = new ArrayList();
     ArrayList timeStart = new ArrayList();
     ArrayList timeEnd = new ArrayList();
-    for (ArrayList t : doctor.getWorkTime()) {
-      workDay.add(t.get(0));
-      timeStart.add(t.get(1));
-      timeEnd.add(t.get(2));
+    if (doctor.getWorkTime() != null) {
+      for (ArrayList t : doctor.getWorkTime()) {
+        workDay.add(t.get(0));
+        timeStart.add(t.get(1));
+        timeEnd.add(t.get(2));
+      }
     }
 
     String SQLCommand = "UPDATE doctors SET title = ?, firstname = ?, lastname = ?, ward = ?, hospital = ?, \"workDay\" = ?, \"timeStart\" = ?, \"timeEnd\" = ? WHERE id = ?";

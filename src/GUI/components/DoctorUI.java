@@ -35,7 +35,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about a doctor will be written here.
  *
  * @author jMedicine
- * @version 0.7.5
+ * @version 0.7.6
  * @since 0.7.0
  */
 
@@ -175,7 +175,7 @@ public class DoctorUI {
     JComboBox cbPrefix = makeComboBox(prefixes);
 
     // Listeners
-    fetchUserInput("add", panelAddDoctor, btnAdd, cbSunday, cbMonday, cbTuesday, cbWednesday,
+    fetchUserInput("add", null, panelAddDoctor, btnAdd, cbSunday, cbMonday, cbTuesday, cbWednesday,
         cbThursday,
         cbFriday, cbSaturday, sundayStartPicker, sundayEndPicker, mondayStartPicker,
         mondayEndPicker, tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker,
@@ -446,7 +446,8 @@ public class DoctorUI {
     cbPrefix.setSelectedIndex(DoctorUtil.getPrefixIndex(doctor.getPrefix()));
 
     // Listeners
-    fetchUserInput("update", panelAddDoctor, btnSave, cbSunday, cbMonday, cbTuesday, cbWednesday,
+    fetchUserInput("update", doctor, panelAddDoctor, btnSave, cbSunday, cbMonday, cbTuesday,
+        cbWednesday,
         cbThursday,
         cbFriday, cbSaturday, sundayStartPicker, sundayEndPicker, mondayStartPicker,
         mondayEndPicker,
@@ -545,9 +546,10 @@ public class DoctorUI {
     return panelAddDoctor;
   }
 
-  private static void fetchUserInput(String type, JPanel panelAddDoctor, JButton btnSave,
-      JCheckBox cbSunday,
-      JCheckBox cbMonday, JCheckBox cbTuesday, JCheckBox cbWednesday, JCheckBox cbThursday,
+  private static void fetchUserInput(String type, Doctor doctor, JPanel panelAddDoctor,
+      JButton btnSave,
+      JCheckBox cbSunday, JCheckBox cbMonday, JCheckBox cbTuesday, JCheckBox cbWednesday,
+      JCheckBox cbThursday,
       JCheckBox cbFriday, JCheckBox cbSaturday, TimePicker sundayStartPicker,
       TimePicker sundayEndPicker, TimePicker mondayStartPicker, TimePicker mondayEndPicker,
       TimePicker tuesStartPicker, TimePicker tuesEndPicker, TimePicker wedStartPicker,
@@ -611,18 +613,16 @@ public class DoctorUI {
         sat.add(fridayEndPicker.getText());
         workTime.add(sat);
       }
-      System.out.println(workTime);
-      Doctor doctor = new Doctor(prefix, fName, sName, ward, hospital, workTime);
 
       switch (type) {
         case "add":
+          Doctor newDoctor = new Doctor(prefix, fName, sName, ward, hospital, workTime);
           try {
-            DoctorDB.addDoctor(doctor, getUser().getUserId());
+            DoctorDB.addDoctor(newDoctor, getUser().getUserId());
             fireSuccessDialog("เพิ่ม " + prefix + " " + fName + " เรียบร้อยแล้ว");
+            reloadAppDoctors();
             panelRight.remove(panelDoctors);
             panelAllDoctors();
-            panelRight.validate();
-            panelRight.repaint();
             backTo("แพทย์");
             panelRight.remove(panelAddDoctor);
             panelRight.add(panelAddDoctor);
@@ -632,17 +632,19 @@ public class DoctorUI {
           }
           break;
         case "update":
+          doctor.setPrefix(prefix);
+          doctor.setFirstName(fName);
+          doctor.setLastName(sName);
+          doctor.setWard(ward);
+          doctor.setWorkTime(workTime);
           try {
             DoctorDB.updateDoctor(doctor);
             fireSuccessDialog("แก้ไข " + prefix + " " + fName + " เรียบร้อยแล้ว");
             reloadAppDoctors();
             panelRight.remove(panelDoctors);
             panelAllDoctors();
-            panelRight.validate();
-            panelRight.repaint();
             backTo("แพทย์");
             panelRight.remove(panelEditDoctor(doctor));
-            panelRight.add(panelAddDoctor);
           } catch (SQLException e1) {
             e1.printStackTrace();
             fireDBErrorDialog();
