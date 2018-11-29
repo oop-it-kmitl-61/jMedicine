@@ -9,27 +9,23 @@ public class Appointment {
   private String timeStart;
   private String timeStop;
   private Doctor doctor;
-  private String hospitalName;
   private String note;
 
   public Appointment(String id, Date date, String timeStart, String timeStop, Doctor doctor,
-      String hospitalName, String note) {
+      String note) {
     this.id = id;
     this.date = date;
     this.timeStart = timeStart;
     this.timeStop = timeStop;
     this.doctor = doctor;
-    this.hospitalName = hospitalName;
     this.note = note;
   }
 
-  public Appointment(Date date, String timeStart, String timeStop, Doctor doctor,
-      String hospitalName, String note) {
+  public Appointment(Date date, String timeStart, String timeStop, Doctor doctor, String note) {
     this.date = date;
     this.timeStart = timeStart;
     this.timeStop = timeStop;
     this.doctor = doctor;
-    this.hospitalName = hospitalName;
     this.note = note;
   }
 
@@ -71,14 +67,6 @@ public class Appointment {
 
   public void setDoctor(Doctor doctor) {
     this.doctor = doctor;
-  }
-
-  public String getHospitalName() {
-    return hospitalName;
-  }
-
-  public void setHospitalName(String hospitalName) {
-    this.hospitalName = hospitalName;
   }
 
   public String getNote() {

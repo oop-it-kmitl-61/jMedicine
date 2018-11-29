@@ -2,6 +2,7 @@ package GUI.components;
 
 import static GUI.GUIHelper.*;
 import static GUI.GUI.*;
+import static GUI.components.AppointmentUI.reloadAppDoctors;
 import static core.Core.getUser;
 import static core.DoctorUtil.getPrefixes;
 
@@ -34,7 +35,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about a doctor will be written here.
  *
  * @author jMedicine
- * @version 0.7.1
+ * @version 0.7.3
  * @since 0.7.0
  */
 
@@ -57,21 +58,17 @@ public class DoctorUI {
     JLabel labelTitle = makeTitleLabel("แพทย์");
     panelTitle.add(labelTitle);
 
-    // Fetch all doctors
-    ArrayList<Doctor> userDoctors = getUser().getUserDoctors();
-
-    // Init panel loop
-
     panelLoop.add(makeNewButton("เพิ่มแพทย์ใหม่"));
 
-    if (userDoctors.isEmpty()) {
-      labelTitle.setText("คุณยังไม่มีแพทย์ที่บันทึกไว้");
-    } else {
+    // Fetch all doctors
+    try {
       labelTitle.setText("แพทย์");
-      for (Doctor doctorCurrent : userDoctors) {
+      for (Doctor doctorCurrent : DoctorDB.getAllDoctor(getUser().getUserId())) {
         JPanel cardLoop = makeDoctorCard(doctorCurrent);
         panelLoop.add(cardLoop);
       }
+    } catch (SQLException ignored) {
+      labelTitle.setText("คุณยังไม่มีแพทย์ที่บันทึกไว้");
     }
 
     // Add all panels into the main panel
@@ -284,7 +281,7 @@ public class DoctorUI {
     JPanel panelTitle = newFlowLayout();
 
     // JButtons
-    JButton btnBack = makeBackButton("แก้ไขแพทย์", DoctorUtil.getDoctorFullName(doctor));
+    JButton btnBack = makeBackButton("แก้ไขแพทย์", doctor.toString());
     JButton btnSave = makeBlueButton("บันทึกแพทย์");
 
     // JCheckBoxes
@@ -638,6 +635,7 @@ public class DoctorUI {
           try {
             DoctorDB.updateDoctor(doctor);
             fireSuccessDialog("แก้ไข " + prefix + " " + fName + " เรียบร้อยแล้ว");
+            reloadAppDoctors();
             panelRight.remove(panelDoctors);
             panelAllDoctors();
             panelRight.validate();
@@ -681,7 +679,7 @@ public class DoctorUI {
     JPanel panelButtons = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
 
-    String doctorName = DoctorUtil.getDoctorFullName(doctor);
+    String doctorName = doctor.toString();
 
     // JButtons
     JButton btnEdit = makeBlueButton("แก้ไขข้อมูลแพทย์");
@@ -715,7 +713,7 @@ public class DoctorUI {
           panelRight.remove(panelViewDoctor(doctor));
         } catch (SQLException e1) {
           e1.printStackTrace();
-          labelMessage = getRemoveFailedMessage("แพทย์");
+          fireDBErrorDialog();
         }
       }
     });
@@ -728,12 +726,16 @@ public class DoctorUI {
     panelBody.add(makeLabel("โรงพยาบาล: " + doctor.getHospital()));
     if (doctor.getWorkTime() != null) {
       panelBody.add(makeLabel("เวลาเข้าตรวจ:"));
-      // WorkTime is an ArrayList, convert it to a printable format
-      for (ArrayList<String> workTime : doctor.getWorkTime()) {
-        JLabel labelWorkTime = makeLabel(
-            workTime.get(0) + " เวลา " + workTime.get(1) + " น. - " + workTime.get(2) + " น.");
-        setPadding(labelWorkTime, 0, 20);
-        panelBody.add(labelWorkTime);
+      if (doctor.getWorkTime().size() == 0) {
+        panelBody.add(makeLabel("คุณยังไม่เคยบักทึกวันและเวลาที่แพทย์เข้าตรวจ"));
+      } else {
+        // WorkTime is an ArrayList, convert it to a printable format
+        for (ArrayList<String> workTime : doctor.getWorkTime()) {
+          JLabel labelWorkTime = makeLabel(
+              workTime.get(0) + " เวลา " + workTime.get(1) + " น. - " + workTime.get(2) + " น.");
+          setPadding(labelWorkTime, 0, 20);
+          panelBody.add(labelWorkTime);
+        }
       }
     }
 
@@ -749,9 +751,9 @@ public class DoctorUI {
 
   private static JPanel makeDoctorCard(Doctor doctor) {
     /* Creates a card that will be used on the All doctors panel only. */
-    String doctorName = DoctorUtil.getDoctorFullName(doctor);
+    String doctorName = doctor.toString();
     JLabel labelTitle = makeBoldLabel(doctorName);
-    String doctorShortInfo = "แผนก " + doctor.getWard() + " โรงพยาบาล" + doctor.getHospital();
+    String doctorShortInfo = "แผนก" + doctor.getWard() + " โรงพยาบาล" + doctor.getHospital();
     JLabel labelShortInfo = makeLabel(doctorShortInfo);
     JLabel labelPic = new JLabel();
     JPanel panelLoopInfo = new JPanel();
@@ -790,6 +792,11 @@ public class DoctorUI {
     });
 
     return panelLoopInfo;
+  }
+
+  static void reloadDoctors() {
+    panelDoctors.revalidate();
+    panelDoctors.repaint();
   }
 
 }

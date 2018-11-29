@@ -17,7 +17,4 @@ public class DoctorUtil {
     return -1;
   }
 
-  public static String getDoctorFullName(Doctor doctor) {
-    return doctor.getPrefix() + " " + doctor.getFirstName() + " " + doctor.getLastName();
-  }
 }

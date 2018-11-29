@@ -16,6 +16,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -49,8 +51,10 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.Border;
 import mdlaf.MaterialLookAndFeel;
 import mdlaf.animation.MaterialUIMovement;
+import mdlaf.shadows.DropShadowBorder;
 import mdlaf.utils.MaterialColors;
 
 /**
@@ -58,7 +62,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.1
+ * @version 0.7.3
  * @since 0.3.0
  */
 
@@ -275,6 +279,11 @@ public class GUIHelper {
     cl.show(origin, "แก้ไข");
   }
 
+  public static Border newCardBorder() {
+    return new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true,
+        true);
+  }
+
   public static JPanel newFlowLayout() {
     return new JPanel(new FlowLayout(FlowLayout.LEFT));
   }
@@ -297,6 +306,22 @@ public class GUIHelper {
     return scrollPane;
   }
 
+  public static JTextField makeNumberField(int columns) {
+    JTextField textField = new JTextField(columns);
+    textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    textField.addKeyListener(new KeyAdapter() {
+      public void keyTyped(KeyEvent e) {
+        char c = e.getKeyChar();
+        if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE) && (c
+            != KeyEvent.VK_PERIOD)) {
+          fireErrorDialog("คุณไม่สามารถกรอกตัวอักษร ลงในช่องที่ต้องการตัวเลขได้");
+          e.consume();
+        }
+      }
+    });
+    return textField;
+  }
+
   public static JTextField makeTextField(int columns) {
     JTextField textField = new JTextField(columns);
     textField.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
@@ -313,6 +338,13 @@ public class GUIHelper {
     JPasswordField passwordField = new JPasswordField(columns);
     passwordField.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
     return passwordField;
+  }
+
+  public static JComboBox makeComboBox() {
+    JComboBox comboBox = new JComboBox();
+    comboBox.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+    comboBox.setBackground(Color.WHITE);
+    return comboBox;
   }
 
   public static JComboBox makeComboBox(ArrayList<ImageIcon> cbIcons) {

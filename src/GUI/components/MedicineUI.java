@@ -38,7 +38,7 @@ import javax.swing.SwingConstants;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.1
+ * @version 0.7.3
  * @since 0.7.0
  */
 
@@ -281,9 +281,9 @@ public class MedicineUI {
     // JTextFields
     JTextField tfMedName = makeTextField(16);
     JTextField tfMedDescription = makeTextField(16);
-    JTextField tfAmount = makeTextField(2);
-    JTextField tfTotalMeds = makeTextField(2);
-    JTextField tfEvery = makeTextField(2);
+    JTextField tfAmount = makeNumberField(2);
+    JTextField tfTotalMeds = makeNumberField(2);
+    JTextField tfEvery = makeNumberField(2);
 
     // JLabels
     JLabel labelUnit = makeLabel(medUnit);
@@ -597,9 +597,9 @@ public class MedicineUI {
     // JTextFields
     JTextField tfMedName = makeTextField(16);
     JTextField tfMedDescription = makeTextField(10);
-    JTextField tfAmount = makeTextField(2);
-    JTextField tfEvery = makeTextField(2);
-    JTextField tfTotalMeds = makeTextField(2);
+    JTextField tfAmount = makeNumberField(2);
+    JTextField tfEvery = makeNumberField(2);
+    JTextField tfTotalMeds = makeNumberField(2);
 
     tfAmount.setText(String.valueOf(medicine.getMedDose()));
 

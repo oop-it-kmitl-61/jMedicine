@@ -43,6 +43,10 @@ public class Doctor {
     this.workTime = workTime;
   }
 
+  public String toString() {
+    return prefix + " " + firstName + " " + lastName;
+  }
+
   public String getFirstName() {
     return firstName;
   }

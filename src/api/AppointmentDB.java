@@ -53,8 +53,7 @@ public class AppointmentDB {
       Doctor doctor = getDoctorInfo(result.getString("doctor"));
 
       results.add(
-          new Appointment(result.getString("id"), date, timeStart, timeEnd, doctor,
-              doctor.getHospital(), note)
+          new Appointment(result.getString("id"), date, timeStart, timeEnd, doctor, note)
       );
     }
 

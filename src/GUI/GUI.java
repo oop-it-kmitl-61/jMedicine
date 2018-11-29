@@ -29,7 +29,6 @@ import java.awt.event.MouseEvent;
 import java.util.Date;
 import javax.swing.*;
 import core.LocationHelper;
-import mdlaf.shadows.DropShadowBorder;
 
 
 /**
@@ -37,7 +36,7 @@ import mdlaf.shadows.DropShadowBorder;
  * /components
  *
  * @author jMedicine
- * @version 0.7.2
+ * @version 0.7.3
  * @since 0.1.0
  */
 
@@ -226,7 +225,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.2"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.3"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -470,8 +469,7 @@ public class GUI {
     // Styling
     panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));
     panelCard.setLayout(new BoxLayout(panelCard, BoxLayout.PAGE_AXIS));
-    panelCard.setBorder(
-        new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true, true));
+    panelCard.setBorder(newCardBorder());
     setPadding(labelPic, 6, 0, 0, 8);
     setPadding(labelMedName, 7, 0, -12, 0);
     setPadding(labelAmount, 0, 0, 2, 0);
