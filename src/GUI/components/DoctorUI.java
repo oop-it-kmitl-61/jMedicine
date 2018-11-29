@@ -35,7 +35,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about a doctor will be written here.
  *
  * @author jMedicine
- * @version 0.7.4
+ * @version 0.7.5
  * @since 0.7.0
  */
 
@@ -713,7 +713,8 @@ public class DoctorUI {
           panelRight.remove(panelViewDoctor(doctor));
         } catch (SQLException e1) {
           e1.printStackTrace();
-          fireDBErrorDialog();
+          fireErrorDialog(
+              "คุณยังมีนัดกับแพทย์คนนี้อยู่ หากต้องการลบแพทย์ กรุณาลบนัดแพทย์ที่มีกับแพทย์คนนี้ออกก่อน โดยคุณสามารถลบนัดแพทย์ได้ที่หน้า \"นัดแพทย์\"");
         }
       }
     });
@@ -807,8 +808,9 @@ public class DoctorUI {
   }
 
   static void reloadDoctors() {
-    panelDoctors.revalidate();
-    panelDoctors.repaint();
+    panelRight.remove(panelDoctors);
+    panelRight.remove(panelAddDoctor());
+    panelAllDoctors();
   }
 
 }

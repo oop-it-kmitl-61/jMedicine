@@ -36,7 +36,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.4
+ * @version 0.7.5
  * @since 0.1.0
  */
 
@@ -150,7 +150,7 @@ public class GUI {
     browser.setPermissionHandler(request -> PermissionStatus.GRANTED);
     // Load URL that query the hospital around the current position
     browser.loadURL(
-        "https://www.google.co.th/maps/search/hospitals/@" + location[0] + "," + location[1]
+        "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
             + ",12z");
 
     // Add all sub panels into the main panel
@@ -225,7 +225,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.4"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.5"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel

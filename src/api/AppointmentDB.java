@@ -89,8 +89,8 @@ public class AppointmentDB {
 
   public static Appointment updateAppointment(Appointment appointment) throws SQLException {
     ArrayList<String> time = new ArrayList<>();
-    time.add(formatDMYHM.format(appointment.getTimeStart()));
-    time.add(formatDMYHM.format(appointment.getTimeStop()));
+    time.add(appointment.getTimeStart());
+    time.add(appointment.getTimeStop());
     String doctorId = appointment.getDoctor().getId();
 
     String SQLCommand = "UPDATE appointments SET doctor = ?, \"time\" = ? WHERE id = ?";
