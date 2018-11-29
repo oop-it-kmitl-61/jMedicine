@@ -526,6 +526,12 @@ public class GUIHelper {
     return label;
   }
 
+  public static JLabel makeSubTitleLabel(String labelText) {
+    JLabel label = new JLabel(labelText);
+    label.setFont(new Font("TH Sarabun New", Font.BOLD, 32));
+    return label;
+  }
+
   public static JLabel makeBoldLabel(String labelText) {
     JLabel label = new JLabel(labelText);
     label.setFont(new Font("TH Sarabun New", Font.BOLD, 26));

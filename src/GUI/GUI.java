@@ -24,9 +24,12 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.Date;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import core.LocationHelper;
 
@@ -105,24 +108,38 @@ public class GUI {
     JPanel panelLoop = newPanelLoop();
     String today = GUIHelper.formatDMYFull.format(new Date());
     panelTitle.add(makeTitleLabel(today));
-    setPadding(panelTitle, 0, 0, 0, 2);
+    setPadding(panelTitle, 0, 0, -12, 2);
 
     // Init card loop
 
     // TODO: Fetch these upcoming events
-    // Sample loop
-    JPanel cardLoop = makeOverviewCard("12.30 น. (อีก 1 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)",
-        "หลังอาหาร 1 เม็ด");
-    panelLoop.add(cardLoop);
-    cardLoop = makeOverviewCard("18.30 น. (อีก 7 ชั่วโมง)", "Prednisolone (ยาแก้อักเสบ)",
-        "หลังอาหาร 1 เม็ด");
-    panelLoop.add(cardLoop);
-    // End sample loop
-    setPadding(panelLoop, 0, 0, 600, 0);
+
+    // !! FOR DEMO ONLY
+    panelLoop.add(makeOverviewTime("15.30 น. (อีก 2 ชั่วโมง)"));
+    panelLoop.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
+        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
+    panelLoop.add(makeOverviewTime("18.30 น. (อีก 5 ชั่วโมง)"));
+    panelLoop.add(makeOverviewCard("Amoxicillin (ยาฆ่าเชื้อ)",
+        "หลังอาหาร 1 เม็ด", "/capsules/capsule-red-white.png"));
+    panelLoop.add(makeOverviewCard("Bisovol (ยาแก้ไอ)",
+        "หลังอาหาร 5 มิลลิกรัม", "/liquids/liquid-yellow.png"));
+    panelLoop.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
+        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
+    panelLoop.add(makeOverviewTime("21.30 น. (อีก 8 ชั่วโมง)"));
+    panelLoop.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
+        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
+    panelLoop.add(makeOverviewTime("22.30 น. (อีก 9 ชั่วโมง)"));
+    panelLoop.add(makeOverviewCard("Chlorpheniramine (ยาแก้แพ้)",
+        "ก่อนนอน 1 เม็ด", "/tablets/tablet-yellow.png"));
+    // End DEMO
+
+    setPadding(panelLoop, 0, 0, 20, 0);
+
+    JScrollPane scrollPane = makeScrollPane(panelLoop);
 
     // Add all panels into the main panel
     panelOverview.add(panelTitle, BorderLayout.NORTH);
-    panelOverview.add(panelLoop);
+    panelOverview.add(scrollPane);
 
     panelRight.add(panelOverview, "ภาพรวม");
   }
@@ -445,22 +462,45 @@ public class GUI {
     panelLeft.setBackground(mainBlue);
   }
 
-  private static JPanel makeOverviewCard(String time, String medName, String dose) {
+  private static JPanel makeOverviewTime(String time) {
     /* Creates a card that will be used on the Overview panel only. */
 
     // JPanels
     JPanel panelLoopInfo = new JPanel(new BorderLayout());
-    JPanel panelCard = new JPanel();
     JPanel panelTime = newFlowLayout();
+
+    // JLabels
+    JLabel labelTime = makeSubTitleLabel(time);
+
+    // Styling
+    setPadding(panelLoopInfo, 18, 0, -2);
+
+    panelTime.add(labelTime);
+    panelLoopInfo.add(panelTime);
+
+    return panelLoopInfo;
+  }
+
+  private static JPanel makeOverviewCard(String medName, String dose, String imgURL) {
+    /* FOR DEMO ONLY */
+
+    // JPanels
+    JPanel panelLoopInfo = new JPanel(new BorderLayout());
+    JPanel panelCard = new JPanel();
     JPanel panelMed = newFlowLayout();
     JPanel panelMedInfo = new JPanel();
     JPanel panelBtn = newFlowLayout();
 
     // JLabels
-    JLabel labelPic = MedicineUtil.getMedIcon(util.getSignedInUser().getUserMedicines().get(1));
-    JLabel labelTime = makeBoldLabel(time);
+    JLabel labelPic = new JLabel();
     JLabel labelMedName = makeBoldLabel(medName);
     JLabel labelAmount = makeSmallerLabel(dose);
+
+    try {
+      Image img = ImageIO.read(new File(imgPath + imgURL));
+      labelPic.setIcon(new ImageIcon(img));
+    } catch (Exception ignored) {
+    }
 
     // JButtons
     JButton btnAte = makeGreyToBlueButton("ทานแล้ว");
@@ -473,11 +513,9 @@ public class GUI {
     setPadding(labelPic, 6, 0, 0, 8);
     setPadding(labelMedName, 7, 0, -12, 0);
     setPadding(labelAmount, 0, 0, 2, 0);
-    setPadding(panelLoopInfo, 0, 0, 20);
+    setPadding(panelLoopInfo, 0, 0, 4);
     setPadding(panelMed, 0, 0, 6, 0);
     setPadding(panelBtn, 6, 0, 0, 0);
-
-    panelTime.add(labelTime);
 
     panelMedInfo.add(labelMedName);
     panelMedInfo.add(labelAmount);
@@ -491,8 +529,6 @@ public class GUI {
     panelCard.add(new JSeparator(SwingConstants.HORIZONTAL));
     panelCard.add(panelBtn);
 
-    panelLoopInfo.add(panelTime, BorderLayout.NORTH);
-    panelLoopInfo.add(panelCard);
     panelLoopInfo.add(panelCard);
     return panelLoopInfo;
   }
