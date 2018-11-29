@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Doctor database class help GUI connect to database using JDBC
@@ -40,11 +41,23 @@ public class DoctorDB {
 
       ArrayList<ArrayList> time = new ArrayList<>();
 
-      Arrays.stream((Object[]) result.getArray("time").getArray()).forEach(obj -> {
-        ArrayList<String> t = new ArrayList<>();
-        t.addAll(Arrays.asList((String[]) obj));
-        time.add(t);
-      });
+      ArrayList<String> workDay = Arrays.stream((Object[]) result.getArray("workDay").getArray())
+          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+      ArrayList<String> timeStart = Arrays
+          .stream((Object[]) result.getArray("timeStart").getArray())
+          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+      ArrayList<String> timeEnd = Arrays.stream((Object[]) result.getArray("timeEnd").getArray())
+          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+      for (int i = 0; i < workDay.size(); i++) {
+        ArrayList<String> temp = new ArrayList<>();
+        temp.add(workDay.get(i));
+        temp.add(timeStart.get(i));
+        temp.add(timeEnd.get(i));
+        time.add(temp);
+      }
 
       results.add(
           new Doctor(result.getString("id"), result.getString("title"),
@@ -68,11 +81,22 @@ public class DoctorDB {
 
     ArrayList<ArrayList> time = new ArrayList<>();
 
-    Arrays.stream((Object[]) result.getArray("time").getArray()).forEach(obj -> {
-      ArrayList<String> t = new ArrayList<>();
-      t.addAll(Arrays.asList((String[]) obj));
-      time.add(t);
-    });
+    ArrayList<String> workDay = Arrays.stream((Object[]) result.getArray("workDay").getArray())
+        .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+    ArrayList<String> timeStart = Arrays.stream((Object[]) result.getArray("timeStart").getArray())
+        .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+    ArrayList<String> timeEnd = Arrays.stream((Object[]) result.getArray("timeEnd").getArray())
+        .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+    for (int i = 0; i < workDay.size(); i++) {
+      ArrayList<String> temp = new ArrayList<>();
+      temp.add(workDay.get(i));
+      temp.add(timeStart.get(i));
+      temp.add(timeEnd.get(i));
+      time.add(temp);
+    }
 
     return new Doctor(result.getString("id"), result.getString("title"),
         result.getString("firstname"), result.getString("lastname"), result.getString("ward"),
@@ -82,12 +106,16 @@ public class DoctorDB {
 
   public static Doctor addDoctor(Doctor doctor, String userId) throws SQLException {
 
-    ArrayList time = new ArrayList();
+    ArrayList workDay = new ArrayList();
+    ArrayList timeStart = new ArrayList();
+    ArrayList timeEnd = new ArrayList();
     for (ArrayList t : doctor.getWorkTime()) {
-      time.add(connection.createArrayOf("text", t.toArray()));
+      workDay.add(t.get(0));
+      timeStart.add(t.get(1));
+      timeEnd.add(t.get(2));
     }
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO doctors (\"user\", title, firstname, lastname, ward, hospital, time) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO doctors (\"user\", title, firstname, lastname, ward, hospital, \"workDay\", \"timeStart\", \"timeEnd\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
@@ -96,7 +124,9 @@ public class DoctorDB {
     pStatement.setString(4, doctor.getLastName());
     pStatement.setString(5, doctor.getWard());
     pStatement.setString(6, doctor.getHospital());
-    pStatement.setArray(7, connection.createArrayOf("text", time.toArray()));
+    pStatement.setArray(7, connection.createArrayOf("text", workDay.toArray()));
+    pStatement.setArray(8, connection.createArrayOf("text", timeStart.toArray()));
+    pStatement.setArray(9, connection.createArrayOf("text", timeEnd.toArray()));
 
     ResultSet result = pStatement.executeQuery();
 
@@ -117,12 +147,16 @@ public class DoctorDB {
    */
 
   public static Doctor updateDoctor(Doctor doctor) throws SQLException {
-    ArrayList time = new ArrayList();
+    ArrayList workDay = new ArrayList();
+    ArrayList timeStart = new ArrayList();
+    ArrayList timeEnd = new ArrayList();
     for (ArrayList t : doctor.getWorkTime()) {
-      time.add(connection.createArrayOf("text", t.toArray()));
+      workDay.add(t.get(0));
+      timeStart.add(t.get(1));
+      timeEnd.add(t.get(2));
     }
 
-    String SQLCommand = "UPDATE doctors SET title = ?, firstname = ?, lastname = ?, ward = ?, hospital = ?, time = ? WHERE id = ?";
+    String SQLCommand = "UPDATE doctors SET title = ?, firstname = ?, lastname = ?, ward = ?, hospital = ?, \"workDay\" = ?, \"timeStart\" = ?, \"timeEnd\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
 
@@ -131,8 +165,10 @@ public class DoctorDB {
     pStatement.setString(3, doctor.getLastName());
     pStatement.setString(4, doctor.getWard());
     pStatement.setString(5, doctor.getHospital());
-    pStatement.setArray(6, connection.createArrayOf("text", time.toArray()));
-    pStatement.setObject(7, doctor.getId(), Types.OTHER);
+    pStatement.setArray(6, connection.createArrayOf("text", workDay.toArray()));
+    pStatement.setArray(7, connection.createArrayOf("text", timeStart.toArray()));
+    pStatement.setArray(8, connection.createArrayOf("text", timeEnd.toArray()));
+    pStatement.setObject(9, doctor.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 

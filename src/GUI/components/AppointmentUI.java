@@ -4,6 +4,7 @@ import static GUI.GUIHelper.*;
 import static GUI.GUI.*;
 import static core.Core.getUser;
 
+import GUI.GUIHelper;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
@@ -92,9 +93,9 @@ public class AppointmentUI {
 
     String doctorName = DoctorUtil.getDoctorFullName(appointment.getDoctor());
 
-    String title = formatDMY.format(appointment.getTimeStart())
-        + " เวลา " + formatHM.format(appointment.getTimeStart()) + " น. - "
-        + formatHM.format(appointment.getTimeStop()) + " น.";
+    String title = GUIHelper.formatDMYFull.format(appointment.getDate())
+        + " เวลา " + appointment.getTimeStart() + " น. - "
+        + appointment.getTimeStop() + " น.";
 
     // JButtons
     JButton btnEdit = makeBlueButton("แก้ไขนัดแพทย์");

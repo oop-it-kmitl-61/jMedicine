@@ -5,9 +5,9 @@ import GUI.GUIHelper;
 public class AppointmentUtil {
 
   public static String getTitle(Appointment app) {
-    String date = GUIHelper.formatDMYFull.format(app.getTimeStart());
-    String timeStart = GUIHelper.formatHM.format(app.getTimeStart());
-    String timeEnd = GUIHelper.formatHM.format(app.getTimeStop());
+    String date = GUIHelper.formatDMYFull.format(app.getDate());
+    String timeStart = app.getTimeStart();
+    String timeEnd = app.getTimeStop();
     return date + " เวลา " + timeStart + " น. - " + timeEnd + " น.";
   }
 }
