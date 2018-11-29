@@ -36,7 +36,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.6
+ * @version 0.7.7
  * @since 0.1.0
  */
 
@@ -225,7 +225,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.6"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.7"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -516,9 +516,9 @@ public class GUI {
     JTextField tfEmail = makeTextField(20);
     JTextField tfFName = makeTextField(20);
     JTextField tfLName = makeTextField(20);
-    JTextField tfWeight = makeTextField(4);
-    JTextField tfHeight = makeTextField(4);
-    JTextField tfAge = makeTextField(2);
+    JTextField tfWeight = makeNumberField(4);
+    JTextField tfHeight = makeNumberField(4);
+    JTextField tfAge = makeNumberField(2);
 
     // tfUsername.setText(user.getUserName());
     tfFName.setText(user.getUserFirstName());

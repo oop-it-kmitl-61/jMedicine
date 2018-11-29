@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Locale;
 import javax.imageio.ImageIO;
@@ -62,7 +64,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.4
+ * @version 0.7.7
  * @since 0.3.0
  */
 
@@ -71,6 +73,7 @@ public class GUIHelper {
   public static Locale locale = new Locale("th", "TH");
   public static Color mainBlue = new Color(20, 101, 155);
 
+  final static LocalDate today = LocalDate.now();
   public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
   public static DateFormat formatDatePicker = new SimpleDateFormat("MMMM dd, yyyy");
@@ -210,31 +213,6 @@ public class GUIHelper {
     return panelLoading;
   }
 
-  public static JPanel getLoadingPanel(String loadingMessage, boolean withBG) {
-    String src = "src/GUI/img/system/loading";
-    if (withBG) {
-      src += "-bg";
-    } else {
-      src += "-no-bg";
-    }
-    src += ".gif";
-
-    JPanel panelLoading = new JPanel();
-    JLabel labelPic = new JLabel();
-    JLabel labelLoading = makeLabel(loadingMessage);
-    setPadding(labelLoading, 4, 0, 0, 0);
-    try {
-      ImageIcon img = new ImageIcon(src);
-      labelPic.setIcon(img);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-
-    panelLoading.add(labelPic);
-    panelLoading.add(labelLoading);
-    return panelLoading;
-  }
-
   public static JPanel getErrorPanel(String errorMessage) {
     String src = "src/GUI/img/system/error.png";
     JPanel panelError = new JPanel();
@@ -263,15 +241,6 @@ public class GUIHelper {
     }
   }
 
-  public static void saveSwitcher(JPanel panelRight, JPanel current, JPanel switchTo,
-      String switchToName) {
-    panelRight.remove(switchTo);
-    panelRight.add(switchTo, switchToName);
-    CardLayout cl = (CardLayout) (panelRight.getLayout());
-    cl.show(panelRight, switchToName);
-    panelRight.remove(current);
-  }
-
   public static void editSwitcher(JPanel origin, JPanel switchTo) {
     origin.add(switchTo, "แก้ไข");
     CardLayout cl = (CardLayout) (origin.getLayout());
@@ -288,12 +257,15 @@ public class GUIHelper {
   }
 
   public static DatePicker makeDatePicker() {
-    DatePicker datePicker = new DatePicker();
+    DatePickerSettings dateSettings = new DatePickerSettings();
+    DatePicker datePicker = new DatePicker(dateSettings);
+    dateSettings.setDateRangeLimits(today, today.plusYears(100));
     return datePicker;
   }
 
   public static TimePicker makeTimePicker() {
     TimePickerSettings timeSettings = new TimePickerSettings(locale);
+    timeSettings.initialTime = LocalTime.of(8, 00);
     TimePicker timePicker = new TimePicker(timeSettings);
     return timePicker;
   }
