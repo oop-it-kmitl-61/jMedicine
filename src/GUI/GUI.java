@@ -4,12 +4,19 @@ import static GUI.GUIHelper.*;
 import static GUI.components.AppointmentUI.*;
 import static GUI.components.DoctorUI.*;
 import static GUI.components.MedicineUI.*;
+import static core.Core.getUser;
+import static core.UserUtil.getGenderIndex;
+import static core.UserUtil.getGenders;
+import static core.UserUtil.getPrefixIndex;
+import static core.UserUtil.getPrefixes;
 
 import GUI.components.MedicineUI;
+import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.MedicineUtil;
+import core.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
@@ -30,7 +37,7 @@ import mdlaf.shadows.DropShadowBorder;
  * /components
  *
  * @author jMedicine
- * @version 0.7.1
+ * @version 0.7.2
  * @since 0.1.0
  */
 
@@ -167,9 +174,10 @@ public class GUI {
     JToggleButton toggleNoti = makeToggle("เปิดการแจ้งเตือน (macOS เท่านั้น)", true);
 
     // JLabels
-    JLabel labelEdit = makeLabel("แก้ไขข้อมูลส่วนตัว");
+    JLabel labelEditProfile = makeLabel("แก้ไขข้อมูลส่วนตัว");
+    JLabel labelEditTime = makeLabel("ตั้งค่าเวลา");
     JLabel labelSignOut = makeLabel("ออกจากระบบ");
-    JLabel labelUserName = makeTitleLabel(util.getSignedInUser().getUserName());
+    JLabel labelUserName = makeTitleLabel(getUser().getUserName());
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
@@ -177,6 +185,8 @@ public class GUI {
     setPadding(panelBody, 20, 0, 180);
     setPadding(labelUserName, 0, 0, 20, 0);
 
+    makeLabelClickable(labelEditProfile, "แก้ไขข้อมูลส่วนตัว");
+    makeLabelClickable(labelEditTime, "ตั้งค่าเวลา");
     makeLabelClickable(labelSignOut, "ยังไม่ได้เข้าสู่ระบบ");
 
     JPanel panelSub = newFlowLayout();
@@ -194,7 +204,11 @@ public class GUI {
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
     panelSub = newFlowLayout();
-    panelSub.add(labelEdit);
+    panelSub.add(labelEditProfile);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelEditTime);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -212,7 +226,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.1"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.2"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -220,6 +234,9 @@ public class GUI {
     panelSettings.add(panelBody);
 
     panelRight.add(panelSettings, "การตั้งค่า");
+
+    panelEditProfile();
+    panelEditTime();
   }
 
   public static void initWelcome() {
@@ -373,8 +390,8 @@ public class GUI {
 
     frameWelcome.add(panelWelcome);
     frameWelcome.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    frameWelcome.setMinimumSize(new Dimension(400, 600));
-    frameWelcome.setSize(new Dimension(400, 720));
+    frameWelcome.setMinimumSize(minSize);
+    frameWelcome.setSize(windowSize);
     frameWelcome.setLocationRelativeTo(null);
     frameWelcome.setVisible(true);
   }
@@ -441,7 +458,7 @@ public class GUI {
     JPanel panelBtn = newFlowLayout();
 
     // JLabels
-    JLabel labelPic = MedicineUtil.getMedIcon(util.getSignedInUser().getUserMedicines().get(4));
+    JLabel labelPic = MedicineUtil.getMedIcon(util.getSignedInUser().getUserMedicines().get(1));
     JLabel labelTime = makeBoldLabel(time);
     JLabel labelMedName = makeBoldLabel(medName);
     JLabel labelAmount = makeSmallerLabel(dose);
@@ -480,6 +497,205 @@ public class GUI {
     panelLoopInfo.add(panelCard);
     panelLoopInfo.add(panelCard);
     return panelLoopInfo;
+  }
+
+  private static void panelEditProfile() {
+
+    // JPanels
+    JPanel panelMain = new JPanel(new BorderLayout());
+    JPanel panelTitle = newFlowLayout();
+    JPanel panelBody = new JPanel();
+
+    User user = getUser();
+
+    // JButtons
+    JButton btnBack = makeBackButton("แก้ไขข้อมูลส่วนตัว", "การตั้งค่า");
+    JButton btnEditPwd = makeBlueButton("เปลี่ยนรหัสผ่าน");
+    JButton btnSave = makeBlueButton("บันทึก");
+
+    // JTextFields
+    // JTextField tfUsername = makeTextField(20);
+    JTextField tfEmail = makeTextField(20);
+    JTextField tfFName = makeTextField(20);
+    JTextField tfLName = makeTextField(20);
+    JTextField tfWeight = makeTextField(4);
+    JTextField tfHeight = makeTextField(4);
+    JTextField tfAge = makeTextField(2);
+
+    // tfUsername.setText(user.getUserName());
+    tfFName.setText(user.getUserFirstName());
+    tfLName.setText(user.getUserLastName());
+    tfWeight.setText(user.getUserWeight());
+    tfHeight.setText(user.getUserHeight());
+    tfAge.setText(user.getUserAge());
+
+    // JPasswordFields
+    JPasswordField tfPassword = makePasswordField(20);
+    JPasswordField tfPasswordConfirm = makePasswordField(20);
+
+    // JComboBoxes
+    JComboBox cbPrefix = makeComboBox(getPrefixes());
+    JComboBox cbGender = makeComboBox(getGenders());
+
+    cbPrefix.setSelectedIndex(getPrefixIndex(user.getUserTitle()));
+    cbGender.setSelectedIndex(getGenderIndex(user.getUserGender()));
+
+    // JLabels
+    JLabel labelHeading1 = makeBoldLabel("ข้อมูลการเข้าใช้งาน");
+    JLabel labelHeading2 = makeBoldLabel("ข้อมูลส่วนตัว");
+    JLabel labelUserName = makeLabel("Username");
+    JLabel labelFName = makeLabel("ชื่อ");
+    JLabel labelLName = makeLabel("นามสกุล");
+    JLabel labelEmail = makeLabel("อีเมล");
+    JLabel labelAge = makeLabel("อายุ");
+    JLabel labelAgeUnit = makeLabel("ปี");
+    JLabel labelGender = makeLabel("เพศ");
+    JLabel labelWeight = makeLabel("น้ำหนัก");
+    JLabel labelWeightUnit = makeLabel("กิโลกรัม");
+    JLabel labelHeight = makeLabel("ส่วนสูง");
+    JLabel labelHeightUnit = makeLabel("เซนติเมตร");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelMain, -11, 0, 20, -18);
+    setPadding(panelBody, 0, 0, 260, 28);
+    setPadding(panelTitle, 0, 0, 20);
+
+    // Panel Title
+    panelTitle.add(btnBack);
+
+    JPanel panelSub = newFlowLayout();
+    panelSub.add(labelHeading1);
+    panelBody.add(panelSub);
+
+    panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
+
+    panelSub = newFlowLayout();
+    // panelSub.add(labelUserName);
+    // panelSub.add(tfUsername);
+    panelSub.add(btnEditPwd);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelHeading2);
+    setPadding(panelSub, 10, 0, 0, 0);
+    panelBody.add(panelSub);
+
+    panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
+
+    panelSub = newFlowLayout();
+    panelSub.add(cbPrefix);
+    panelSub.add(labelFName);
+    panelSub.add(tfFName);
+    panelSub.add(labelLName);
+    panelSub.add(tfLName);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelGender);
+    panelSub.add(cbGender);
+    panelSub.add(labelAge);
+    panelSub.add(tfAge);
+    panelSub.add(labelAgeUnit);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelWeight);
+    panelSub.add(tfWeight);
+    panelSub.add(labelWeightUnit);
+    panelSub.add(labelHeight);
+    panelSub.add(tfHeight);
+    panelSub.add(labelHeightUnit);
+    panelBody.add(panelSub);
+
+    panelMain.add(panelTitle, BorderLayout.NORTH);
+    panelMain.add(panelBody, BorderLayout.CENTER);
+    panelMain.add(btnSave, BorderLayout.SOUTH);
+
+    panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
+  }
+
+  private static void panelEditTime() {
+
+    // JPanels
+    JPanel panelMain = new JPanel(new BorderLayout());
+    JPanel panelTitle = newFlowLayout();
+    JPanel panelBody = new JPanel();
+
+    // JButtons
+    JButton btnBack = makeBackButton("ตั้งค่าเวลา", "การตั้งค่า");
+    JButton btnSave = makeBlueButton("บันทึก");
+
+    // Pickers
+    TimePicker tpMorning = makeTimePicker();
+    TimePicker tpAfternoon = makeTimePicker();
+    TimePicker tpEvening = makeTimePicker();
+    TimePicker tpBed = makeTimePicker();
+
+    // TODO: getUser()->time
+    tpMorning.setText("08:30");
+    tpAfternoon.setText("12:30");
+    tpEvening.setText("18:30");
+    tpBed.setText("22:30");
+
+    // JLabels
+    JLabel labelDescription = makeLabel(
+        "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
+    JLabel labelMorning = makeBoldLabel("เช้า");
+    JLabel labelAfternoon = makeBoldLabel("กลางวัน");
+    JLabel labelEvening = makeBoldLabel("เย็น");
+    JLabel labelBed = makeBoldLabel("ก่อนนอน");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelMain, -11, 0, 20, -18);
+    setPadding(panelBody, 0, 0, 260, 28);
+    setPadding(panelTitle, 0, 0, 20);
+
+    // Panel Title
+    panelTitle.add(btnBack);
+
+    JPanel panelSub = newFlowLayout();
+    panelSub.add(labelDescription);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelMorning);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(tpMorning);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelAfternoon);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(tpAfternoon);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelEvening);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(tpEvening);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelBed);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(tpBed);
+    panelBody.add(panelSub);
+
+    panelMain.add(panelTitle, BorderLayout.NORTH);
+    panelMain.add(panelBody, BorderLayout.CENTER);
+    panelMain.add(btnSave, BorderLayout.SOUTH);
+
+    panelRight.add(panelMain, "ตั้งค่าเวลา");
   }
 
   static JButton[] getButtons() {

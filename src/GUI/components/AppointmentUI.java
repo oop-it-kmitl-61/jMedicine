@@ -34,7 +34,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.7.1
+ * @version 0.7.2
  * @since 0.7.0
  */
 
@@ -278,6 +278,11 @@ public class AppointmentUI {
     JLabel labelHospital = makeLabel("ชื่อสถานพยาบาล");
     JLabel labelNote = makeLabel("หมายเหตุการนัด");
 
+    // Pickers
+    DatePicker datePicker = makeDatePicker();
+    TimePicker timePickerStart = makeTimePicker();
+    TimePicker timePickerEnd = makeTimePicker();
+
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
     setPadding(panelAddAppointment, -11, 0, 20, -18);
@@ -292,14 +297,11 @@ public class AppointmentUI {
 
     JPanel panelSub = newFlowLayout();
     panelSub.add(labelDateTitle);
-    DatePicker datePicker1 = new DatePicker();
-    panelSub.add(datePicker1);
+    panelSub.add(datePicker);
     panelSub.add(labelTimeStart);
-    TimePicker timePicker1 = new TimePicker();
-    panelSub.add(timePicker1);
+    panelSub.add(timePickerStart);
     panelSub.add(labelTimeEnd);
-    TimePicker timePicker2 = new TimePicker();
-    panelSub.add(timePicker2);
+    panelSub.add(timePickerEnd);
     setPadding(panelSub, 0, 0, 10, 0);
     panelBody.add(panelSub);
 
