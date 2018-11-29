@@ -38,7 +38,7 @@ import javax.swing.SwingConstants;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.3
+ * @version 0.7.4
  * @since 0.7.0
  */
 
@@ -591,8 +591,8 @@ public class MedicineUI {
     panelSubEvening.setVisible(false);
     panelSubBed.setVisible(false);
     setPadding(panelEditMed, -4, 0, 10, -18);
-    setPadding(panelBody, 0, 0, 20, 40);
-    setPadding(panelTitle, 0, 0, 20);
+    setPadding(panelBody, 0, 0, 20, 36);
+    setPadding(panelTitle, -2, 0, 20, 4);
 
     // JTextFields
     JTextField tfMedName = makeTextField(16);
@@ -777,15 +777,21 @@ public class MedicineUI {
         selectedDoseStr.add(tfEvery.getText() + " ชั่วโมง");
       }
       Date exp = Date.from(picker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-      Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
-          tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
-          Integer.valueOf(tfAmount.getText()),
-          Integer.valueOf(tfTotalMeds.getText()), exp);
+      medicine.setMedName(tfMedName.getText());
+      medicine.setMedType(type);
+      medicine.setMedColor(selectedColor);
+      medicine.setMedDescription(tfMedDescription.getText());
+      medicine.setMedTime(selectedMedTime);
+      medicine.setMedDoseStr(selectedDoseStr);
+      medicine.setMedDose(Integer.valueOf(tfAmount.getText()));
+      medicine.setMedTotal(Integer.valueOf(tfTotalMeds.getText()));
+      medicine.setMedEXP(exp);
       try {
-        MedicineDB.updateMedicine(med);
-        fireSuccessDialog("แก้ไขยา " + med.getMedName() + " เรียบร้อยแล้ว");
+        MedicineDB.updateMedicine(medicine);
+        fireSuccessDialog("แก้ไขยา " + medicine.getMedName() + " เรียบร้อยแล้ว");
         panelRight.remove(panelViewMedicine(medicine));
         panelRight.add(panelViewMedicine(medicine));
+        reload();
         backTo("ยาทั้งหมด");
         panelRight.remove(panelEditMedicine(medicine));
       } catch (SQLException e1) {
@@ -824,6 +830,8 @@ public class MedicineUI {
         panelSubMorning.setVisible(false);
       }
     });
+
+    panelTitle.add(btnBack);
 
     panelSub.add(makeBoldLabel("ข้อมูลพื้นฐาน"));
     panelBody.add(panelSub);
@@ -932,23 +940,29 @@ public class MedicineUI {
 
   private static JPanel makeMedCard(Medicine medicine) {
     /* Creates a card that will be used on the All medicines panel only. */
+
+    // Strings
     Date medEXP = medicine.getMedEXP();
     String medTitle = medicine.getMedName() + " (" + medicine.getMedDescription() + ")";
     String medShortInfo =
         "เหลืออยู่ " + medicine.getMedRemaining() + " " + medicine.getMedUnit() + " หมดอายุ "
             + GUIHelper.formatDMY
             .format(medEXP);
-    JLabel labelTitle = makeBoldLabel(medTitle);
-    JLabel labelShortInfo = makeLabel(medShortInfo);
-    JLabel labelPic = getMedIcon(medicine);
+
+    // JPanels
+    JPanel panelPic = new JPanel();
+    JPanel panelInfo = new JPanel();
     JPanel panelLoopInfo = new JPanel();
+
+    // JLabels
+    JLabel labelTitle = makeBoldLabel(medTitle);
+    JLabel labelShortInfo = makeSmallerLabel(medShortInfo);
+    JLabel labelPic = getMedIcon(medicine);
+
+    // Styling
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
     setPadding(panelLoopInfo, 0, 0, 20, 0);
-
-    JPanel panelPic = new JPanel();
     panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
-
-    JPanel panelInfo = new JPanel();
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
 
     panelPic.add(labelPic);
@@ -1036,5 +1050,10 @@ public class MedicineUI {
           break;
       }
     });
+  }
+
+  static void reload() {
+    panelRight.remove(panelMedicines);
+    panelAllMedicines();
   }
 }

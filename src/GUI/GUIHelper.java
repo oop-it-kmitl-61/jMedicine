@@ -62,7 +62,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.3
+ * @version 0.7.4
  * @since 0.3.0
  */
 
@@ -72,7 +72,6 @@ public class GUIHelper {
   public static Color mainBlue = new Color(20, 101, 155);
 
   public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
-  public static DateFormat formatTimePicker = new SimpleDateFormat("HH:mm");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
   public static DateFormat formatDatePicker = new SimpleDateFormat("MMMM dd, yyyy");
   public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy", locale);
@@ -571,10 +570,6 @@ public class GUIHelper {
     JLabel label = new JLabel(labelText);
     label.setFont(new Font("TH Sarabun New", Font.PLAIN, 22));
     return label;
-  }
-
-  public static void makeLabelLeft(JLabel label) {
-    label.setAlignmentX(Component.LEFT_ALIGNMENT);
   }
 
   public static void makeLabelCenter(JLabel label) {

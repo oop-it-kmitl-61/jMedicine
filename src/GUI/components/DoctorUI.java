@@ -35,7 +35,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about a doctor will be written here.
  *
  * @author jMedicine
- * @version 0.7.3
+ * @version 0.7.4
  * @since 0.7.0
  */
 
@@ -751,23 +751,38 @@ public class DoctorUI {
 
   private static JPanel makeDoctorCard(Doctor doctor) {
     /* Creates a card that will be used on the All doctors panel only. */
+
+    // Strings
     String doctorName = doctor.toString();
-    JLabel labelTitle = makeBoldLabel(doctorName);
     String doctorShortInfo = "แผนก" + doctor.getWard() + " โรงพยาบาล" + doctor.getHospital();
-    JLabel labelShortInfo = makeLabel(doctorShortInfo);
-    JLabel labelPic = new JLabel();
+
+    // JPanels
     JPanel panelLoopInfo = new JPanel();
-    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
-    setPadding(panelLoopInfo, 5, 0, 20, 0);
-
     JPanel panelPic = new JPanel();
-    panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
-
     JPanel panelInfo = new JPanel();
+
+    // JLabels
+    JLabel labelTitle = makeBoldLabel(doctorName);
+    JLabel labelShortInfo = makeSmallerLabel(doctorShortInfo);
+    JLabel labelPic = new JLabel();
+
+    // Styling
+    panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
+    panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
+    setPadding(panelLoopInfo, 5, 0, 20, 0);
+    setPadding(labelTitle, 5, 0, -10, 0);
+    setPadding(labelPic, 5, 10, 0, 0);
+
+    String imgName = "/system/doctor";
+    if (doctor.getPrefix().equals("พญ.")) {
+      imgName += "-female.png";
+    } else {
+      imgName += ".png";
+    }
 
     try {
-      Image img = ImageIO.read(new File(imgPath + "/system/doctor.png"));
+      Image img = ImageIO.read(new File(imgPath + imgName));
       labelPic.setIcon(new ImageIcon(img));
     } catch (Exception ignored) {
     }
@@ -775,9 +790,6 @@ public class DoctorUI {
     panelPic.add(labelPic);
     panelInfo.add(labelTitle);
     panelInfo.add(labelShortInfo);
-
-    setPadding(labelTitle, 5, 0, -10, 0);
-    setPadding(labelPic, 5, 10, 0, 0);
 
     panelLoopInfo.add(panelPic);
     panelLoopInfo.add(panelInfo);

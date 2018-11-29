@@ -107,47 +107,95 @@ public class Medicine {
     return medName;
   }
 
+  public void setMedName(String medName) {
+    this.medName = medName;
+  }
+
   public String getMedType() {
     return medType;
+  }
+
+  public void setMedType(String medType) {
+    this.medType = medType;
   }
 
   public String getMedColor() {
     return medColor;
   }
 
+  public void setMedColor(String medColor) {
+    this.medColor = medColor;
+  }
+
   public String getMedDescription() {
     return medDescription;
+  }
+
+  public void setMedDescription(String medDescription) {
+    this.medDescription = medDescription;
   }
 
   public ArrayList<String> getMedTime() {
     return medTime;
   }
 
+  public void setMedTime(ArrayList<String> medTime) {
+    this.medTime = medTime;
+  }
+
   public ArrayList<String> getMedDoseStr() {
     return medDoseStr;
+  }
+
+  public void setMedDoseStr(ArrayList<String> medDoseStr) {
+    this.medDoseStr = medDoseStr;
   }
 
   public int getMedDose() {
     return medDose;
   }
 
+  public void setMedDose(int medDose) {
+    this.medDose = medDose;
+  }
+
+  public int getMedTotal() {
+    return medTotal;
+  }
+
+  public void setMedTotal(int medTotal) {
+    this.medTotal = medTotal;
+  }
+
   public int getMedRemaining() {
     return medRemaining;
+  }
+
+  public void setMedRemaining(int medRemaining) {
+    this.medRemaining = medRemaining;
   }
 
   public Date getMedEXP() {
     return medEXP;
   }
 
+  public void setMedEXP(Date medEXP) {
+    this.medEXP = medEXP;
+  }
+
   public Date getDateAdded() {
     return dateAdded;
+  }
+
+  public void setDateAdded(Date dateAdded) {
+    this.dateAdded = dateAdded;
   }
 
   public String getMedUnit() {
     return medUnit;
   }
 
-  public int getMedTotal() {
-    return medTotal;
+  public void setMedUnit(String medUnit) {
+    this.medUnit = medUnit;
   }
 }

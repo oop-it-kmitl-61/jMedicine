@@ -45,7 +45,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.7.3
+ * @version 0.7.4
  * @since 0.7.0
  */
 
@@ -116,6 +116,7 @@ public class AppointmentUI {
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelTitle, -10, 0, 0, -14);
     setPadding(panelBody, 20, 0, 0, 45);
 
     // Listeners
@@ -461,15 +462,14 @@ public class AppointmentUI {
     JPanel panelPic = new JPanel();
     JPanel panelInfo = new JPanel();
 
-    Doctor appDr = appointment.getDoctor();
-
     // Strings
+    Doctor appDr = appointment.getDoctor();
     String title = AppointmentUtil.getTitle(appointment);
-    String shortInfo = appDr.toString() + " โรงพยาบาล" + appDr.getHospital();
+    String shortInfo = appDr.toString() + " (โรงพยาบาล" + appDr.getHospital() + ")";
 
     // JLabels
     JLabel labelTitle = makeBoldLabel(title);
-    JLabel labelShortInfo = makeLabel(shortInfo);
+    JLabel labelShortInfo = makeSmallerLabel(shortInfo);
     JLabel labelPic = new JLabel();
 
     // Styling
