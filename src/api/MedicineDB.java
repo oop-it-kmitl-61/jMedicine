@@ -105,7 +105,7 @@ public class MedicineDB {
     pStatement.setInt(7, medicine.getMedTotal());
     pStatement.setArray(8, connection.createArrayOf("text", medicine.getMedTime().toArray()));
     pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
-    pStatement.setString(10, new SimpleDateFormat("yyyy-MM-dd").format(medicine.getMedEXP()));
+    pStatement.setDate(10, new Date(medicine.getMedEXP().getTime()));
 
     ResultSet result = pStatement.executeQuery();
 
