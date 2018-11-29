@@ -116,21 +116,31 @@ public class GUI {
 
     // !! FOR DEMO ONLY
     panelLoop.add(makeOverviewTime("15.30 น. (อีก 2 ชั่วโมง)"));
-    panelLoop.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
+    JPanel panelSub = newFlowLayout();
+    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
         "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
+    panelSub.add(makeOverviewCard("Tylenol (ยาแก้ปวด ลดไข้)",
+        "1 เม็ด ทุก ๆ 8 ชั่วโมง", "/tablets/tablet-white.png"));
+    panelLoop.add(panelSub);
+    panelSub = newFlowLayout();
     panelLoop.add(makeOverviewTime("18.30 น. (อีก 5 ชั่วโมง)"));
-    panelLoop.add(makeOverviewCard("Amoxicillin (ยาฆ่าเชื้อ)",
+    panelSub.add(makeOverviewCard("Amoxicillin (ยาฆ่าเชื้อ)",
         "หลังอาหาร 1 เม็ด", "/capsules/capsule-red-white.png"));
-    panelLoop.add(makeOverviewCard("Bisovol (ยาแก้ไอ)",
+    panelSub.add(makeOverviewCard("Bisovol (ยาแก้ไอ)",
         "หลังอาหาร 5 มิลลิกรัม", "/liquids/liquid-yellow.png"));
-    panelLoop.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
+    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
         "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
+    panelLoop.add(panelSub);
     panelLoop.add(makeOverviewTime("21.30 น. (อีก 8 ชั่วโมง)"));
-    panelLoop.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
+    panelSub = newFlowLayout();
+    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
         "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
+    panelLoop.add(panelSub);
     panelLoop.add(makeOverviewTime("22.30 น. (อีก 9 ชั่วโมง)"));
-    panelLoop.add(makeOverviewCard("Chlorpheniramine (ยาแก้แพ้)",
+    panelSub = newFlowLayout();
+    panelSub.add(makeOverviewCard("Chlorpheniramine (ยาแก้แพ้)",
         "ก่อนนอน 1 เม็ด", "/tablets/tablet-yellow.png"));
+    panelLoop.add(panelSub);
     // End DEMO
 
     setPadding(panelLoop, 0, 0, 20, 0);
@@ -513,9 +523,9 @@ public class GUI {
     setPadding(labelPic, 6, 0, 0, 8);
     setPadding(labelMedName, 7, 0, -12, 0);
     setPadding(labelAmount, 0, 0, 2, 0);
-    setPadding(panelLoopInfo, 0, 0, 4);
-    setPadding(panelMed, 0, 0, 6, 0);
-    setPadding(panelBtn, 6, 0, 0, 0);
+    setPadding(panelLoopInfo, 0, 20, 4, 0);
+    setPadding(panelMed, 6, 36, 12, 0);
+    setPadding(panelBtn, 0, 0, -6, -3);
 
     panelMedInfo.add(labelMedName);
     panelMedInfo.add(labelAmount);
