@@ -12,7 +12,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 
 public class Login {
@@ -41,6 +45,9 @@ public class Login {
     ResultSet result = pStatement.executeQuery();
 
     if (result.next()) {
+      ArrayList<String> userTime = Arrays.stream((Object[]) result.getArray("time").getArray())
+          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
       User user = new User(result.getString("id"), result.getString("title"),
           result.getString("firstname"), result.getString("lastname"), result.getString("email"),
           result.getString("gender"), String.valueOf(result.getInt("age")),
@@ -49,6 +56,7 @@ public class Login {
       user.setUserMedicines(getAllMedicine(user.getUserId()));
       user.setUserDoctors(getAllDoctor(user.getUserId()));
       user.setUserAppointments(getAllAppointment(user.getUserId()));
+      user.setUserTime(userTime);
 
       return user;
     }
@@ -79,6 +87,19 @@ public class Login {
     result.next();
 
     user.setUserId(result.getString("id"));
+
+    return user;
+  }
+
+  public static User updateUserTime(User user) throws SQLException {
+
+    String SQLCommand = "UPDATE users SET \"time\" = ? WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setArray(1, connection.createArrayOf("text", user.getUserTime().toArray()));
+    pStatement.setObject(2, user.getUserId(), Types.OTHER);
+
+    pStatement.executeUpdate();
 
     return user;
   }

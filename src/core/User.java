@@ -19,6 +19,7 @@ public class User {
   private String userAge;
   private String userWeight;
   private String userHeight;
+  private ArrayList<String> userTime;
   private ArrayList<Medicine> userMedicines;
   private ArrayList<Doctor> userDoctors;
   private ArrayList<Appointment> userAppointments;
@@ -45,6 +46,14 @@ public class User {
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();
     this.userAppointments = new ArrayList<>();
+  }
+
+  public ArrayList<String> getUserTime() {
+    return userTime;
+  }
+
+  public void setUserTime(ArrayList<String> userTime) {
+    this.userTime = userTime;
   }
 
   public String getUserTitle() {
