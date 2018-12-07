@@ -171,6 +171,7 @@ public class DoctorUI {
     JTextField tfDoctorSurName = makeTextField(20);
     JTextField tfDoctorWard = makeTextField(16);
     JTextField tfDoctorHospital = makeTextField(18);
+    JTextField tfDoctorPhone = makeTextField(10);
     String[] prefixes = getPrefixes();
     JComboBox cbPrefix = makeComboBox(prefixes);
 
@@ -180,7 +181,7 @@ public class DoctorUI {
         cbFriday, cbSaturday, sundayStartPicker, sundayEndPicker, mondayStartPicker,
         mondayEndPicker, tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker,
         thurStartPicker, thurEndPicker, fridayStartPicker, fridayEndPicker, tfDoctorName,
-        tfDoctorSurName, tfDoctorWard, tfDoctorHospital, cbPrefix);
+        tfDoctorSurName, tfDoctorWard, tfDoctorHospital, tfDoctorPhone, cbPrefix);
 
     panelTitle.add(btnBack);
 
@@ -190,17 +191,22 @@ public class DoctorUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("ชื่อ"));
+    panelSub.add(makeLabel("ชื่อ*"));
     panelSub.add(tfDoctorName);
-    panelSub.add(makeLabel("นามสกุล"));
+    panelSub.add(makeLabel("นามสกุล*"));
     panelSub.add(tfDoctorSurName);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("แผนก"));
     panelSub.add(tfDoctorWard);
-    panelSub.add(makeLabel("ชื่อสถานพยาบาล"));
+    panelSub.add(makeLabel("ชื่อสถานพยาบาล*"));
     panelSub.add(tfDoctorHospital);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeLabel("เบอร์โทรศัพท์"));
+    panelSub.add(tfDoctorPhone);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -436,6 +442,7 @@ public class DoctorUI {
     JTextField tfDoctorSurName = makeTextField(20);
     JTextField tfDoctorWard = makeTextField(16);
     JTextField tfDoctorHospital = makeTextField(18);
+    JTextField tfDoctorPhone = makeTextField(10);
     String[] prefixes = getPrefixes();
     JComboBox cbPrefix = makeComboBox(prefixes);
 
@@ -443,6 +450,8 @@ public class DoctorUI {
     tfDoctorSurName.setText(doctor.getLastName());
     tfDoctorWard.setText(doctor.getWard());
     tfDoctorHospital.setText(doctor.getHospital());
+    // TODO: Doctor getPhone()
+    //tfDoctorPhone.setText(doctor.getPhone());
     cbPrefix.setSelectedIndex(DoctorUtil.getPrefixIndex(doctor.getPrefix()));
 
     // Listeners
@@ -454,7 +463,7 @@ public class DoctorUI {
         tuesStartPicker, tuesEndPicker, wedStartPicker, wedEndPicker, thurStartPicker,
         thurEndPicker,
         fridayStartPicker, fridayEndPicker, tfDoctorName, tfDoctorSurName, tfDoctorWard,
-        tfDoctorHospital, cbPrefix);
+        tfDoctorHospital, tfDoctorPhone, cbPrefix);
 
     panelTitle.add(btnBack);
 
@@ -464,17 +473,22 @@ public class DoctorUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("ชื่อ"));
+    panelSub.add(makeLabel("ชื่อ*"));
     panelSub.add(tfDoctorName);
-    panelSub.add(makeLabel("นามสกุล"));
+    panelSub.add(makeLabel("นามสกุล*"));
     panelSub.add(tfDoctorSurName);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("แผนก"));
     panelSub.add(tfDoctorWard);
-    panelSub.add(makeLabel("ชื่อสถานพยาบาล"));
+    panelSub.add(makeLabel("ชื่อสถานพยาบาล*"));
     panelSub.add(tfDoctorHospital);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeLabel("เบอร์โทรศัพท์"));
+    panelSub.add(tfDoctorPhone);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -556,13 +570,14 @@ public class DoctorUI {
       TimePicker wedEndPicker, TimePicker thurStartPicker, TimePicker thurEndPicker,
       TimePicker fridayStartPicker, TimePicker fridayEndPicker, JTextField tfDoctorName,
       JTextField tfDoctorSurName, JTextField tfDoctorWard, JTextField tfDoctorHospital,
-      JComboBox cbPrefix) {
+      JTextField tfDoctorPhone, JComboBox cbPrefix) {
     btnSave.addActionListener(e -> {
       String prefix = getPrefixes()[cbPrefix.getSelectedIndex()];
       String fName = tfDoctorName.getText();
       String sName = tfDoctorSurName.getText();
       String ward = tfDoctorWard.getText();
       String hospital = tfDoctorHospital.getText();
+      String phone = tfDoctorPhone.getText();
       ArrayList<ArrayList> workTime = new ArrayList<>();
       if (cbSunday.isSelected()) {
         ArrayList<String> sunday = new ArrayList<>();
@@ -613,7 +628,7 @@ public class DoctorUI {
         sat.add(fridayEndPicker.getText());
         workTime.add(sat);
       }
-
+      // TODO: ADD PHONE TO A DOCTOR
       switch (type) {
         case "add":
           Doctor newDoctor = new Doctor(prefix, fName, sName, ward, hospital, workTime);
