@@ -35,7 +35,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about a doctor will be written here.
  *
  * @author jMedicine
- * @version 0.7.6
+ * @version 0.7.8
  * @since 0.7.0
  */
 
@@ -450,8 +450,7 @@ public class DoctorUI {
     tfDoctorSurName.setText(doctor.getLastName());
     tfDoctorWard.setText(doctor.getWard());
     tfDoctorHospital.setText(doctor.getHospital());
-    // TODO: Doctor getPhone()
-    //tfDoctorPhone.setText(doctor.getPhone());
+    tfDoctorPhone.setText(doctor.getPhone());
     cbPrefix.setSelectedIndex(DoctorUtil.getPrefixIndex(doctor.getPrefix()));
 
     // Listeners
@@ -628,10 +627,9 @@ public class DoctorUI {
         sat.add(fridayEndPicker.getText());
         workTime.add(sat);
       }
-      // TODO: ADD PHONE TO A DOCTOR
       switch (type) {
         case "add":
-          Doctor newDoctor = new Doctor(prefix, fName, sName, ward, hospital, workTime);
+          Doctor newDoctor = new Doctor(prefix, fName, sName, ward, hospital, phone, workTime);
           try {
             DoctorDB.addDoctor(newDoctor, getUser().getUserId());
             fireSuccessDialog("เพิ่ม " + prefix + " " + fName + " เรียบร้อยแล้ว");
@@ -651,6 +649,7 @@ public class DoctorUI {
           doctor.setFirstName(fName);
           doctor.setLastName(sName);
           doctor.setWard(ward);
+          doctor.setPhone(phone);
           doctor.setWorkTime(workTime);
           try {
             DoctorDB.updateDoctor(doctor);
@@ -742,6 +741,9 @@ public class DoctorUI {
       panelBody.add(makeLabel("แผนก: " + doctor.getWard()));
     }
     panelBody.add(makeLabel("โรงพยาบาล: " + doctor.getHospital()));
+    if (doctor.getPhone() != null) {
+      panelBody.add(makeLabel("เบอร์โทรศัพท์: " + doctor.getPhone()));
+    }
     if (doctor.getWorkTime() != null) {
       panelBody.add(makeLabel("เวลาเข้าตรวจ:"));
       if (doctor.getWorkTime().size() == 0) {

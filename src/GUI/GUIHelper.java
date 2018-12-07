@@ -6,7 +6,6 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
-import core.Medicine;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -64,7 +63,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.7
+ * @version 0.7.8
  * @since 0.3.0
  */
 
@@ -256,6 +255,14 @@ public class GUIHelper {
     DatePicker datePicker = new DatePicker(dateSettings);
     dateSettings.setDateRangeLimits(today, today.plusYears(100));
     return datePicker;
+  }
+
+  public static TimePicker makeTimeNowPicker() {
+    TimePickerSettings timeSettings = new TimePickerSettings(locale);
+    timeSettings.initialTime = LocalTime.of(8, 00);
+    TimePicker timePicker = new TimePicker(timeSettings);
+    timePicker.setTimeToNow();
+    return timePicker;
   }
 
   public static TimePicker makeTimePicker() {

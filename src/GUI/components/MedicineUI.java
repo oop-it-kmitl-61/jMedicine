@@ -39,7 +39,7 @@ import javax.swing.SwingConstants;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.4
+ * @version 0.7.8
  * @since 0.7.0
  */
 
@@ -343,7 +343,7 @@ public class MedicineUI {
     // Pickers
     DatePicker pickerStart = makeTodayPicker();
     DatePicker pickerEXP = makeDatePicker();
-    TimePicker pickerStartTime = makeTimePicker();
+    TimePicker pickerStartTime = makeTimeNowPicker();
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
@@ -606,7 +606,7 @@ public class MedicineUI {
     // Pickers
     DatePicker pickerStart = makeTodayPicker();
     DatePicker pickerEXP = makeDatePicker();
-    TimePicker pickerStartTime = makeTimePicker();
+    TimePicker pickerStartTime = makeTimeNowPicker();
 
     tfMedName.setText(medicine.getMedName());
     tfMedDescription.setText(medicine.getMedDescription());

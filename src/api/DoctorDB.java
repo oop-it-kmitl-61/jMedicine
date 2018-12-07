@@ -62,7 +62,7 @@ public class DoctorDB {
       results.add(
           new Doctor(result.getString("id"), result.getString("title"),
               result.getString("firstname"), result.getString("lastname"), result.getString("ward"),
-              result.getString("hospital"), time)
+              result.getString("hospital"), result.getString("phone"), time)
       );
     }
 
@@ -100,7 +100,7 @@ public class DoctorDB {
 
     return new Doctor(result.getString("id"), result.getString("title"),
         result.getString("firstname"), result.getString("lastname"), result.getString("ward"),
-        result.getString("hospital"), time);
+        result.getString("hospital"), result.getString("phone"), time);
 
   }
 
@@ -117,7 +117,7 @@ public class DoctorDB {
       }
     }
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO doctors (\"user\", title, firstname, lastname, ward, hospital, \"workDay\", \"timeStart\", \"timeEnd\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO doctors (\"user\", title, firstname, lastname, ward, hospital, \"workDay\", \"timeStart\", \"timeEnd\", phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
@@ -129,6 +129,7 @@ public class DoctorDB {
     pStatement.setArray(7, connection.createArrayOf("text", workDay.toArray()));
     pStatement.setArray(8, connection.createArrayOf("text", timeStart.toArray()));
     pStatement.setArray(9, connection.createArrayOf("text", timeEnd.toArray()));
+    pStatement.setString(10, doctor.getPhone());
 
     ResultSet result = pStatement.executeQuery();
 
@@ -160,7 +161,7 @@ public class DoctorDB {
       }
     }
 
-    String SQLCommand = "UPDATE doctors SET title = ?, firstname = ?, lastname = ?, ward = ?, hospital = ?, \"workDay\" = ?, \"timeStart\" = ?, \"timeEnd\" = ? WHERE id = ?";
+    String SQLCommand = "UPDATE doctors SET title = ?, firstname = ?, lastname = ?, ward = ?, hospital = ?, \"workDay\" = ?, \"timeStart\" = ?, \"timeEnd\" = ?, phone = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
 
@@ -172,7 +173,8 @@ public class DoctorDB {
     pStatement.setArray(6, connection.createArrayOf("text", workDay.toArray()));
     pStatement.setArray(7, connection.createArrayOf("text", timeStart.toArray()));
     pStatement.setArray(8, connection.createArrayOf("text", timeEnd.toArray()));
-    pStatement.setObject(9, doctor.getId(), Types.OTHER);
+    pStatement.setString(9, doctor.getPhone());
+    pStatement.setObject(10, doctor.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 
