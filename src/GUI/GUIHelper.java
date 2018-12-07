@@ -245,6 +245,12 @@ public class GUIHelper {
     return new JPanel(new FlowLayout(FlowLayout.LEFT));
   }
 
+  public static DatePicker makeTodayPicker() {
+    DatePicker datePicker = new DatePicker();
+    datePicker.setDateToToday();
+    return datePicker;
+  }
+
   public static DatePicker makeDatePicker() {
     DatePickerSettings dateSettings = new DatePickerSettings();
     DatePicker datePicker = new DatePicker(dateSettings);
