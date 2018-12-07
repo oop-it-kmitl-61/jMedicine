@@ -73,7 +73,7 @@ public class GUIHelper {
   public static Color mainBlue = new Color(20, 101, 155);
 
   final static LocalDate today = LocalDate.now();
-  public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
+  public static DateFormat formatHM = new SimpleDateFormat("HH:mm");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
   public static DateFormat formatDatePicker = new SimpleDateFormat("MMMM dd, yyyy");
   public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy", locale);

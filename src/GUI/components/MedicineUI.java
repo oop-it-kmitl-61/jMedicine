@@ -287,11 +287,8 @@ public class MedicineUI {
     JTextField tfEvery = makeNumberField(2);
 
     // JLabels
-    JLabel labelUnit = makeLabel(medUnit);
-    JLabel labelUnitMorning = makeLabel(medUnit);
-    JLabel labelUnitAfternoon = makeLabel(medUnit);
-    JLabel labelUnitEvening = makeLabel(medUnit);
-    JLabel labelUnitBed = makeLabel(medUnit);
+    JLabel labelUnit1 = makeLabel(medUnit);
+    JLabel labelUnit2 = makeLabel(medUnit);
     JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
     JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
     JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
@@ -406,10 +403,11 @@ public class MedicineUI {
       }
 
       Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+      String dateStart = formatDMY.format(pickerStart.getDate()) + formatHM.format(pickerStartTime.getTime());
       Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
           tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
           Integer.valueOf(tfAmount.getText()),
-          Integer.valueOf(tfTotalMeds.getText()), exp);
+          Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
       try {
         MedicineDB.addMedicine(med, getUser().getUserId());
         fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
@@ -424,9 +422,8 @@ public class MedicineUI {
         e1.printStackTrace();
       }
     });
-
-    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
-        labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
+    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit1,
+        labelUnit2, cbMedType);
     cbAfternoon.addActionListener(e -> {
       if (cbAfternoon.isSelected()) {
         panelSubAfternoon.setVisible(true);
@@ -513,7 +510,7 @@ public class MedicineUI {
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวน"));
     panelSub.add(tfAmount);
-    panelSub.add(labelUnit);
+    panelSub.add(labelUnit1);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -523,8 +520,7 @@ public class MedicineUI {
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
     panelSub.add(tfTotalMeds);
-    labelUnit = makeLabel(medUnit);
-    panelSub.add(labelUnit);
+    panelSub.add(labelUnit2);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -567,11 +563,8 @@ public class MedicineUI {
     JPanel panelLiquidColor = newFlowLayout();
 
     // JLabels
-    JLabel labelUnit = makeLabel(medUnit);
-    JLabel labelUnitMorning = makeLabel(medUnit);
-    JLabel labelUnitAfternoon = makeLabel(medUnit);
-    JLabel labelUnitEvening = makeLabel(medUnit);
-    JLabel labelUnitBed = makeLabel(medUnit);
+    JLabel labelUnit1 = makeLabel(medUnit);
+    JLabel labelUnit2 = makeLabel(medUnit);
     JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
     JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
     JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
@@ -611,6 +604,10 @@ public class MedicineUI {
     tfMedName.setText(medicine.getMedName());
     tfMedDescription.setText(medicine.getMedDescription());
     tfTotalMeds.setText(String.valueOf(medicine.getMedTotal()));
+
+    String[] dateStart = medicine.getDateStart().split(" ");
+    pickerStart.setText(dateStart[0]);
+    pickerStartTime.setText(dateStart[1]);
     pickerEXP.setText(formatDatePicker.format(medicine.getMedEXP()));
 
     // Arrays
@@ -759,6 +756,7 @@ public class MedicineUI {
         selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
       }
       Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+      String newDateStart = formatDMY.format(pickerStart.getDate()) + formatHM.format(pickerStartTime.getTime());
       medicine.setMedName(tfMedName.getText());
       medicine.setMedType(type);
       medicine.setMedColor(selectedColor);
@@ -768,6 +766,7 @@ public class MedicineUI {
       medicine.setMedDose(Integer.valueOf(tfAmount.getText()));
       medicine.setMedTotal(Integer.valueOf(tfTotalMeds.getText()));
       medicine.setMedEXP(exp);
+      medicine.setDateStart(newDateStart);
       try {
         MedicineDB.updateMedicine(medicine);
         fireSuccessDialog("แก้ไขยา " + medicine.getMedName() + " เรียบร้อยแล้ว");
@@ -782,8 +781,8 @@ public class MedicineUI {
       }
     });
 
-    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
-        labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
+    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit1,
+        labelUnit2, cbMedType);
     cbAfternoon.addActionListener(e -> {
       if (cbAfternoon.isSelected()) {
         panelSubAfternoon.setVisible(true);
@@ -872,7 +871,7 @@ public class MedicineUI {
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวน"));
     panelSub.add(tfAmount);
-    panelSub.add(labelUnit);
+    panelSub.add(labelUnit1);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -882,8 +881,7 @@ public class MedicineUI {
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
     panelSub.add(tfTotalMeds);
-    labelUnit = makeLabel(medUnit);
-    panelSub.add(labelUnit);
+    panelSub.add(labelUnit2);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -970,9 +968,8 @@ public class MedicineUI {
   }
 
   private static void medTypeUIHandler(JPanel panelColor, JPanel panelTabletColor,
-      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit, JLabel labelUnitMorning,
-      JLabel labelUnitAfternoon, JLabel labelUnitEvening, JLabel labelUnitBed,
-      JComboBox cbMedType) {
+      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit1,
+      JLabel labelUnit2, JComboBox cbMedType) {
     cbMedType.addActionListener(e -> {
       switch (cbMedType.getSelectedIndex()) {
         case 0:
@@ -980,44 +977,32 @@ public class MedicineUI {
           panelTabletColor.setVisible(true);
           panelCapsuleColor.setVisible(false);
           panelLiquidColor.setVisible(false);
-          labelUnit.setText("เม็ด");
-          labelUnitMorning.setText("เม็ด");
-          labelUnitAfternoon.setText("เม็ด");
-          labelUnitEvening.setText("เม็ด");
-          labelUnitBed.setText("เม็ด");
+          labelUnit1.setText("เม็ด");
+          labelUnit2.setText("เม็ด");
           break;
         case 1:
           panelColor.setVisible(true);
           panelTabletColor.setVisible(false);
           panelCapsuleColor.setVisible(true);
           panelLiquidColor.setVisible(false);
-          labelUnit.setText("แคปซูล");
-          labelUnitMorning.setText("แคปซูล");
-          labelUnitAfternoon.setText("แคปซูล");
-          labelUnitEvening.setText("แคปซูล");
-          labelUnitBed.setText("แคปซูล");
+          labelUnit1.setText("แคปซูล");
+          labelUnit2.setText("แคปซูล");
           break;
         case 2:
           panelColor.setVisible(true);
           panelTabletColor.setVisible(false);
           panelCapsuleColor.setVisible(false);
           panelLiquidColor.setVisible(true);
-          labelUnit.setText("มิลลิลิตร");
-          labelUnitMorning.setText("มิลลิลิตร");
-          labelUnitAfternoon.setText("มิลลิลิตร");
-          labelUnitEvening.setText("มิลลิลิตร");
-          labelUnitBed.setText("มิลลิลิตร");
+          labelUnit1.setText("มิลลิลิตร");
+          labelUnit2.setText("แคปซูล");
           break;
         default:
           panelColor.setVisible(false);
           panelTabletColor.setVisible(false);
           panelCapsuleColor.setVisible(false);
           panelLiquidColor.setVisible(false);
-          labelUnit.setText("มิลลิลิตร");
-          labelUnitMorning.setText("ครั้ง");
-          labelUnitAfternoon.setText("ครั้ง");
-          labelUnitEvening.setText("ครั้ง");
-          labelUnitBed.setText("ครั้ง");
+          labelUnit1.setText("มิลลิลิตร");
+          labelUnit2.setText("แคปซูล");
           break;
       }
     });
