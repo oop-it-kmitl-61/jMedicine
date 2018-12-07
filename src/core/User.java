@@ -19,16 +19,10 @@ public class User {
   private String userAge;
   private String userWeight;
   private String userHeight;
+  private String[] userTime;
   private ArrayList<Medicine> userMedicines;
   private ArrayList<Doctor> userDoctors;
   private ArrayList<Appointment> userAppointments;
-
-  public User(String userName) {
-    this.userName = userName;
-    this.userMedicines = new ArrayList<>();
-    this.userDoctors = new ArrayList<>();
-    this.userAppointments = new ArrayList<>();
-  }
 
   public User(String userId, String userTitle, String userFirstName, String userLastName,
       String userEmail, String userGender, String userAge, String userWeight, String userHeight) {
@@ -125,6 +119,14 @@ public class User {
 
   public void setUserHeight(String userHeight) {
     this.userHeight = userHeight;
+  }
+
+  public String[] getUserTime() {
+    return userTime;
+  }
+
+  public void setUserTime(String[] userTime) {
+    this.userTime = userTime;
   }
 
   public ArrayList<Appointment> getUserAppointments() {

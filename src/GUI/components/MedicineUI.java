@@ -190,7 +190,7 @@ public class MedicineUI {
     for (int i = 0; i < medicine.getMedTime().size(); i++) {
       panelSub = newFlowLayout();
       JLabel labelMedTime = makeLabel(medicine.getMedTime().get(i));
-      JLabel labelMedDoseStr = makeLabel(medicine.getMedDoseStr().get(i));
+      JLabel labelMedDoseStr = makeLabel(medicine.getMedDoseStr());
       panelSub.add(labelMedTime);
       panelSub.add(labelMedDoseStr);
       setPadding(panelSub, 0, 0, -10);
@@ -326,34 +326,16 @@ public class MedicineUI {
     JCheckBox cbEvery = makeCheckBox("ทุก ๆ ");
 
     // JRadioButtons
-    JRadioButton rbMorningBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbMorningAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbMorningImme = makeRadioButton(medDoseStr[2]);
-
-    JRadioButton rbAfternoonBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbAfternoonAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbAfternoonImme = makeRadioButton(medDoseStr[2]);
-
-    JRadioButton rbEveningBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbEveningAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbEveningImme = makeRadioButton(medDoseStr[2]);
+    JRadioButton rbBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbImmediately = makeRadioButton(medDoseStr[2]);
 
     // Radio Groups
-    ButtonGroup bgMorning = new ButtonGroup();
-    ButtonGroup bgAfternoon = new ButtonGroup();
-    ButtonGroup bgEvening = new ButtonGroup();
+    ButtonGroup bgMedDoseStr = new ButtonGroup();
 
-    bgMorning.add(rbMorningBefore);
-    bgMorning.add(rbMorningAfter);
-    bgMorning.add(rbMorningImme);
-
-    bgAfternoon.add(rbAfternoonBefore);
-    bgAfternoon.add(rbAfternoonAfter);
-    bgAfternoon.add(rbAfternoonImme);
-
-    bgEvening.add(rbEveningBefore);
-    bgEvening.add(rbEveningAfter);
-    bgEvening.add(rbEveningImme);
+    bgMedDoseStr.add(rbBefore);
+    bgMedDoseStr.add(rbAfter);
+    bgMedDoseStr.add(rbImmediately);
 
     DatePicker picker = makeDatePicker();
 
@@ -386,28 +368,35 @@ public class MedicineUI {
       } else {
         type = "spray";
       }
+
+      // Dose Information
       ArrayList<String> selectedMedTime = new ArrayList<>();
-      ArrayList<String> selectedDoseStr = new ArrayList<>();
+      String selectedDoseStr = "";
       if (cbMorning.isSelected()) {
         selectedMedTime.add("เช้า");
-        medTimeAdder(rbMorningBefore, rbMorningAfter, rbMorningImme, selectedDoseStr);
       }
       if (cbAfternoon.isSelected()) {
         selectedMedTime.add("กลางวัน");
-        medTimeAdder(rbAfternoonBefore, rbAfternoonAfter, rbAfternoonImme, selectedDoseStr);
       }
       if (cbEvening.isSelected()) {
         selectedMedTime.add("เย็น");
-        medTimeAdder(rbEveningBefore, rbEveningAfter, rbEveningImme, selectedDoseStr);
       }
       if (cbBed.isSelected()) {
         selectedMedTime.add("ก่อนนอน");
-        selectedDoseStr.add("");
       }
       if (cbEvery.isSelected()) {
         selectedMedTime.add("ทุก ๆ ");
-        selectedDoseStr.add(tfEvery.getText() + " ชั่วโมง");
+        selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
       }
+
+      if (rbBefore.isSelected()) {
+        selectedDoseStr = "ก่อนอาหาร";
+      } else if (rbAfter.isSelected()) {
+        selectedDoseStr = "หลังอาหาร";
+      } else if (rbImmediately.isSelected()) {
+        selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+      }
+
       Date exp = Date.from(picker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
       Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
           tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
@@ -498,44 +487,25 @@ public class MedicineUI {
     panelAddMedGUI.add(panelSub);
 
     panelSub = newFlowLayout();
+    panelSub.add(cbMorning);
+    panelSub.add(cbAfternoon);
+    panelSub.add(cbEvening);
+    panelSub.add(cbBed);
+    panelSub.add(cbEvery);
+    panelSub.add(tfEvery);
+    panelSub.add(makeLabel("ชั่วโมง"));
+    panelAddMedGUI.add(panelSub);
+
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวน"));
     panelSub.add(tfAmount);
     panelSub.add(labelUnit);
     panelAddMedGUI.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(cbMorning);
-    panelSubMorning.add(rbMorningBefore);
-    panelSubMorning.add(rbMorningAfter);
-    panelSubMorning.add(rbMorningImme);
-    panelSub.add(panelSubMorning);
-    panelAddMedGUI.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbAfternoon);
-    panelSubAfternoon.add(rbAfternoonBefore);
-    panelSubAfternoon.add(rbAfternoonAfter);
-    panelSubAfternoon.add(rbAfternoonImme);
-    panelSub.add(panelSubAfternoon);
-    panelAddMedGUI.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbEvening);
-    panelSubEvening.add(rbEveningBefore);
-    panelSubEvening.add(rbEveningAfter);
-    panelSubEvening.add(rbEveningImme);
-    panelSub.add(panelSubEvening);
-    panelAddMedGUI.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbBed);
-    panelSub.add(panelSubBed);
-    panelAddMedGUI.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbEvery);
-    panelSub.add(tfEvery);
-    panelSub.add(makeLabel("ชั่วโมง"));
+    panelSub.add(rbBefore);
+    panelSub.add(rbAfter);
+    panelSub.add(rbImmediately);
     panelAddMedGUI.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -679,50 +649,29 @@ public class MedicineUI {
     JCheckBox cbEvery = makeCheckBox("ทุก ๆ ");
 
     // JRadioButtons
-    JRadioButton rbMorningBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbMorningAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbMorningImme = makeRadioButton(medDoseStr[2]);
-
-    JRadioButton rbAfternoonBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbAfternoonAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbAfternoonImme = makeRadioButton(medDoseStr[2]);
-
-    JRadioButton rbEveningBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbEveningAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbEveningImme = makeRadioButton(medDoseStr[2]);
+    JRadioButton rbBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbImmediately = makeRadioButton(medDoseStr[2]);
 
     // Radio Groups
-    ButtonGroup bgMorning = new ButtonGroup();
-    ButtonGroup bgAfternoon = new ButtonGroup();
-    ButtonGroup bgEvening = new ButtonGroup();
+    ButtonGroup bgDoseStr = new ButtonGroup();
 
-    bgMorning.add(rbMorningBefore);
-    bgMorning.add(rbMorningAfter);
-    bgMorning.add(rbMorningImme);
-
-    bgAfternoon.add(rbAfternoonBefore);
-    bgAfternoon.add(rbAfternoonAfter);
-    bgAfternoon.add(rbAfternoonImme);
-
-    bgEvening.add(rbEveningBefore);
-    bgEvening.add(rbEveningAfter);
-    bgEvening.add(rbEveningImme);
+    bgDoseStr.add(rbBefore);
+    bgDoseStr.add(rbAfter);
+    bgDoseStr.add(rbImmediately);
 
     for (int i = 0; i < medicine.getMedTime().size(); i++) {
       switch (medicine.getMedTime().get(i)) {
         case "เช้า":
           cbMorning.setSelected(true);
-          medTimeRadioHandler(medicine, rbMorningBefore, rbMorningAfter, i);
           panelSubMorning.setVisible(true);
           break;
         case "กลางวัน":
           cbAfternoon.setSelected(true);
-          medTimeRadioHandler(medicine, rbAfternoonBefore, rbAfternoonAfter, i);
           panelSubAfternoon.setVisible(true);
           break;
         case "เย็น":
           cbEvening.setSelected(true);
-          medTimeRadioHandler(medicine, rbEveningBefore, rbEveningAfter, i);
           panelSubEvening.setVisible(true);
           break;
         case "ก่อนนอน":
@@ -731,9 +680,10 @@ public class MedicineUI {
           break;
         case "ทุก ๆ ":
           cbEvery.setSelected(true);
-          tfEvery.setText(medicine.getMedDoseStr().get(i).split(" ")[0]);
+          tfEvery.setText(medicine.getMedDoseStr().split(" ")[0]);
       }
     }
+    medTimeRadioHandler(medicine, rbBefore, rbAfter, rbImmediately);
 
     // Listeners
     btnSave.addActionListener(e -> {
@@ -754,27 +704,33 @@ public class MedicineUI {
       } else {
         type = "spray";
       }
+
+      // DOSE INFORMATION
       ArrayList<String> selectedMedTime = new ArrayList<>();
-      ArrayList<String> selectedDoseStr = new ArrayList<>();
+      String selectedDoseStr = "";
       if (cbMorning.isSelected()) {
         selectedMedTime.add("เช้า");
-        medTimeAdder(rbMorningBefore, rbMorningAfter, rbMorningImme, selectedDoseStr);
       }
       if (cbAfternoon.isSelected()) {
         selectedMedTime.add("กลางวัน");
-        medTimeAdder(rbAfternoonBefore, rbAfternoonAfter, rbAfternoonImme, selectedDoseStr);
       }
       if (cbEvening.isSelected()) {
         selectedMedTime.add("เย็น");
-        medTimeAdder(rbEveningBefore, rbEveningAfter, rbEveningImme, selectedDoseStr);
       }
       if (cbBed.isSelected()) {
         selectedMedTime.add("ก่อนนอน");
-        selectedDoseStr.add("");
       }
       if (cbEvery.isSelected()) {
         selectedMedTime.add("ทุก ๆ ");
-        selectedDoseStr.add(tfEvery.getText() + " ชั่วโมง");
+        selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
+      }
+
+      if (rbBefore.isSelected()) {
+        selectedDoseStr = "ก่อนอาหาร";
+      } else if (rbAfter.isSelected()) {
+        selectedDoseStr = "หลังอาหาร";
+      } else if (rbImmediately.isSelected()) {
+        selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
       }
       Date exp = Date.from(picker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
       medicine.setMedName(tfMedName.getText());
@@ -868,7 +824,17 @@ public class MedicineUI {
     panelBody.add(panelMedSettings);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeBoldLabel("เวลาที่ต้องรับประทาน"));
+    panelSub.add(makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน"));
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(cbMorning);
+    panelSub.add(cbAfternoon);
+    panelSub.add(cbEvening);
+    panelSub.add(cbBed);
+    panelSub.add(cbEvery);
+    panelSub.add(tfEvery);
+    panelSub.add(makeLabel("ชั่วโมง"));
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -878,38 +844,9 @@ public class MedicineUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(cbMorning);
-    panelSubMorning.add(rbMorningBefore);
-    panelSubMorning.add(rbMorningAfter);
-    panelSubMorning.add(rbMorningImme);
-    panelSub.add(panelSubMorning);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbAfternoon);
-    panelSubAfternoon.add(rbAfternoonBefore);
-    panelSubAfternoon.add(rbAfternoonAfter);
-    panelSubAfternoon.add(rbAfternoonImme);
-    panelSub.add(panelSubAfternoon);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbEvening);
-    panelSubEvening.add(rbEveningBefore);
-    panelSubEvening.add(rbEveningAfter);
-    panelSubEvening.add(rbEveningImme);
-    panelSub.add(panelSubEvening);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbBed);
-    panelSub.add(panelSubBed);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbEvery);
-    panelSub.add(tfEvery);
-    panelSub.add(makeLabel("ชั่วโมง"));
+    panelSub.add(rbBefore);
+    panelSub.add(rbAfter);
+    panelSub.add(rbImmediately);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -987,14 +924,14 @@ public class MedicineUI {
     return panelLoopInfo;
   }
 
-  private static void medTimeRadioHandler(Medicine medicine, JRadioButton rbMorningBefore,
-      JRadioButton rbMorningAfter, int i) {
-    if (medicine.getMedDoseStr().get(i).equals("ก่อนอาหาร")) {
-      rbMorningBefore.setSelected(true);
-    } else if (medicine.getMedDoseStr().get(i).equals("หลังอาหาร")) {
-      rbMorningAfter.setSelected(true);
+  private static void medTimeRadioHandler(Medicine medicine, JRadioButton rbBefore,
+      JRadioButton rbAfter, JRadioButton rbImmediately) {
+    if (medicine.getMedDoseStr().equals("ก่อนอาหาร")) {
+      rbBefore.setSelected(true);
+    } else if (medicine.getMedDoseStr().equals("หลังอาหาร")) {
+      rbAfter.setSelected(true);
     } else {
-      rbMorningBefore.setSelected(true);
+      rbImmediately.setSelected(true);
     }
   }
 

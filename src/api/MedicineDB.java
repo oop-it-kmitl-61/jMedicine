@@ -53,14 +53,10 @@ public class MedicineDB {
         throw new MedicineException("Dose is null");
       }
 
-      ArrayList<String> doseStr;
-      doseStr = Arrays.stream((Object[]) result.getArray("doseStr").getArray())
-          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
-
       results.add(
           new Medicine(result.getString("id"), result.getString("name"), result.getString("type"),
               result.getString("color"), result.getString("description"), time,
-              doseStr, result.getInt("dose"), result.getInt("total"),
+              result.getString("doseStr"), result.getInt("dose"), result.getInt("total"),
               result.getDate("expire")));
     }
 
@@ -82,12 +78,9 @@ public class MedicineDB {
     ArrayList<String> time = Arrays.stream((Object[]) result.getArray("time").getArray())
         .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
 
-    ArrayList<String> doseStr = Arrays.stream((Object[]) result.getArray("doseStr").getArray())
-        .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
-
     return new Medicine(result.getString("id"), result.getString("name"), result.getString("type"),
         result.getString("color"), result.getString("description"), time,
-        doseStr, result.getInt("dose"), result.getInt("total"),
+        result.getString("doseStr"), result.getInt("dose"), result.getInt("total"),
         result.getDate("expire"));
   }
 
@@ -104,7 +97,7 @@ public class MedicineDB {
     pStatement.setInt(6, medicine.getMedDose());
     pStatement.setInt(7, medicine.getMedTotal());
     pStatement.setArray(8, connection.createArrayOf("text", medicine.getMedTime().toArray()));
-    pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
+    pStatement.setString(9, medicine.getMedDoseStr());
     pStatement.setDate(10, new Date(medicine.getMedEXP().getTime()));
 
     ResultSet result = pStatement.executeQuery();
@@ -129,7 +122,7 @@ public class MedicineDB {
     pStatement.setString(4, medicine.getMedDescription());
     pStatement.setInt(5, medicine.getMedDose());
     pStatement.setInt(6, medicine.getMedTotal());
-    pStatement.setArray(7, connection.createArrayOf("text", medicine.getMedDoseStr().toArray()));
+    pStatement.setString(7, medicine.getMedDoseStr());
     pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
     pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedTime().toArray()));
     pStatement.setObject(10, medicine.getId(), Types.OTHER);

@@ -26,7 +26,7 @@ public class Medicine {
   private String medColor;
   private String medDescription;
   private ArrayList<String> medTime;
-  private ArrayList<String> medDoseStr;
+  private String medDoseStr;
   private int medDose;
   private int medTotal;
   private int medRemaining;
@@ -35,7 +35,7 @@ public class Medicine {
   private String medUnit;
 
   public Medicine(String medName, String medType, String medColor, String medDescription,
-      ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
+      ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
       Date medEXP) {
     this.medName = medName;
     this.medType = medType;
@@ -65,7 +65,7 @@ public class Medicine {
   }
 
   public Medicine(String id, String medName, String medType, String medColor, String medDescription,
-      ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
+      ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
       Date medEXP) {
     this.id = id;
     this.medName = medName;
@@ -143,11 +143,11 @@ public class Medicine {
     this.medTime = medTime;
   }
 
-  public ArrayList<String> getMedDoseStr() {
+  public String getMedDoseStr() {
     return medDoseStr;
   }
 
-  public void setMedDoseStr(ArrayList<String> medDoseStr) {
+  public void setMedDoseStr(String medDoseStr) {
     this.medDoseStr = medDoseStr;
   }
 

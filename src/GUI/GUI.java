@@ -16,6 +16,7 @@ import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.MedicineUtil;
+import core.Overview;
 import core.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -102,47 +103,18 @@ public class GUI {
       including medication reminders and doctor appointments.
      */
 
+    Overview overview = new Overview();
+
     // JPanels
     JPanel panelOverview = new JPanel(new BorderLayout());
     JPanel panelTitle = newFlowLayout();
-    JPanel panelLoop = newPanelLoop();
+    JPanel panelLoop = overview.renderOverview();
+
     String today = GUIHelper.formatDMYFull.format(new Date());
     panelTitle.add(makeTitleLabel(today));
+
+    // Styling
     setPadding(panelTitle, 0, 0, -12, 2);
-
-    // Init card loop
-
-    // TODO: Fetch these upcoming events
-
-    // !! FOR DEMO ONLY
-    panelLoop.add(makeOverviewTime("15.30 น. (อีก 2 ชั่วโมง)"));
-    JPanel panelSub = newFlowLayout();
-    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
-        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
-    panelSub.add(makeOverviewCard("Tylenol (ยาแก้ปวด ลดไข้)",
-        "1 เม็ด ทุก ๆ 8 ชั่วโมง", "/tablets/tablet-white.png"));
-    panelLoop.add(panelSub);
-    panelSub = newFlowLayout();
-    panelLoop.add(makeOverviewTime("18.30 น. (อีก 5 ชั่วโมง)"));
-    panelSub.add(makeOverviewCard("Amoxicillin (ยาฆ่าเชื้อ)",
-        "หลังอาหาร 1 เม็ด", "/capsules/capsule-red-white.png"));
-    panelSub.add(makeOverviewCard("Bisovol (ยาแก้ไอ)",
-        "หลังอาหาร 5 มิลลิกรัม", "/liquids/liquid-yellow.png"));
-    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
-        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
-    panelLoop.add(panelSub);
-    panelLoop.add(makeOverviewTime("21.30 น. (อีก 8 ชั่วโมง)"));
-    panelSub = newFlowLayout();
-    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
-        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
-    panelLoop.add(panelSub);
-    panelLoop.add(makeOverviewTime("22.30 น. (อีก 9 ชั่วโมง)"));
-    panelSub = newFlowLayout();
-    panelSub.add(makeOverviewCard("Chlorpheniramine (ยาแก้แพ้)",
-        "ก่อนนอน 1 เม็ด", "/tablets/tablet-yellow.png"));
-    panelLoop.add(panelSub);
-    // End DEMO
-
     setPadding(panelLoop, 0, 0, 20, 0);
 
     JScrollPane scrollPane = makeScrollPane(panelLoop);
@@ -470,77 +442,6 @@ public class GUI {
     gbc.weighty = 1000;
     panelLeft.add(space, gbc);
     panelLeft.setBackground(mainBlue);
-  }
-
-  private static JPanel makeOverviewTime(String time) {
-    /* Creates a card that will be used on the Overview panel only. */
-
-    // JPanels
-    JPanel panelLoopInfo = new JPanel(new BorderLayout());
-    JPanel panelTime = newFlowLayout();
-
-    // JLabels
-    JLabel labelTime = makeSubTitleLabel(time);
-
-    // Styling
-    setPadding(panelLoopInfo, 18, 0, -2);
-
-    panelTime.add(labelTime);
-    panelLoopInfo.add(panelTime);
-
-    return panelLoopInfo;
-  }
-
-  private static JPanel makeOverviewCard(String medName, String dose, String imgURL) {
-    /* FOR DEMO ONLY */
-
-    // JPanels
-    JPanel panelLoopInfo = new JPanel(new BorderLayout());
-    JPanel panelCard = new JPanel();
-    JPanel panelMed = newFlowLayout();
-    JPanel panelMedInfo = new JPanel();
-    JPanel panelBtn = newFlowLayout();
-
-    // JLabels
-    JLabel labelPic = new JLabel();
-    JLabel labelMedName = makeBoldLabel(medName);
-    JLabel labelAmount = makeSmallerLabel(dose);
-
-    try {
-      Image img = ImageIO.read(new File(imgPath + imgURL));
-      labelPic.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) {
-    }
-
-    // JButtons
-    JButton btnAte = makeGreyToBlueButton("ทานแล้ว");
-    JButton btnSkip = makeGreyToRedButton("ข้ามเวลานี้");
-
-    // Styling
-    panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));
-    panelCard.setLayout(new BoxLayout(panelCard, BoxLayout.PAGE_AXIS));
-    panelCard.setBorder(newCardBorder());
-    setPadding(labelPic, 6, 0, 0, 8);
-    setPadding(labelMedName, 7, 0, -12, 0);
-    setPadding(labelAmount, 0, 0, 2, 0);
-    setPadding(panelLoopInfo, 0, 20, 4, 0);
-    setPadding(panelMed, 6, 36, 12, 0);
-    setPadding(panelBtn, 0, 0, -6, -3);
-
-    panelMedInfo.add(labelMedName);
-    panelMedInfo.add(labelAmount);
-
-    panelMed.add(labelPic);
-    panelMed.add(panelMedInfo);
-    panelCard.add(panelMed);
-
-    panelBtn.add(btnAte);
-    panelBtn.add(btnSkip);
-    panelCard.add(new JSeparator(SwingConstants.HORIZONTAL));
-    panelCard.add(panelBtn);
-
-    panelLoopInfo.add(panelCard);
-    return panelLoopInfo;
   }
 
   private static void panelEditProfile() {

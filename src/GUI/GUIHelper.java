@@ -230,17 +230,6 @@ public class GUIHelper {
     return panelError;
   }
 
-  public static void medTimeAdder(JRadioButton rbMorningBefore, JRadioButton rbMorningAfter,
-      JRadioButton rbMorningImme, ArrayList<String> selectedDoseStr) {
-    if (rbMorningBefore.isSelected()) {
-      selectedDoseStr.add("ก่อนอาหาร");
-    } else if (rbMorningAfter.isSelected()) {
-      selectedDoseStr.add("หลังอาหาร");
-    } else if (rbMorningImme.isSelected()) {
-      selectedDoseStr.add("หลังอาหารทันที / พร้อมอาหาร");
-    }
-  }
-
   public static void editSwitcher(JPanel origin, JPanel switchTo) {
     origin.add(switchTo, "แก้ไข");
     CardLayout cl = (CardLayout) (origin.getLayout());
