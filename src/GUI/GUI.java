@@ -15,7 +15,6 @@ import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
-import core.MedicineUtil;
 import core.Overview;
 import core.User;
 import java.awt.BorderLayout;
@@ -25,12 +24,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.Date;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import core.LocationHelper;
 
@@ -50,7 +46,7 @@ public class GUI {
   static JPanel panelLeft;
   public static JPanel panelRight;
   static JPanel panelWelcome;
-  static JPanel panelSignIn, panelLoadingSignIn, panelErrorSignIn;
+  static JPanel panelSignIn, panelLoading, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp, btnSkip;
@@ -125,7 +121,6 @@ public class GUI {
 
     panelRight.add(panelOverview, "ภาพรวม");
   }
-
 
   private static void panelNearbyHospitals() {
     /*
@@ -247,8 +242,10 @@ public class GUI {
     frameWelcome = new JFrame("jMedicine: เข้าสู่ระบบ");
 
     // Panels
-    panelLoadingSignIn = getLoadingPanel(false);
+    panelLoading = getLoadingPanel(false);
     panelErrorSignIn = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
+    panelErrorSignUpUsername = getErrorPanel("ชื่อผู้ใช้งานนี้เคยสมัครไปแล้ว");
+    panelErrorSignUpPassword = getErrorPanel("รหัสผ่านทั้งสองช่องไม่ตรงกัน");
     panelWelcome = new JPanel(new CardLayout());
     panelSignIn = new JPanel(new GridBagLayout());
     JPanel panelFirstMed = new JPanel();
@@ -278,8 +275,10 @@ public class GUI {
     setPadding(labelPasswordConfirm, 0, 0, -10, 0);
     setPadding(labelRegister, 20, 60);
     setPadding(labelSignIn, 20, 60);
-    panelLoadingSignIn.setVisible(false);
+    panelLoading.setVisible(false);
     panelErrorSignIn.setVisible(false);
+    panelErrorSignUpUsername.setVisible(false);
+    panelErrorSignUpPassword.setVisible(false);
     labelPasswordConfirm.setVisible(false);
     tfPasswordConfirm.setVisible(false);
     btnSignUp.setVisible(false);
@@ -351,9 +350,13 @@ public class GUI {
     gbc.gridy++;
     panelSignIn.add(tfPasswordConfirm, gbc);
     gbc.gridy++;
-    panelSignIn.add(panelLoadingSignIn, gbc);
+    panelSignIn.add(panelLoading, gbc);
     gbc.gridy++;
     panelSignIn.add(panelErrorSignIn, gbc);
+    gbc.gridy++;
+    panelSignIn.add(panelErrorSignUpUsername, gbc);
+    gbc.gridy++;
+    panelSignIn.add(panelErrorSignUpPassword, gbc);
     gbc.gridy++;
     panelSignIn.add(btnSignUp, gbc);
     gbc.gridy++;
