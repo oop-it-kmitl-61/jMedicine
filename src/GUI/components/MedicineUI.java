@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -41,13 +42,23 @@ import javax.swing.SwingConstants;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.10
+ * @version 0.7.11
  * @since 0.7.0
  */
 
 public class MedicineUI {
 
-  private static JPanel panelMedicines;
+  private static JPanel panelMedicines, panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor;
+
+  private static JLabel labelUnit1, labelUnit2;
+  private static JTextField tfMedName, tfMedDescription, tfAmount, tfTotalMeds, tfEvery;
+  private static JComboBox cbMedType, cbTabletColor, cbLiquidColor, cbCapsuleColor01, cbCapsuleColor02;
+  private static JCheckBox cbMorning, cbAfternoon, cbEvening, cbBed, cbEvery;
+  private static JRadioButton rbBefore, rbAfter, rbImmediately;
+  private static ButtonGroup bgMedDoseStr;
+  private static DatePicker pickerStart, pickerEXP;
+  private static TimePicker pickerStartTime;
+  private static JButton btnSave, btnEdit, btnSkip;
 
   public static void panelAllMedicines() {
     /*
@@ -190,22 +201,29 @@ public class MedicineUI {
 
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
-    panelSub = newFlowLayout();
-    for (int i = 0; i < medicine.getMedTime().size(); i++) {
-      panelSub.add(makeLabel(medicine.getMedTime().get(i)));
-    }
-    setPadding(panelSub, 0, 0, -10);
-    panelBody.add(panelSub);
+    if (medicine.getMedTime().get(0).equals("ทุก ๆ ")) {
+      panelSub = newFlowLayout();
+      panelSub.add(makeLabel(medicine.getMedTime().get(0)));
+      panelSub.add(makeLabel(medicine.getMedDoseStr() + " ครั้งละ " + medicine.getMedDose() + " " + medicine.getMedUnit()));
+      panelBody.add(panelSub);
+    } else {
+      panelSub = newFlowLayout();
+      for (int i = 0; i < medicine.getMedTime().size(); i++) {
+        panelSub.add(makeLabel(medicine.getMedTime().get(i)));
+      }
+      setPadding(panelSub, 0, 0, -10);
+      panelBody.add(panelSub);
 
-    panelSub = newFlowLayout();
-    String space = " ";
-    if (medicine.getMedDoseStr().equals("")) {
-      space = "";
+      panelSub = newFlowLayout();
+      String space = " ";
+      if (medicine.getMedDoseStr().equals("")) {
+        space = "";
+      }
+      panelSub.add(makeLabel(
+          medicine.getMedDoseStr() + space + "ครั้งละ " + medicine.getMedDose() + " " + medicine.getMedUnit()
+      ));
+      panelBody.add(panelSub);
     }
-    panelSub.add(makeLabel(
-        medicine.getMedDoseStr() + space + "ครั้งละ " + medicine.getMedDose() + " " + medicine.getMedUnit()
-    ));
-    panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ข้อมูลอื่น ๆ"));
@@ -259,111 +277,12 @@ public class MedicineUI {
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มยาใหม่", "ยาทั้งหมด");
+    btnSave = makeBlueButton("บันทึกยา");
 
     // Styling
-    setPadding(panelAddMedicine, -2, 0, 40, -16);
+    setPadding(panelAddMedicine, -2, 0, 0, -16);
     setPadding(panelBody, 0, 0, 20, 40);
     setPadding(panelTitle, 0, 0, 20);
-
-    panelTitle.add(btnBack);
-    panelBody.add(addMedGUI(), BorderLayout.CENTER);
-
-    panelAddMedicine.add(panelTitle, BorderLayout.NORTH);
-    panelAddMedicine.add(panelBody, BorderLayout.CENTER);
-
-    return panelAddMedicine;
-  }
-
-  public static JScrollPane addMedGUI() {
-    /* Creates GUI of the form for adding a new medicine. */
-    String medUnit = "เม็ด";
-
-    // JPanels
-    JPanel panelBody = new JPanel();
-    JPanel panelSub = newFlowLayout();
-    JPanel panelSubMorning = newFlowLayout();
-    JPanel panelSubAfternoon = newFlowLayout();
-    JPanel panelSubEvening = newFlowLayout();
-    JPanel panelSubBed = newFlowLayout();
-    JPanel panelColor = newFlowLayout();
-    JPanel panelTabletColor = newFlowLayout();
-    JPanel panelCapsuleColor = newFlowLayout();
-    JPanel panelLiquidColor = newFlowLayout();
-
-    // JTextFields
-    JTextField tfMedName = makeTextField(16);
-    JTextField tfMedDescription = makeTextField(16);
-    JTextField tfAmount = makeNumberField(2);
-    JTextField tfTotalMeds = makeNumberField(2);
-    JTextField tfEvery = makeNumberField(2);
-
-    // JLabels
-    JLabel labelUnit1 = makeLabel(medUnit);
-    JLabel labelUnit2 = makeLabel(medUnit);
-    JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
-    JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
-    JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
-
-    // JButtons
-    JButton btnSave = makeBlueButton("บันทึกยา");
-
-    // Arrays
-    String[] medType = getMedType();
-    String[] tabletColor = getTabletColor();
-    String[] liquidColor = getLiquidColor();
-    String[] medTime = getMedTime();
-    String[] medDoseStr = getMedDoseStr();
-    ArrayList<ImageIcon> tabletColorIcons = new ArrayList<>();
-    ArrayList<ImageIcon> liquidColorIcons = new ArrayList<>();
-
-    for (String color : tabletColor) {
-      tabletColorIcons.add(new ImageIcon(imgPath + "/colors/" + color + ".png"));
-    }
-    for (String color : liquidColor) {
-      liquidColorIcons.add(new ImageIcon(imgPath + "/colors/" + color + ".png"));
-    }
-
-    // JComboBoxes
-    JComboBox cbMedType = makeComboBox(medType);
-    JComboBox cbTabletColor = makeComboBox(tabletColorIcons);
-    JComboBox cbLiquidColor = makeComboBox(liquidColorIcons);
-    JComboBox cbCapsuleColor01 = makeComboBox(tabletColorIcons);
-    JComboBox cbCapsuleColor02 = makeComboBox(tabletColorIcons);
-
-    // JCheckBoxes
-    JCheckBox cbMorning = makeCheckBox(medTime[0]);
-    JCheckBox cbAfternoon = makeCheckBox(medTime[1]);
-    JCheckBox cbEvening = makeCheckBox(medTime[2]);
-    JCheckBox cbBed = makeCheckBox(medTime[3]);
-    JCheckBox cbEvery = makeCheckBox("ทุก ๆ ");
-
-    // JRadioButtons
-    JRadioButton rbBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbImmediately = makeRadioButton(medDoseStr[2]);
-
-    // Radio Groups
-    ButtonGroup bgMedDoseStr = new ButtonGroup();
-    bgMedDoseStr.add(rbBefore);
-    bgMedDoseStr.add(rbAfter);
-    bgMedDoseStr.add(rbImmediately);
-
-    // Pickers
-    DatePicker pickerStart = makeTodayPicker();
-    DatePicker pickerEXP = makeDatePicker();
-    TimePicker pickerStartTime = makeTimeNowPicker();
-
-    // Styling
-    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
-    setPadding(panelBody, 0, 0, 40);
-    setPadding(labelHeading2, 20, 0, 0);
-    setPadding(labelHeading3, 20, 0, 0);
-    panelCapsuleColor.setVisible(false);
-    panelLiquidColor.setVisible(false);
-    panelSubMorning.setVisible(false);
-    panelSubAfternoon.setVisible(false);
-    panelSubEvening.setVisible(false);
-    panelSubBed.setVisible(false);
 
     // Listeners
     btnSave.addActionListener(e -> {
@@ -433,185 +352,152 @@ public class MedicineUI {
         e1.printStackTrace();
       }
     });
-    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit1,
-        labelUnit2, cbMedType);
-    cbAfternoon.addActionListener(e -> {
-      if (cbAfternoon.isSelected()) {
-        panelSubAfternoon.setVisible(true);
+
+    panelTitle.add(btnBack);
+    panelBody.add(form(), BorderLayout.CENTER);
+    panelBody.add(btnSave, BorderLayout.SOUTH);
+
+    panelAddMedicine.add(panelTitle, BorderLayout.NORTH);
+    panelAddMedicine.add(panelBody, BorderLayout.CENTER);
+
+    return panelAddMedicine;
+  }
+
+  public static JPanel panelFirstMedicine() {
+
+    // JPanels
+    JPanel panelFirstMed = new JPanel(new BorderLayout());
+    JPanel panelBody = new JPanel(new BorderLayout());
+    JPanel panelTitle = new JPanel(new BorderLayout());
+    JPanel panelBtn = new JPanel(new BorderLayout());
+
+    // JButton
+    btnSave = makeBlueButton("บันทึกยา");
+    btnSkip = makeRedButton("ข้ามขั้นตอนนี้");
+
+    panelTitle.add(makeTitleLabel("เพิ่มยาตัวแรกของคุณ"));
+
+    panelBtn.add(btnSave, BorderLayout.CENTER);
+    panelBtn.add(btnSkip, BorderLayout.EAST);
+
+    panelBody.add(form(), BorderLayout.CENTER);
+    panelBody.add(panelBtn, BorderLayout.SOUTH);
+
+    // Styling
+    setPadding(panelFirstMed, 20, 20, 0);
+    setPadding(panelBody, 0, 0, 20, 20);
+    setPadding(panelTitle, 20, 0, 20, 20);
+
+    // Listeners
+    btnSave.addActionListener(e -> {
+      String selectedMedType = getMedType()[cbMedType.getSelectedIndex()];
+      String type;
+      String selectedColor = "";
+      if (selectedMedType.equals("ยาแคปซูล")) {
+        type = "capsule";
+        selectedColor = getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
+        selectedColor += "-";
+        selectedColor += getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
+      } else if (selectedMedType.equals("ยาเม็ด")) {
+        type = "tablet";
+        selectedColor = getTabletColor()[cbTabletColor.getSelectedIndex()];
+      } else if (selectedMedType.equals("ยาน้ำ")) {
+        type = "liquid";
+        selectedColor = getLiquidColor()[cbLiquidColor.getSelectedIndex()];
       } else {
-        panelSubAfternoon.setVisible(false);
+        type = "spray";
       }
-    });
-    cbEvening.addActionListener(e -> {
-      if (cbEvening.isSelected()) {
-        panelSubEvening.setVisible(true);
-      } else {
-        panelSubEvening.setVisible(false);
-      }
-    });
-    cbBed.addActionListener(e -> {
-      if (cbBed.isSelected()) {
-        panelSubBed.setVisible(true);
-      } else {
-        panelSubBed.setVisible(false);
-      }
-    });
-    cbMorning.addActionListener(e -> {
+
+      // Dose Information
+      ArrayList<String> selectedMedTime = new ArrayList<>();
+      String selectedDoseStr = "";
       if (cbMorning.isSelected()) {
-        panelSubMorning.setVisible(true);
+        selectedMedTime.add("เช้า");
+      }
+      if (cbAfternoon.isSelected()) {
+        selectedMedTime.add("กลางวัน");
+      }
+      if (cbEvening.isSelected()) {
+        selectedMedTime.add("เย็น");
+      }
+      if (cbBed.isSelected()) {
+        selectedMedTime.add("ก่อนนอน");
+      }
+      if (cbEvery.isSelected()) {
+        selectedMedTime.add("ทุก ๆ ");
+        selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
+      }
+
+      if (rbBefore.isSelected()) {
+        selectedDoseStr = "ก่อนอาหาร";
+      } else if (rbAfter.isSelected()) {
+        selectedDoseStr = "หลังอาหาร";
+      } else if (rbImmediately.isSelected()) {
+        selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+      }
+      System.out.println(pickerEXP.getDate());
+      Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+      String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
+      Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
+          tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
+          Integer.valueOf(tfAmount.getText()),
+          Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
+      try {
+        MedicineDB.addMedicine(med, getUser().getUserId());
+        fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
+        panelRight.remove(panelMedicines);
+        panelAllMedicines();
+        backTo("ยาทั้งหมด");
+        panelRight.remove(panelAddMedicine());
+        panelRight.remove(panelBody);
+        panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
+        frameWelcome.setVisible(false);
+        frameMain.setVisible(true);
+        frameWelcome = null;
+      } catch (SQLException e1) {
+        fireDBErrorDialog();
+        e1.printStackTrace();
+      }
+    });
+    btnSkip.addActionListener(e -> {
+      if (frameWelcome == null) {
+        CardLayout cl = (CardLayout) (panelRight.getLayout());
+        cl.show(panelRight, "ยาทั้งหมด");
       } else {
-        panelSubMorning.setVisible(false);
+        frameWelcome.setVisible(false);
+        frameMain.setVisible(true);
+        frameWelcome = null;
       }
     });
 
-    panelSub.add(labelHeading1);
-    panelBody.add(panelSub);
+    panelFirstMed.add(panelTitle, BorderLayout.NORTH);
+    panelFirstMed.add(panelBody, BorderLayout.CENTER);
 
-    panelSub = newFlowLayout();
-    panelSub.add(makeLabel("ชื่อยา"));
-    panelSub.add(tfMedName);
-    panelSub.add(makeLabel("คำอธิบายยา (เช่น ยาแก้ปวด)"));
-    panelSub.add(tfMedDescription);
-    panelBody.add(panelSub);
-
-    JPanel panelMedSettings = newFlowLayout();
-
-    JPanel panelType = newFlowLayout();
-    panelType.add(makeLabel("ประเภท"));
-    panelType.add(cbMedType);
-    panelMedSettings.add(panelType);
-
-    panelColor.add(makeLabel("สีของยา"));
-    panelMedSettings.add(panelColor);
-
-    panelTabletColor.add(cbTabletColor);
-    panelMedSettings.add(panelTabletColor);
-
-    panelCapsuleColor.add(makeLabel("สีที่ 1"));
-    panelCapsuleColor.add(cbCapsuleColor01);
-    panelCapsuleColor.add(makeLabel("สีที่ 2"));
-    panelCapsuleColor.add(cbCapsuleColor02);
-    panelMedSettings.add(panelCapsuleColor);
-
-    panelLiquidColor.add(cbLiquidColor);
-    panelMedSettings.add(panelLiquidColor);
-
-    panelBody.add(panelMedSettings);
-
-    panelSub = newFlowLayout();
-    panelSub.add(labelHeading2);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbMorning);
-    panelSub.add(cbAfternoon);
-    panelSub.add(cbEvening);
-    panelSub.add(cbBed);
-    panelSub.add(cbEvery);
-    panelSub.add(tfEvery);
-    panelSub.add(makeLabel("ชั่วโมง"));
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(rbBefore);
-    panelSub.add(rbAfter);
-    panelSub.add(rbImmediately);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(makeLabel("จำนวน"));
-    panelSub.add(tfAmount);
-    panelSub.add(labelUnit1);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(labelHeading3);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
-    panelSub.add(tfTotalMeds);
-    panelSub.add(labelUnit2);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(makeLabel("วันและเวลาที่เริ่มทานยา"));
-    panelSub.add(pickerStart);
-    panelSub.add(pickerStartTime);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(makeLabel("วันหมดอายุ"));
-    panelSub.add(pickerEXP);
-    panelBody.add(panelSub);
-
-    panelSub = new JPanel();
-    panelSub.add(btnSave);
-    panelBody.add(panelSub);
-
-    JScrollPane scrollPane = makeScrollPane(panelBody);
-
-    return scrollPane;
+    return panelFirstMed;
   }
 
   public static JPanel panelEditMedicine(Medicine medicine) {
     /* Creates GUI of the form for editing a new medicine. */
-    String medUnit = medicine.getMedUnit();
 
     // JPanels
     JPanel panelEditMed = new JPanel(new BorderLayout());
-    JPanel panelBody = new JPanel();
-    JPanel panelButtons = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
-    JPanel panelSub = newFlowLayout();
-    JPanel panelSubMorning = newFlowLayout();
-    JPanel panelSubAfternoon = newFlowLayout();
-    JPanel panelSubEvening = newFlowLayout();
-    JPanel panelSubBed = newFlowLayout();
-    JPanel panelColor = newFlowLayout();
-    JPanel panelTabletColor = newFlowLayout();
-    JPanel panelCapsuleColor = newFlowLayout();
-    JPanel panelLiquidColor = newFlowLayout();
-
-    // JLabels
-    JLabel labelUnit1 = makeLabel(medUnit);
-    JLabel labelUnit2 = makeLabel(medUnit);
-    JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
-    JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
-    JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
+    JPanel panelBody = new JPanel(new BorderLayout());
+    JScrollPane form = form();
 
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขยา", medicine.getMedName());
-    JButton btnSave = makeBlueButton("บันทึก");
+    btnEdit = makeBlueButton("บันทึก");
+
+    panelTitle.add(btnBack);
+    panelBody.add(form, BorderLayout.CENTER);
+    panelBody.add(btnEdit, BorderLayout.SOUTH);
 
     // Styling
-    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
-    panelCapsuleColor.setVisible(false);
-    panelLiquidColor.setVisible(false);
-    panelSubMorning.setVisible(false);
-    panelSubAfternoon.setVisible(false);
-    panelSubEvening.setVisible(false);
-    panelSubBed.setVisible(false);
-    setPadding(labelHeading2, 20, 0, 0);
-    setPadding(labelHeading3, 20, 0, 0);
-    setPadding(panelEditMed, -4, 0, 10, -18);
-    setPadding(panelBody, 0, 0, 20, 36);
-    setPadding(panelTitle, -2, 0, 20, 4);
+    setPadding(form, 0, 0, 10, 16);
 
-    // JTextFields
-    JTextField tfMedName = makeTextField(16);
-    JTextField tfMedDescription = makeTextField(10);
-    JTextField tfAmount = makeNumberField(2);
-    JTextField tfEvery = makeNumberField(2);
-    JTextField tfTotalMeds = makeNumberField(2);
-
+    // Set existed info
     tfAmount.setText(String.valueOf(medicine.getMedDose()));
-
-    // Pickers
-    DatePicker pickerStart = makeTodayPicker();
-    DatePicker pickerEXP = makeDatePicker();
-    TimePicker pickerStartTime = makeTimeNowPicker();
-
     tfMedName.setText(medicine.getMedName());
     tfMedDescription.setText(medicine.getMedDescription());
     tfTotalMeds.setText(String.valueOf(medicine.getMedTotal()));
@@ -630,29 +516,6 @@ public class MedicineUI {
     pickerStart.setText(startDate);
     pickerStartTime.setText(startTime);
     pickerEXP.setText(formatDatePicker.format(medicine.getMedEXP()));
-
-    // Arrays
-    String[] medType = getMedType();
-    String[] tabletColor = getTabletColor();
-    String[] liquidColor = getLiquidColor();
-    String[] medTime = getMedTime();
-    String[] medDoseStr = getMedDoseStr();
-    ArrayList<ImageIcon> tabletColorIcons = new ArrayList<>();
-    ArrayList<ImageIcon> liquidColorIcons = new ArrayList<>();
-
-    for (String color : tabletColor) {
-      tabletColorIcons.add(new ImageIcon(imgPath + "/colors/" + color + ".png"));
-    }
-    for (String color : liquidColor) {
-      liquidColorIcons.add(new ImageIcon(imgPath + "/colors/" + color + ".png"));
-    }
-
-    // JComboBoxes
-    JComboBox cbMedType = makeComboBox(medType);
-    JComboBox cbTabletColor = makeComboBox(tabletColorIcons);
-    JComboBox cbLiquidColor = makeComboBox(liquidColorIcons);
-    JComboBox cbCapsuleColor01 = makeComboBox(tabletColorIcons);
-    JComboBox cbCapsuleColor02 = makeComboBox(tabletColorIcons);
 
     switch (medicine.getMedType()) {
       case "tablet":
@@ -685,52 +548,41 @@ public class MedicineUI {
         cbMedType.setSelectedIndex(3);
     }
 
-    // JCheckBoxes
-    JCheckBox cbMorning = makeCheckBox(medTime[0]);
-    JCheckBox cbAfternoon = makeCheckBox(medTime[1]);
-    JCheckBox cbEvening = makeCheckBox(medTime[2]);
-    JCheckBox cbBed = makeCheckBox(medTime[3]);
-    JCheckBox cbEvery = makeCheckBox("ทุก ๆ ");
-
-    // JRadioButtons
-    JRadioButton rbBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbImmediately = makeRadioButton(medDoseStr[2]);
-
-    // Radio Groups
-    ButtonGroup bgDoseStr = new ButtonGroup();
-
-    bgDoseStr.add(rbBefore);
-    bgDoseStr.add(rbAfter);
-    bgDoseStr.add(rbImmediately);
-
     for (int i = 0; i < medicine.getMedTime().size(); i++) {
       switch (medicine.getMedTime().get(i)) {
         case "เช้า":
           cbMorning.setSelected(true);
-          panelSubMorning.setVisible(true);
           break;
         case "กลางวัน":
           cbAfternoon.setSelected(true);
-          panelSubAfternoon.setVisible(true);
           break;
         case "เย็น":
           cbEvening.setSelected(true);
-          panelSubEvening.setVisible(true);
           break;
         case "ก่อนนอน":
           cbBed.setSelected(true);
-          panelSubBed.setVisible(true);
           break;
         case "ทุก ๆ ":
           cbEvery.setSelected(true);
           tfEvery.setText(medicine.getMedDoseStr().split(" ")[0]);
+          cbMorning.setEnabled(false);
+          cbMorning.setSelected(false);
+          cbAfternoon.setEnabled(false);
+          cbAfternoon.setSelected(false);
+          cbEvening.setEnabled(false);
+          cbEvening.setSelected(false);
+          cbBed.setEnabled(false);
+          cbBed.setSelected(false);
+          bgMedDoseStr.clearSelection();
+          rbBefore.setEnabled(false);
+          rbAfter.setEnabled(false);
+          rbImmediately.setEnabled(false);
       }
     }
-    medTimeRadioHandler(medicine, rbBefore, rbAfter, rbImmediately);
 
     // Listeners
-    btnSave.addActionListener(e -> {
+    medTimeRadioHandler(medicine);
+    btnEdit.addActionListener(e -> {
       String selectedMedType = getMedType()[cbMedType.getSelectedIndex()];
       String type;
       String selectedColor = "";
@@ -802,38 +654,94 @@ public class MedicineUI {
       }
     });
 
-    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit1,
-        labelUnit2, cbMedType);
-    cbAfternoon.addActionListener(e -> {
-      if (cbAfternoon.isSelected()) {
-        panelSubAfternoon.setVisible(true);
-      } else {
-        panelSubAfternoon.setVisible(false);
-      }
-    });
-    cbEvening.addActionListener(e -> {
-      if (cbEvening.isSelected()) {
-        panelSubEvening.setVisible(true);
-      } else {
-        panelSubEvening.setVisible(false);
-      }
-    });
-    cbBed.addActionListener(e -> {
-      if (cbBed.isSelected()) {
-        panelSubBed.setVisible(true);
-      } else {
-        panelSubBed.setVisible(false);
-      }
-    });
-    cbMorning.addActionListener(e -> {
-      if (cbMorning.isSelected()) {
-        panelSubMorning.setVisible(true);
-      } else {
-        panelSubMorning.setVisible(false);
-      }
-    });
+    panelEditMed.add(panelTitle, BorderLayout.NORTH);
+    panelEditMed.add(panelBody, BorderLayout.CENTER);
+    return panelEditMed;
+  }
 
-    panelTitle.add(btnBack);
+  public static JScrollPane form() {
+    /* Creates GUI of the form for adding a new medicine. */
+    String medUnit = "เม็ด";
+
+    // JPanels
+    JPanel panelBody = new JPanel();
+    JPanel panelSub = newFlowLayout();
+    panelColor = newFlowLayout();
+    panelTabletColor = newFlowLayout();
+    panelCapsuleColor = newFlowLayout();
+    panelLiquidColor = newFlowLayout();
+
+    // JTextFields
+    tfMedName = makeTextField(16);
+    tfMedDescription = makeTextField(16);
+    tfAmount = makeNumberField(2);
+    tfTotalMeds = makeNumberField(2);
+    tfEvery = makeNumberField(2);
+
+    // JLabels
+    labelUnit1 = makeLabel(medUnit);
+    labelUnit2 = makeLabel(medUnit);
+    JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
+    JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
+    JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
+
+    // Arrays
+    String[] medType = getMedType();
+    String[] tabletColor = getTabletColor();
+    String[] liquidColor = getLiquidColor();
+    String[] medTime = getMedTime();
+    String[] medDoseStr = getMedDoseStr();
+    ArrayList<ImageIcon> tabletColorIcons = new ArrayList<>();
+    ArrayList<ImageIcon> liquidColorIcons = new ArrayList<>();
+
+    for (String color : tabletColor) {
+      tabletColorIcons.add(new ImageIcon(imgPath + "/colors/" + color + ".png"));
+    }
+    for (String color : liquidColor) {
+      liquidColorIcons.add(new ImageIcon(imgPath + "/colors/" + color + ".png"));
+    }
+
+    // JComboBoxes
+    cbMedType = makeComboBox(medType);
+    cbTabletColor = makeComboBox(tabletColorIcons);
+    cbLiquidColor = makeComboBox(liquidColorIcons);
+    cbCapsuleColor01 = makeComboBox(tabletColorIcons);
+    cbCapsuleColor02 = makeComboBox(tabletColorIcons);
+
+    // JCheckBoxes
+    cbMorning = makeCheckBox(medTime[0]);
+    cbAfternoon = makeCheckBox(medTime[1]);
+    cbEvening = makeCheckBox(medTime[2]);
+    cbBed = makeCheckBox(medTime[3]);
+    cbEvery = makeCheckBox("ทุก ๆ ");
+
+    // JRadioButtons
+    rbBefore = makeRadioButton(medDoseStr[0]);
+    rbAfter = makeRadioButton(medDoseStr[1]);
+    rbImmediately = makeRadioButton(medDoseStr[2]);
+
+    // Radio Groups
+    bgMedDoseStr = new ButtonGroup();
+    bgMedDoseStr.add(rbBefore);
+    bgMedDoseStr.add(rbAfter);
+    bgMedDoseStr.add(rbImmediately);
+
+    // Pickers
+    pickerStart = makeTodayPicker();
+    pickerEXP = makeDatePicker();
+    pickerStartTime = makeTimeNowPicker();
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelBody, 0, 0, 40);
+    setPadding(labelHeading2, 20, 0, 0);
+    setPadding(labelHeading3, 20, 0, 0);
+    panelCapsuleColor.setVisible(false);
+    panelLiquidColor.setVisible(false);
+
+    // Listeners
+    medTypeUIHandler();
+    toggleCheckBox();
 
     panelSub.add(labelHeading1);
     panelBody.add(panelSub);
@@ -916,16 +824,9 @@ public class MedicineUI {
     panelSub.add(pickerEXP);
     panelBody.add(panelSub);
 
-    panelSub = new JPanel();
-    panelSub.add(btnSave);
-    panelBody.add(panelSub);
-
     JScrollPane scrollPane = makeScrollPane(panelBody);
 
-    panelEditMed.add(panelTitle, BorderLayout.NORTH);
-    panelEditMed.add(scrollPane, BorderLayout.CENTER);
-    panelEditMed.add(panelButtons, BorderLayout.SOUTH);
-    return panelEditMed;
+    return scrollPane;
   }
 
   private static JPanel makeMedCard(Medicine medicine) {
@@ -977,20 +878,17 @@ public class MedicineUI {
     return panelLoopInfo;
   }
 
-  private static void medTimeRadioHandler(Medicine medicine, JRadioButton rbBefore,
-      JRadioButton rbAfter, JRadioButton rbImmediately) {
+  private static void medTimeRadioHandler(Medicine medicine) {
     if (medicine.getMedDoseStr().equals("ก่อนอาหาร")) {
       rbBefore.setSelected(true);
     } else if (medicine.getMedDoseStr().equals("หลังอาหาร")) {
       rbAfter.setSelected(true);
-    } else {
+    } else if (medicine.getMedDoseStr().equals("หลังอาหารทันที / พร้อมอาหาร")) {
       rbImmediately.setSelected(true);
     }
   }
 
-  private static void medTypeUIHandler(JPanel panelColor, JPanel panelTabletColor,
-      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit1,
-      JLabel labelUnit2, JComboBox cbMedType) {
+  private static void medTypeUIHandler() {
     cbMedType.addActionListener(e -> {
       switch (cbMedType.getSelectedIndex()) {
         case 0:
@@ -1025,6 +923,33 @@ public class MedicineUI {
           labelUnit1.setText("มิลลิลิตร");
           labelUnit2.setText("แคปซูล");
           break;
+      }
+    });
+  }
+
+  private static void toggleCheckBox() {
+    cbEvery.addActionListener(e -> {
+      if (cbEvery.isSelected()) {
+        cbMorning.setEnabled(false);
+        cbMorning.setSelected(false);
+        cbAfternoon.setEnabled(false);
+        cbAfternoon.setSelected(false);
+        cbEvening.setEnabled(false);
+        cbEvening.setSelected(false);
+        cbBed.setEnabled(false);
+        cbBed.setSelected(false);
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        cbMorning.setEnabled(true);
+        cbAfternoon.setEnabled(true);
+        cbEvening.setEnabled(true);
+        cbBed.setEnabled(true);
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
       }
     });
   }

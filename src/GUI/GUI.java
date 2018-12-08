@@ -36,23 +36,22 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.10
+ * @version 0.7.11
  * @since 0.1.0
  */
 
 public class GUI {
 
-  static JFrame frameWelcome, frameMain;
+  public static JFrame frameWelcome, frameMain;
   static JPanel panelLeft;
   public static JPanel panelRight;
   static JPanel panelWelcome;
   static JPanel panelSignIn, panelLoading, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
-  static JButton buttons[], btnSignIn, btnSignUp, btnSkip;
+  static JButton buttons[], btnSignIn, btnSignUp;
   private static Dimension windowSize, minSize;
   private static GUIUtil util;
-  private static MedicineUI medUI;
 
   public GUI(Dimension windowSize) {
     GUI.util = new GUIUtil();
@@ -219,7 +218,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.10"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.11"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -248,7 +247,6 @@ public class GUI {
     panelErrorSignUpPassword = getErrorPanel("รหัสผ่านทั้งสองช่องไม่ตรงกัน");
     panelWelcome = new JPanel(new CardLayout());
     panelSignIn = new JPanel(new GridBagLayout());
-    JPanel panelFirstMed = new JPanel();
 
     // JLabels
     JLabel space = new JLabel();
@@ -369,25 +367,10 @@ public class GUI {
     gbc.weighty = 300;
     panelSignIn.add(space, gbc);
 
-    // FirstMed Panel
-    JLabel labelTitle = makeTitleLabel("เพิ่มยาตัวแรกของคุณ");
-    btnSkip = makeBlueButton("ข้ามขั้นตอนนี้");
-    setPadding(labelTitle, 0, 0, 30);
-    btnSkip.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-    panelFirstMed.setLayout(new BoxLayout(panelFirstMed, BoxLayout.PAGE_AXIS));
-    setPadding(panelFirstMed, 80, 0, 40, 0);
-
-    JPanel panelInline = new JPanel(new FlowLayout());
-    panelInline.add(labelTitle);
-    panelFirstMed.add(panelInline);
-    panelFirstMed.add(medUI.addMedGUI());
-    panelFirstMed.add(btnSkip);
-
     util.listeners();
 
     panelWelcome.add(panelSignIn, "ยังไม่ได้เข้าสู่ระบบ");
-    panelWelcome.add(panelFirstMed, "เพิ่มยาตัวแรก");
+    panelWelcome.add(panelFirstMedicine(), "เพิ่มยาตัวแรก");
 
     frameWelcome.add(panelWelcome);
     frameWelcome.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -459,6 +442,7 @@ public class GUI {
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขข้อมูลส่วนตัว", "การตั้งค่า");
     JButton btnEditPwd = makeBlueButton("เปลี่ยนรหัสผ่าน");
+    JButton btnRemoveAccount = makeRedButton("ลบบัญชีนี้");
     JButton btnSave = makeBlueButton("บันทึก");
 
     // JTextFields
@@ -522,6 +506,8 @@ public class GUI {
     // panelSub.add(labelUserName);
     // panelSub.add(tfUsername);
     panelSub.add(btnEditPwd);
+    panelSub.add(btnRemoveAccount);
+    setPadding(panelSub, 10, 0, 8);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -537,6 +523,7 @@ public class GUI {
     panelSub.add(tfFName);
     panelSub.add(labelLName);
     panelSub.add(tfLName);
+    setPadding(panelSub, 10, 0, 0);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();

@@ -1,5 +1,6 @@
 package core;
 
+import static GUI.GUIHelper.formatHM;
 import static GUI.GUIHelper.formatTimestamp;
 import static GUI.GUIHelper.formatYMD;
 
@@ -35,6 +36,16 @@ public class Utils {
     try {
       Date date = formatTimestamp.parse(timestamp);
       return formatYMD.format(date);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static String timestampToTime(String timestamp) {
+    try {
+      Date date = formatTimestamp.parse(timestamp);
+      return formatHM.format(date);
     } catch (ParseException e) {
       e.printStackTrace();
     }

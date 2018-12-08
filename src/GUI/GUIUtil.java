@@ -19,7 +19,7 @@ import javax.swing.SwingWorker;
  * An utility class for GUI.java
  *
  * @author jMedicine
- * @version 0.7.0
+ * @version 0.7.11
  * @since 0.7.0
  */
 
@@ -32,7 +32,6 @@ public class GUIUtil implements ActionListener, KeyListener {
     btnSignUp.addActionListener(this);
     tfUserName.addKeyListener(this);
     tfPassword.addKeyListener(this);
-    btnSkip.addActionListener(this);
   }
 
   public User getSignedInUser() {
@@ -115,17 +114,6 @@ public class GUIUtil implements ActionListener, KeyListener {
     String btnCommand = e.getActionCommand();
 
     switch (btnCommand) {
-      case "ข้ามขั้นตอนนี้":
-        if (frameWelcome == null) {
-          CardLayout cl = (CardLayout) (panelRight.getLayout());
-          cl.show(panelRight, "ยาทั้งหมด");
-        } else {
-          frameWelcome.setVisible(false);
-          frameMain.setVisible(true);
-          frameWelcome = null;
-        }
-        break;
-
       case "เข้าสู่ระบบ":
         executeSignIn();
         break;
