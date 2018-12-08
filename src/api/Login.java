@@ -45,8 +45,7 @@ public class Login {
     ResultSet result = pStatement.executeQuery();
 
     if (result.next()) {
-      ArrayList<String> userTime = Arrays.stream((Object[]) result.getArray("time").getArray())
-          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+      String[] userTime = (String[]) result.getArray("time").getArray();
 
       User user = new User(result.getString("id"), result.getString("title"),
           result.getString("firstname"), result.getString("lastname"), result.getString("email"),
@@ -96,7 +95,7 @@ public class Login {
     String SQLCommand = "UPDATE users SET \"time\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
-    pStatement.setArray(1, connection.createArrayOf("text", user.getUserTime().toArray()));
+    pStatement.setArray(1, connection.createArrayOf("text", user.getUserTime()));
     pStatement.setObject(2, user.getUserId(), Types.OTHER);
 
     pStatement.executeUpdate();
