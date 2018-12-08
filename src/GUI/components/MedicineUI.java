@@ -4,6 +4,7 @@ import static GUI.GUI.*;
 import static GUI.GUIHelper.*;
 import static core.MedicineUtil.*;
 import static core.Core.*;
+import static core.Utils.timestampToString;
 
 import GUI.GUIHelper;
 import api.MedicineDB;
@@ -16,6 +17,7 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +41,7 @@ import javax.swing.SwingConstants;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.8
+ * @version 0.7.9
  * @since 0.7.0
  */
 
@@ -210,20 +212,26 @@ public class MedicineUI {
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
     panelSub = newFlowLayout();
-    panelSub.add(makeBoldLabel("วันที่เพิ่มยา: "));
-    panelSub.add(makeLabel(GUIHelper.formatDMY.format(medicine.getDateAdded())));
-    setPadding(panelSub, 0, 0, -10);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("จำนวนยาเริ่มต้น: "));
     panelSub.add(makeLabel(String.valueOf(medicine.getMedTotal())));
     setPadding(panelSub, 0, 0, -10);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
+    panelSub.add(makeBoldLabel("วันที่เพิ่มยา: "));
+    panelSub.add(makeLabel(formatYMD.format(medicine.getDateAdded())));
+    setPadding(panelSub, 0, 0, -10);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeBoldLabel("วันที่เริ่มทานยา: "));
+    panelSub.add(makeLabel(timestampToString(medicine.getDateStart())));
+    setPadding(panelSub, 0, 0, -10);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("วันหมดอายุ: "));
-    panelSub.add(makeLabel(GUIHelper.formatDMY.format(medicine.getMedEXP())));
+    panelSub.add(makeLabel(GUIHelper.formatYMD.format(medicine.getMedEXP())));
     panelBody.add(panelSub);
 
     panelButtons.add(btnEdit, BorderLayout.CENTER);
@@ -403,7 +411,7 @@ public class MedicineUI {
       }
 
       Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-      String dateStart = formatDMY.format(pickerStart.getDate()) + formatHM.format(pickerStartTime.getTime());
+      String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
       Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
           tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
           Integer.valueOf(tfAmount.getText()),
@@ -606,8 +614,18 @@ public class MedicineUI {
     tfTotalMeds.setText(String.valueOf(medicine.getMedTotal()));
 
     String[] dateStart = medicine.getDateStart().split(" ");
-    pickerStart.setText(dateStart[0]);
-    pickerStartTime.setText(dateStart[1]);
+    String startDate = "";
+    String startTime = "";
+    try {
+      Date date = formatYMD.parse(dateStart[0]);
+      startDate = formatDatePicker.format(date);
+      Date time = formatHM.parse(dateStart[1]);
+      startTime = formatHM.format(time);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    pickerStart.setText(startDate);
+    pickerStartTime.setText(startTime);
     pickerEXP.setText(formatDatePicker.format(medicine.getMedEXP()));
 
     // Arrays
@@ -756,7 +774,7 @@ public class MedicineUI {
         selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
       }
       Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-      String newDateStart = formatDMY.format(pickerStart.getDate()) + formatHM.format(pickerStartTime.getTime());
+      String newDateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
       medicine.setMedName(tfMedName.getText());
       medicine.setMedType(type);
       medicine.setMedColor(selectedColor);

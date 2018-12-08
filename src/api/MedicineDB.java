@@ -1,6 +1,7 @@
 package api;
 
-import static GUI.GUIHelper.formatDMYHM;
+import static core.Utils.*;
+import static GUI.GUIHelper.formatTimestamp;
 
 import core.Database;
 import core.Medicine;
@@ -10,7 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -86,7 +87,7 @@ public class MedicineDB {
 
   public static Medicine addMedicine(Medicine medicine, String userId) throws SQLException {
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (\"user\", name, type, color, description, dose, total,\"time\", \"doseStr\", expire, startDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (\"user\", name, type, color, description, dose, total,\"time\", \"doseStr\", expire, \"startDate\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
@@ -99,7 +100,7 @@ public class MedicineDB {
     pStatement.setArray(8, connection.createArrayOf("text", medicine.getMedTime().toArray()));
     pStatement.setString(9, medicine.getMedDoseStr());
     pStatement.setDate(10, new Date(medicine.getMedEXP().getTime()));
-    pStatement.setString(11, medicine.getDateStart());
+    pStatement.setTimestamp(11, new java.sql.Timestamp(stringToTimestamp(medicine.getDateStart())));
 
     ResultSet result = pStatement.executeQuery();
 
@@ -114,7 +115,7 @@ public class MedicineDB {
 
 
   public static Medicine updateMedicine(Medicine medicine) throws SQLException {
-    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ?, \"time\" = ?, startDate = ? WHERE id = ?";
+    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ?, \"time\" = ?, \"startDate\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, medicine.getMedName());
@@ -126,7 +127,7 @@ public class MedicineDB {
     pStatement.setString(7, medicine.getMedDoseStr());
     pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
     pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedTime().toArray()));
-    pStatement.setString(10, medicine.getDateStart());
+    pStatement.setTimestamp(10, new java.sql.Timestamp(stringToTimestamp(medicine.getDateStart())));
     pStatement.setObject(11, medicine.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
