@@ -25,6 +25,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +46,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.7.5
+ * @version 0.7.8
  * @since 0.7.0
  */
 
@@ -422,7 +423,8 @@ public class AppointmentUI {
     // Listeners
     newDoctorListener(panelNewDr, cbDoctor);
     btnAdd.addActionListener(e -> {
-      Date date = Date.from(datePicker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+      Instant var = datePicker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+      Date date = Date.from(var);
       String timeStart = timePickerStart.getText();
       String timeEnd = timePickerEnd.getText();
       String note = tfNote.getText();
@@ -521,7 +523,7 @@ public class AppointmentUI {
       String drLName = tfDrLName.getText();
       String drWard = tfDrWard.getText();
       String drHpt = tfDrHpt.getText();
-      doctor = new Doctor(drPrefix, drFName, drLName, drWard, drHpt, null);
+      doctor = new Doctor(drPrefix, drFName, drLName, drWard, drHpt, null, null);
       try {
         DoctorDB.addDoctor(doctor, getUser().getUserId());
         reloadDoctors();

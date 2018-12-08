@@ -20,26 +20,29 @@ public class Doctor {
   private String lastName;
   private String ward;
   private String hospital;
+  private String phone;
   private ArrayList<ArrayList> workTime;
 
-  public Doctor(String prefix, String firstName, String lastName, String ward,
-      String hospital, ArrayList<ArrayList> workTime) {
-    this.prefix = prefix;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.ward = ward;
-    this.hospital = hospital;
-    this.workTime = workTime;
-  }
-
   public Doctor(String id, String prefix, String firstName, String lastName, String ward,
-      String hospital, ArrayList<ArrayList> workTime) {
+      String hospital, String phone, ArrayList<ArrayList> workTime) {
     this.id = id;
     this.prefix = prefix;
     this.firstName = firstName;
     this.lastName = lastName;
     this.ward = ward;
     this.hospital = hospital;
+    this.phone = phone;
+    this.workTime = workTime;
+  }
+
+  public Doctor(String prefix, String firstName, String lastName, String ward,
+      String hospital, String phone, ArrayList<ArrayList> workTime) {
+    this.prefix = prefix;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.ward = ward;
+    this.hospital = hospital;
+    this.phone = phone;
     this.workTime = workTime;
   }
 
@@ -93,6 +96,14 @@ public class Doctor {
 
   public void setHospital(String hospital) {
     this.hospital = hospital;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
   }
 
   public ArrayList<ArrayList> getWorkTime() {

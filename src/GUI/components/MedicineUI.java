@@ -8,6 +8,7 @@ import static core.Core.*;
 import GUI.GUIHelper;
 import api.MedicineDB;
 import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.TimePicker;
 import core.Medicine;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -38,7 +39,7 @@ import javax.swing.SwingConstants;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.4
+ * @version 0.7.8
  * @since 0.7.0
  */
 
@@ -190,7 +191,7 @@ public class MedicineUI {
     for (int i = 0; i < medicine.getMedTime().size(); i++) {
       panelSub = newFlowLayout();
       JLabel labelMedTime = makeLabel(medicine.getMedTime().get(i));
-      JLabel labelMedDoseStr = makeLabel(medicine.getMedDoseStr().get(i));
+      JLabel labelMedDoseStr = makeLabel(medicine.getMedDoseStr());
       panelSub.add(labelMedTime);
       panelSub.add(labelMedDoseStr);
       setPadding(panelSub, 0, 0, -10);
@@ -267,7 +268,7 @@ public class MedicineUI {
     String medUnit = "เม็ด";
 
     // JPanels
-    JPanel panelAddMedGUI = new JPanel();
+    JPanel panelBody = new JPanel();
     JPanel panelSub = newFlowLayout();
     JPanel panelSubMorning = newFlowLayout();
     JPanel panelSubAfternoon = newFlowLayout();
@@ -286,11 +287,11 @@ public class MedicineUI {
     JTextField tfEvery = makeNumberField(2);
 
     // JLabels
-    JLabel labelUnit = makeLabel(medUnit);
-    JLabel labelUnitMorning = makeLabel(medUnit);
-    JLabel labelUnitAfternoon = makeLabel(medUnit);
-    JLabel labelUnitEvening = makeLabel(medUnit);
-    JLabel labelUnitBed = makeLabel(medUnit);
+    JLabel labelUnit1 = makeLabel(medUnit);
+    JLabel labelUnit2 = makeLabel(medUnit);
+    JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
+    JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
+    JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
 
     // JButtons
     JButton btnSave = makeBlueButton("บันทึกยา");
@@ -326,40 +327,26 @@ public class MedicineUI {
     JCheckBox cbEvery = makeCheckBox("ทุก ๆ ");
 
     // JRadioButtons
-    JRadioButton rbMorningBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbMorningAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbMorningImme = makeRadioButton(medDoseStr[2]);
-
-    JRadioButton rbAfternoonBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbAfternoonAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbAfternoonImme = makeRadioButton(medDoseStr[2]);
-
-    JRadioButton rbEveningBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbEveningAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbEveningImme = makeRadioButton(medDoseStr[2]);
+    JRadioButton rbBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbImmediately = makeRadioButton(medDoseStr[2]);
 
     // Radio Groups
-    ButtonGroup bgMorning = new ButtonGroup();
-    ButtonGroup bgAfternoon = new ButtonGroup();
-    ButtonGroup bgEvening = new ButtonGroup();
+    ButtonGroup bgMedDoseStr = new ButtonGroup();
+    bgMedDoseStr.add(rbBefore);
+    bgMedDoseStr.add(rbAfter);
+    bgMedDoseStr.add(rbImmediately);
 
-    bgMorning.add(rbMorningBefore);
-    bgMorning.add(rbMorningAfter);
-    bgMorning.add(rbMorningImme);
-
-    bgAfternoon.add(rbAfternoonBefore);
-    bgAfternoon.add(rbAfternoonAfter);
-    bgAfternoon.add(rbAfternoonImme);
-
-    bgEvening.add(rbEveningBefore);
-    bgEvening.add(rbEveningAfter);
-    bgEvening.add(rbEveningImme);
-
-    DatePicker picker = makeDatePicker();
+    // Pickers
+    DatePicker pickerStart = makeTodayPicker();
+    DatePicker pickerEXP = makeDatePicker();
+    TimePicker pickerStartTime = makeTimeNowPicker();
 
     // Styling
-    panelAddMedGUI.setLayout(new BoxLayout(panelAddMedGUI, BoxLayout.PAGE_AXIS));
-    setPadding(panelAddMedGUI, 0, 0, 40);
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelBody, 0, 0, 40);
+    setPadding(labelHeading2, 20, 0, 0);
+    setPadding(labelHeading3, 20, 0, 0);
     panelCapsuleColor.setVisible(false);
     panelLiquidColor.setVisible(false);
     panelSubMorning.setVisible(false);
@@ -386,33 +373,41 @@ public class MedicineUI {
       } else {
         type = "spray";
       }
+
+      // Dose Information
       ArrayList<String> selectedMedTime = new ArrayList<>();
-      ArrayList<String> selectedDoseStr = new ArrayList<>();
+      String selectedDoseStr = "";
       if (cbMorning.isSelected()) {
         selectedMedTime.add("เช้า");
-        medTimeAdder(rbMorningBefore, rbMorningAfter, rbMorningImme, selectedDoseStr);
       }
       if (cbAfternoon.isSelected()) {
         selectedMedTime.add("กลางวัน");
-        medTimeAdder(rbAfternoonBefore, rbAfternoonAfter, rbAfternoonImme, selectedDoseStr);
       }
       if (cbEvening.isSelected()) {
         selectedMedTime.add("เย็น");
-        medTimeAdder(rbEveningBefore, rbEveningAfter, rbEveningImme, selectedDoseStr);
       }
       if (cbBed.isSelected()) {
         selectedMedTime.add("ก่อนนอน");
-        selectedDoseStr.add("");
       }
       if (cbEvery.isSelected()) {
         selectedMedTime.add("ทุก ๆ ");
-        selectedDoseStr.add(tfEvery.getText() + " ชั่วโมง");
+        selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
       }
-      Date exp = Date.from(picker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+      if (rbBefore.isSelected()) {
+        selectedDoseStr = "ก่อนอาหาร";
+      } else if (rbAfter.isSelected()) {
+        selectedDoseStr = "หลังอาหาร";
+      } else if (rbImmediately.isSelected()) {
+        selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+      }
+
+      Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+      String dateStart = formatDMY.format(pickerStart.getDate()) + formatHM.format(pickerStartTime.getTime());
       Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
           tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
           Integer.valueOf(tfAmount.getText()),
-          Integer.valueOf(tfTotalMeds.getText()), exp);
+          Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
       try {
         MedicineDB.addMedicine(med, getUser().getUserId());
         fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
@@ -420,16 +415,15 @@ public class MedicineUI {
         panelAllMedicines();
         backTo("ยาทั้งหมด");
         panelRight.remove(panelAddMedicine());
-        panelRight.remove(panelAddMedGUI);
+        panelRight.remove(panelBody);
         panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
       } catch (SQLException e1) {
         fireDBErrorDialog();
         e1.printStackTrace();
       }
     });
-
-    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
-        labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
+    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit1,
+        labelUnit2, cbMedType);
     cbAfternoon.addActionListener(e -> {
       if (cbAfternoon.isSelected()) {
         panelSubAfternoon.setVisible(true);
@@ -459,15 +453,15 @@ public class MedicineUI {
       }
     });
 
-    panelSub.add(makeBoldLabel("ข้อมูลพื้นฐาน"));
-    panelAddMedGUI.add(panelSub);
+    panelSub.add(labelHeading1);
+    panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("ชื่อยา"));
     panelSub.add(tfMedName);
     panelSub.add(makeLabel("คำอธิบายยา (เช่น ยาแก้ปวด)"));
     panelSub.add(tfMedDescription);
-    panelAddMedGUI.add(panelSub);
+    panelBody.add(panelSub);
 
     JPanel panelMedSettings = newFlowLayout();
 
@@ -491,70 +485,60 @@ public class MedicineUI {
     panelLiquidColor.add(cbLiquidColor);
     panelMedSettings.add(panelLiquidColor);
 
-    panelAddMedGUI.add(panelMedSettings);
+    panelBody.add(panelMedSettings);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน"));
-    panelAddMedGUI.add(panelSub);
+    panelSub.add(labelHeading2);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(cbMorning);
+    panelSub.add(cbAfternoon);
+    panelSub.add(cbEvening);
+    panelSub.add(cbBed);
+    panelSub.add(cbEvery);
+    panelSub.add(tfEvery);
+    panelSub.add(makeLabel("ชั่วโมง"));
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(rbBefore);
+    panelSub.add(rbAfter);
+    panelSub.add(rbImmediately);
+    panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวน"));
     panelSub.add(tfAmount);
-    panelSub.add(labelUnit);
-    panelAddMedGUI.add(panelSub);
+    panelSub.add(labelUnit1);
+    panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(cbMorning);
-    panelSubMorning.add(rbMorningBefore);
-    panelSubMorning.add(rbMorningAfter);
-    panelSubMorning.add(rbMorningImme);
-    panelSub.add(panelSubMorning);
-    panelAddMedGUI.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbAfternoon);
-    panelSubAfternoon.add(rbAfternoonBefore);
-    panelSubAfternoon.add(rbAfternoonAfter);
-    panelSubAfternoon.add(rbAfternoonImme);
-    panelSub.add(panelSubAfternoon);
-    panelAddMedGUI.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbEvening);
-    panelSubEvening.add(rbEveningBefore);
-    panelSubEvening.add(rbEveningAfter);
-    panelSubEvening.add(rbEveningImme);
-    panelSub.add(panelSubEvening);
-    panelAddMedGUI.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbBed);
-    panelSub.add(panelSubBed);
-    panelAddMedGUI.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(cbEvery);
-    panelSub.add(tfEvery);
-    panelSub.add(makeLabel("ชั่วโมง"));
-    panelAddMedGUI.add(panelSub);
+    panelSub.add(labelHeading3);
+    panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
     panelSub.add(tfTotalMeds);
-    labelUnit = makeLabel(medUnit);
-    panelSub.add(labelUnit);
-    panelAddMedGUI.add(panelSub);
+    panelSub.add(labelUnit2);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeLabel("วันและเวลาที่เริ่มทานยา"));
+    panelSub.add(pickerStart);
+    panelSub.add(pickerStartTime);
+    panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("วันหมดอายุ"));
-    panelSub.add(picker);
-    panelAddMedGUI.add(panelSub);
+    panelSub.add(pickerEXP);
+    panelBody.add(panelSub);
 
     panelSub = new JPanel();
     panelSub.add(btnSave);
-    panelAddMedGUI.add(panelSub);
+    panelBody.add(panelSub);
 
-    JScrollPane scrollPane = makeScrollPane(panelAddMedGUI);
+    JScrollPane scrollPane = makeScrollPane(panelBody);
 
     return scrollPane;
   }
@@ -578,6 +562,13 @@ public class MedicineUI {
     JPanel panelCapsuleColor = newFlowLayout();
     JPanel panelLiquidColor = newFlowLayout();
 
+    // JLabels
+    JLabel labelUnit1 = makeLabel(medUnit);
+    JLabel labelUnit2 = makeLabel(medUnit);
+    JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
+    JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
+    JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
+
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขยา", medicine.getMedName());
     JButton btnSave = makeBlueButton("บันทึก");
@@ -590,6 +581,8 @@ public class MedicineUI {
     panelSubAfternoon.setVisible(false);
     panelSubEvening.setVisible(false);
     panelSubBed.setVisible(false);
+    setPadding(labelHeading2, 20, 0, 0);
+    setPadding(labelHeading3, 20, 0, 0);
     setPadding(panelEditMed, -4, 0, 10, -18);
     setPadding(panelBody, 0, 0, 20, 36);
     setPadding(panelTitle, -2, 0, 20, 4);
@@ -603,19 +596,19 @@ public class MedicineUI {
 
     tfAmount.setText(String.valueOf(medicine.getMedDose()));
 
-    DatePicker picker = makeDatePicker();
+    // Pickers
+    DatePicker pickerStart = makeTodayPicker();
+    DatePicker pickerEXP = makeDatePicker();
+    TimePicker pickerStartTime = makeTimeNowPicker();
 
     tfMedName.setText(medicine.getMedName());
     tfMedDescription.setText(medicine.getMedDescription());
     tfTotalMeds.setText(String.valueOf(medicine.getMedTotal()));
-    picker.setText(formatDatePicker.format(medicine.getMedEXP()));
 
-    // JLabels
-    JLabel labelUnit = makeLabel(medUnit);
-    JLabel labelUnitMorning = makeLabel(medUnit);
-    JLabel labelUnitAfternoon = makeLabel(medUnit);
-    JLabel labelUnitEvening = makeLabel(medUnit);
-    JLabel labelUnitBed = makeLabel(medUnit);
+    String[] dateStart = medicine.getDateStart().split(" ");
+    pickerStart.setText(dateStart[0]);
+    pickerStartTime.setText(dateStart[1]);
+    pickerEXP.setText(formatDatePicker.format(medicine.getMedEXP()));
 
     // Arrays
     String[] medType = getMedType();
@@ -679,50 +672,29 @@ public class MedicineUI {
     JCheckBox cbEvery = makeCheckBox("ทุก ๆ ");
 
     // JRadioButtons
-    JRadioButton rbMorningBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbMorningAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbMorningImme = makeRadioButton(medDoseStr[2]);
-
-    JRadioButton rbAfternoonBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbAfternoonAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbAfternoonImme = makeRadioButton(medDoseStr[2]);
-
-    JRadioButton rbEveningBefore = makeRadioButton(medDoseStr[0]);
-    JRadioButton rbEveningAfter = makeRadioButton(medDoseStr[1]);
-    JRadioButton rbEveningImme = makeRadioButton(medDoseStr[2]);
+    JRadioButton rbBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbImmediately = makeRadioButton(medDoseStr[2]);
 
     // Radio Groups
-    ButtonGroup bgMorning = new ButtonGroup();
-    ButtonGroup bgAfternoon = new ButtonGroup();
-    ButtonGroup bgEvening = new ButtonGroup();
+    ButtonGroup bgDoseStr = new ButtonGroup();
 
-    bgMorning.add(rbMorningBefore);
-    bgMorning.add(rbMorningAfter);
-    bgMorning.add(rbMorningImme);
-
-    bgAfternoon.add(rbAfternoonBefore);
-    bgAfternoon.add(rbAfternoonAfter);
-    bgAfternoon.add(rbAfternoonImme);
-
-    bgEvening.add(rbEveningBefore);
-    bgEvening.add(rbEveningAfter);
-    bgEvening.add(rbEveningImme);
+    bgDoseStr.add(rbBefore);
+    bgDoseStr.add(rbAfter);
+    bgDoseStr.add(rbImmediately);
 
     for (int i = 0; i < medicine.getMedTime().size(); i++) {
       switch (medicine.getMedTime().get(i)) {
         case "เช้า":
           cbMorning.setSelected(true);
-          medTimeRadioHandler(medicine, rbMorningBefore, rbMorningAfter, i);
           panelSubMorning.setVisible(true);
           break;
         case "กลางวัน":
           cbAfternoon.setSelected(true);
-          medTimeRadioHandler(medicine, rbAfternoonBefore, rbAfternoonAfter, i);
           panelSubAfternoon.setVisible(true);
           break;
         case "เย็น":
           cbEvening.setSelected(true);
-          medTimeRadioHandler(medicine, rbEveningBefore, rbEveningAfter, i);
           panelSubEvening.setVisible(true);
           break;
         case "ก่อนนอน":
@@ -731,9 +703,10 @@ public class MedicineUI {
           break;
         case "ทุก ๆ ":
           cbEvery.setSelected(true);
-          tfEvery.setText(medicine.getMedDoseStr().get(i).split(" ")[0]);
+          tfEvery.setText(medicine.getMedDoseStr().split(" ")[0]);
       }
     }
+    medTimeRadioHandler(medicine, rbBefore, rbAfter, rbImmediately);
 
     // Listeners
     btnSave.addActionListener(e -> {
@@ -754,29 +727,36 @@ public class MedicineUI {
       } else {
         type = "spray";
       }
+
+      // DOSE INFORMATION
       ArrayList<String> selectedMedTime = new ArrayList<>();
-      ArrayList<String> selectedDoseStr = new ArrayList<>();
+      String selectedDoseStr = "";
       if (cbMorning.isSelected()) {
         selectedMedTime.add("เช้า");
-        medTimeAdder(rbMorningBefore, rbMorningAfter, rbMorningImme, selectedDoseStr);
       }
       if (cbAfternoon.isSelected()) {
         selectedMedTime.add("กลางวัน");
-        medTimeAdder(rbAfternoonBefore, rbAfternoonAfter, rbAfternoonImme, selectedDoseStr);
       }
       if (cbEvening.isSelected()) {
         selectedMedTime.add("เย็น");
-        medTimeAdder(rbEveningBefore, rbEveningAfter, rbEveningImme, selectedDoseStr);
       }
       if (cbBed.isSelected()) {
         selectedMedTime.add("ก่อนนอน");
-        selectedDoseStr.add("");
       }
       if (cbEvery.isSelected()) {
         selectedMedTime.add("ทุก ๆ ");
-        selectedDoseStr.add(tfEvery.getText() + " ชั่วโมง");
+        selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
       }
-      Date exp = Date.from(picker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+      if (rbBefore.isSelected()) {
+        selectedDoseStr = "ก่อนอาหาร";
+      } else if (rbAfter.isSelected()) {
+        selectedDoseStr = "หลังอาหาร";
+      } else if (rbImmediately.isSelected()) {
+        selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+      }
+      Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+      String newDateStart = formatDMY.format(pickerStart.getDate()) + formatHM.format(pickerStartTime.getTime());
       medicine.setMedName(tfMedName.getText());
       medicine.setMedType(type);
       medicine.setMedColor(selectedColor);
@@ -786,6 +766,7 @@ public class MedicineUI {
       medicine.setMedDose(Integer.valueOf(tfAmount.getText()));
       medicine.setMedTotal(Integer.valueOf(tfTotalMeds.getText()));
       medicine.setMedEXP(exp);
+      medicine.setDateStart(newDateStart);
       try {
         MedicineDB.updateMedicine(medicine);
         fireSuccessDialog("แก้ไขยา " + medicine.getMedName() + " เรียบร้อยแล้ว");
@@ -800,8 +781,8 @@ public class MedicineUI {
       }
     });
 
-    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit,
-        labelUnitMorning, labelUnitAfternoon, labelUnitEvening, labelUnitBed, cbMedType);
+    medTypeUIHandler(panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor, labelUnit1,
+        labelUnit2, cbMedType);
     cbAfternoon.addActionListener(e -> {
       if (cbAfternoon.isSelected()) {
         panelSubAfternoon.setVisible(true);
@@ -833,7 +814,7 @@ public class MedicineUI {
 
     panelTitle.add(btnBack);
 
-    panelSub.add(makeBoldLabel("ข้อมูลพื้นฐาน"));
+    panelSub.add(labelHeading1);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -868,67 +849,55 @@ public class MedicineUI {
     panelBody.add(panelMedSettings);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeBoldLabel("เวลาที่ต้องรับประทาน"));
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(makeLabel("จำนวน"));
-    panelSub.add(tfAmount);
-    panelSub.add(labelUnit);
+    panelSub.add(labelHeading2);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(cbMorning);
-    panelSubMorning.add(rbMorningBefore);
-    panelSubMorning.add(rbMorningAfter);
-    panelSubMorning.add(rbMorningImme);
-    panelSub.add(panelSubMorning);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
     panelSub.add(cbAfternoon);
-    panelSubAfternoon.add(rbAfternoonBefore);
-    panelSubAfternoon.add(rbAfternoonAfter);
-    panelSubAfternoon.add(rbAfternoonImme);
-    panelSub.add(panelSubAfternoon);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
     panelSub.add(cbEvening);
-    panelSubEvening.add(rbEveningBefore);
-    panelSubEvening.add(rbEveningAfter);
-    panelSubEvening.add(rbEveningImme);
-    panelSub.add(panelSubEvening);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
     panelSub.add(cbBed);
-    panelSub.add(panelSubBed);
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
     panelSub.add(cbEvery);
     panelSub.add(tfEvery);
     panelSub.add(makeLabel("ชั่วโมง"));
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
+    panelSub.add(rbBefore);
+    panelSub.add(rbAfter);
+    panelSub.add(rbImmediately);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeLabel("จำนวน"));
+    panelSub.add(tfAmount);
+    panelSub.add(labelUnit1);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelHeading3);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
     panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
     panelSub.add(tfTotalMeds);
-    labelUnit = makeLabel(medUnit);
-    panelSub.add(labelUnit);
+    panelSub.add(labelUnit2);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeLabel("วันและเวลาที่เริ่มทานยา"));
+    panelSub.add(pickerStart);
+    panelSub.add(pickerStartTime);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
     panelSub.add(makeLabel("วันหมดอายุ"));
-    panelSub.add(picker);
+    panelSub.add(pickerEXP);
     panelBody.add(panelSub);
 
     panelSub = new JPanel();
     panelSub.add(btnSave);
     panelBody.add(panelSub);
-
-    panelButtons.add(btnSave);
 
     JScrollPane scrollPane = makeScrollPane(panelBody);
 
@@ -987,21 +956,20 @@ public class MedicineUI {
     return panelLoopInfo;
   }
 
-  private static void medTimeRadioHandler(Medicine medicine, JRadioButton rbMorningBefore,
-      JRadioButton rbMorningAfter, int i) {
-    if (medicine.getMedDoseStr().get(i).equals("ก่อนอาหาร")) {
-      rbMorningBefore.setSelected(true);
-    } else if (medicine.getMedDoseStr().get(i).equals("หลังอาหาร")) {
-      rbMorningAfter.setSelected(true);
+  private static void medTimeRadioHandler(Medicine medicine, JRadioButton rbBefore,
+      JRadioButton rbAfter, JRadioButton rbImmediately) {
+    if (medicine.getMedDoseStr().equals("ก่อนอาหาร")) {
+      rbBefore.setSelected(true);
+    } else if (medicine.getMedDoseStr().equals("หลังอาหาร")) {
+      rbAfter.setSelected(true);
     } else {
-      rbMorningBefore.setSelected(true);
+      rbImmediately.setSelected(true);
     }
   }
 
   private static void medTypeUIHandler(JPanel panelColor, JPanel panelTabletColor,
-      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit, JLabel labelUnitMorning,
-      JLabel labelUnitAfternoon, JLabel labelUnitEvening, JLabel labelUnitBed,
-      JComboBox cbMedType) {
+      JPanel panelCapsuleColor, JPanel panelLiquidColor, JLabel labelUnit1,
+      JLabel labelUnit2, JComboBox cbMedType) {
     cbMedType.addActionListener(e -> {
       switch (cbMedType.getSelectedIndex()) {
         case 0:
@@ -1009,44 +977,32 @@ public class MedicineUI {
           panelTabletColor.setVisible(true);
           panelCapsuleColor.setVisible(false);
           panelLiquidColor.setVisible(false);
-          labelUnit.setText("เม็ด");
-          labelUnitMorning.setText("เม็ด");
-          labelUnitAfternoon.setText("เม็ด");
-          labelUnitEvening.setText("เม็ด");
-          labelUnitBed.setText("เม็ด");
+          labelUnit1.setText("เม็ด");
+          labelUnit2.setText("เม็ด");
           break;
         case 1:
           panelColor.setVisible(true);
           panelTabletColor.setVisible(false);
           panelCapsuleColor.setVisible(true);
           panelLiquidColor.setVisible(false);
-          labelUnit.setText("แคปซูล");
-          labelUnitMorning.setText("แคปซูล");
-          labelUnitAfternoon.setText("แคปซูล");
-          labelUnitEvening.setText("แคปซูล");
-          labelUnitBed.setText("แคปซูล");
+          labelUnit1.setText("แคปซูล");
+          labelUnit2.setText("แคปซูล");
           break;
         case 2:
           panelColor.setVisible(true);
           panelTabletColor.setVisible(false);
           panelCapsuleColor.setVisible(false);
           panelLiquidColor.setVisible(true);
-          labelUnit.setText("มิลลิลิตร");
-          labelUnitMorning.setText("มิลลิลิตร");
-          labelUnitAfternoon.setText("มิลลิลิตร");
-          labelUnitEvening.setText("มิลลิลิตร");
-          labelUnitBed.setText("มิลลิลิตร");
+          labelUnit1.setText("มิลลิลิตร");
+          labelUnit2.setText("แคปซูล");
           break;
         default:
           panelColor.setVisible(false);
           panelTabletColor.setVisible(false);
           panelCapsuleColor.setVisible(false);
           panelLiquidColor.setVisible(false);
-          labelUnit.setText("มิลลิลิตร");
-          labelUnitMorning.setText("ครั้ง");
-          labelUnitAfternoon.setText("ครั้ง");
-          labelUnitEvening.setText("ครั้ง");
-          labelUnitBed.setText("ครั้ง");
+          labelUnit1.setText("มิลลิลิตร");
+          labelUnit2.setText("แคปซูล");
           break;
       }
     });

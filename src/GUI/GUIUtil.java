@@ -29,6 +29,7 @@ public class GUIUtil implements ActionListener, KeyListener {
 
   public void listeners() {
     btnSignIn.addActionListener(this);
+    btnSignUp.addActionListener(this);
     tfUserName.addKeyListener(this);
     tfPassword.addKeyListener(this);
     btnSkip.addActionListener(this);
@@ -43,7 +44,7 @@ public class GUIUtil implements ActionListener, KeyListener {
       panelErrorSignIn.setVisible(true);
     } else {
       panelErrorSignIn.setVisible(false);
-      panelLoadingSignIn.setVisible(true);
+      panelLoading.setVisible(true);
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
@@ -53,7 +54,7 @@ public class GUIUtil implements ActionListener, KeyListener {
             user = doSignIn(username, password);
             Core.setUser(user);
           } catch (LoginException ignored) {
-            panelLoadingSignIn.setVisible(false);
+            panelLoading.setVisible(false);
             panelErrorSignIn.setVisible(true);
           } catch (NoSuchAlgorithmException | SQLException ex) {
             ex.printStackTrace();
@@ -82,6 +83,33 @@ public class GUIUtil implements ActionListener, KeyListener {
     }
   }
 
+  void executeSignUp() {
+    if (tfUserName.getText().equals("")) {
+      // CHANGE THIS IF STATEMENT TO CHECK IF PASSWORD MISMATCH BEFORE STARTING doSignUp()
+    } else {
+      panelLoading.setVisible(true);
+      SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
+        @Override
+        protected Integer doInBackground() throws Exception {
+          // doSignUp() TRY CATCH HERE
+          return null;
+        }
+
+        @Override
+        protected void done() {
+          // PLEASE LOGIN THE USER THAT JUST SIGNED UP HERE USING doSignIn()
+          if (user != null) {
+            main();
+            CardLayout cl = (CardLayout) (panelWelcome.getLayout());
+            cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+          }
+        }
+      };
+      swingWorker.execute();
+    }
+  }
+
+
   @Override
   public void actionPerformed(ActionEvent e) {
     String btnCommand = e.getActionCommand();
@@ -100,6 +128,10 @@ public class GUIUtil implements ActionListener, KeyListener {
 
       case "เข้าสู่ระบบ":
         executeSignIn();
+        break;
+
+      case "ลงทะเบียน":
+        executeSignUp();
         break;
     }
   }

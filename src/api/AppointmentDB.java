@@ -93,12 +93,14 @@ public class AppointmentDB {
     time.add(appointment.getTimeStop());
     String doctorId = appointment.getDoctor().getId();
 
-    String SQLCommand = "UPDATE appointments SET doctor = ?, \"time\" = ? WHERE id = ?";
+    String SQLCommand = "UPDATE appointments SET doctor = ?, \"time\" = ?, note = ?, date = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, doctorId, Types.OTHER);
     pStatement.setArray(2, connection.createArrayOf("text", time.toArray()));
-    pStatement.setObject(3, appointment.getId(), Types.OTHER);
+    pStatement.setString(3, appointment.getNote());
+    pStatement.setDate(4, new java.sql.Date(appointment.getDate().getTime()));
+    pStatement.setObject(5, appointment.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 

@@ -26,17 +26,21 @@ public class Medicine {
   private String medColor;
   private String medDescription;
   private ArrayList<String> medTime;
-  private ArrayList<String> medDoseStr;
+  private String medDoseStr;
   private int medDose;
   private int medTotal;
   private int medRemaining;
   private Date medEXP;
   private Date dateAdded;
   private String medUnit;
+  private String lastTaken;
+  private String dateStart;
+  private ArrayList<String> taken;
+  private ArrayList<String> skipped;
 
   public Medicine(String medName, String medType, String medColor, String medDescription,
-      ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
-      Date medEXP) {
+      ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
+      Date medEXP, String dateStart) {
     this.medName = medName;
     this.medType = medType;
     this.medColor = medColor;
@@ -48,6 +52,7 @@ public class Medicine {
     this.medRemaining = medTotal;
     this.medEXP = medEXP;
     this.dateAdded = new Date();
+    this.dateStart = dateStart;
     switch (medType) {
       case "tablet":
         this.medUnit = "เม็ด";
@@ -65,8 +70,8 @@ public class Medicine {
   }
 
   public Medicine(String id, String medName, String medType, String medColor, String medDescription,
-      ArrayList<String> medTime, ArrayList<String> medDoseStr, int medDose, int medTotal,
-      Date medEXP) {
+      ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
+      Date medEXP, String dateStart) {
     this.id = id;
     this.medName = medName;
     this.medType = medType;
@@ -79,6 +84,7 @@ public class Medicine {
     this.medRemaining = medTotal;
     this.medEXP = medEXP;
     this.dateAdded = new Date();
+    this.dateStart = dateStart;
     switch (medType) {
       case "tablet":
         this.medUnit = "เม็ด";
@@ -143,11 +149,11 @@ public class Medicine {
     this.medTime = medTime;
   }
 
-  public ArrayList<String> getMedDoseStr() {
+  public String getMedDoseStr() {
     return medDoseStr;
   }
 
-  public void setMedDoseStr(ArrayList<String> medDoseStr) {
+  public void setMedDoseStr(String medDoseStr) {
     this.medDoseStr = medDoseStr;
   }
 
@@ -197,5 +203,37 @@ public class Medicine {
 
   public void setMedUnit(String medUnit) {
     this.medUnit = medUnit;
+  }
+
+  public String getLastTaken() {
+    return lastTaken;
+  }
+
+  public void setLastTaken(String lastTaken) {
+    this.lastTaken = lastTaken;
+  }
+
+  public String getDateStart() {
+    return dateStart;
+  }
+
+  public void setDateStart(String dateStart) {
+    this.dateStart = dateStart;
+  }
+
+  public ArrayList<String> getTaken() {
+    return taken;
+  }
+
+  public void setTaken(ArrayList<String> taken) {
+    this.taken = taken;
+  }
+
+  public ArrayList<String> getSkipped() {
+    return skipped;
+  }
+
+  public void setSkipped(ArrayList<String> skipped) {
+    this.skipped = skipped;
   }
 }

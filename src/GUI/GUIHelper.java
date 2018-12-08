@@ -6,7 +6,6 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
-import core.Medicine;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -64,7 +63,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.7
+ * @version 0.7.8
  * @since 0.3.0
  */
 
@@ -74,7 +73,7 @@ public class GUIHelper {
   public static Color mainBlue = new Color(20, 101, 155);
 
   final static LocalDate today = LocalDate.now();
-  public static DateFormat formatHM = new SimpleDateFormat("HH.mm");
+  public static DateFormat formatHM = new SimpleDateFormat("HH:mm");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
   public static DateFormat formatDatePicker = new SimpleDateFormat("MMMM dd, yyyy");
   public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy", locale);
@@ -230,17 +229,6 @@ public class GUIHelper {
     return panelError;
   }
 
-  public static void medTimeAdder(JRadioButton rbMorningBefore, JRadioButton rbMorningAfter,
-      JRadioButton rbMorningImme, ArrayList<String> selectedDoseStr) {
-    if (rbMorningBefore.isSelected()) {
-      selectedDoseStr.add("ก่อนอาหาร");
-    } else if (rbMorningAfter.isSelected()) {
-      selectedDoseStr.add("หลังอาหาร");
-    } else if (rbMorningImme.isSelected()) {
-      selectedDoseStr.add("หลังอาหารทันที / พร้อมอาหาร");
-    }
-  }
-
   public static void editSwitcher(JPanel origin, JPanel switchTo) {
     origin.add(switchTo, "แก้ไข");
     CardLayout cl = (CardLayout) (origin.getLayout());
@@ -256,11 +244,25 @@ public class GUIHelper {
     return new JPanel(new FlowLayout(FlowLayout.LEFT));
   }
 
+  public static DatePicker makeTodayPicker() {
+    DatePicker datePicker = new DatePicker();
+    datePicker.setDateToToday();
+    return datePicker;
+  }
+
   public static DatePicker makeDatePicker() {
     DatePickerSettings dateSettings = new DatePickerSettings();
     DatePicker datePicker = new DatePicker(dateSettings);
     dateSettings.setDateRangeLimits(today, today.plusYears(100));
     return datePicker;
+  }
+
+  public static TimePicker makeTimeNowPicker() {
+    TimePickerSettings timeSettings = new TimePickerSettings(locale);
+    timeSettings.initialTime = LocalTime.of(8, 00);
+    TimePicker timePicker = new TimePicker(timeSettings);
+    timePicker.setTimeToNow();
+    return timePicker;
   }
 
   public static TimePicker makeTimePicker() {

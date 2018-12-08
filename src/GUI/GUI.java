@@ -15,7 +15,7 @@ import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
-import core.MedicineUtil;
+import core.Overview;
 import core.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -24,12 +24,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.Date;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import core.LocationHelper;
 
@@ -39,7 +36,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.7
+ * @version 0.7.8
  * @since 0.1.0
  */
 
@@ -49,7 +46,7 @@ public class GUI {
   static JPanel panelLeft;
   public static JPanel panelRight;
   static JPanel panelWelcome;
-  static JPanel panelSignIn, panelLoadingSignIn, panelErrorSignIn;
+  static JPanel panelSignIn, panelLoading, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp, btnSkip;
@@ -102,47 +99,18 @@ public class GUI {
       including medication reminders and doctor appointments.
      */
 
+    Overview overview = new Overview();
+
     // JPanels
     JPanel panelOverview = new JPanel(new BorderLayout());
     JPanel panelTitle = newFlowLayout();
-    JPanel panelLoop = newPanelLoop();
+    JPanel panelLoop = overview.renderOverview();
+
     String today = GUIHelper.formatDMYFull.format(new Date());
     panelTitle.add(makeTitleLabel(today));
+
+    // Styling
     setPadding(panelTitle, 0, 0, -12, 2);
-
-    // Init card loop
-
-    // TODO: Fetch these upcoming events
-
-    // !! FOR DEMO ONLY
-    panelLoop.add(makeOverviewTime("15.30 น. (อีก 2 ชั่วโมง)"));
-    JPanel panelSub = newFlowLayout();
-    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
-        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
-    panelSub.add(makeOverviewCard("Tylenol (ยาแก้ปวด ลดไข้)",
-        "1 เม็ด ทุก ๆ 8 ชั่วโมง", "/tablets/tablet-white.png"));
-    panelLoop.add(panelSub);
-    panelSub = newFlowLayout();
-    panelLoop.add(makeOverviewTime("18.30 น. (อีก 5 ชั่วโมง)"));
-    panelSub.add(makeOverviewCard("Amoxicillin (ยาฆ่าเชื้อ)",
-        "หลังอาหาร 1 เม็ด", "/capsules/capsule-red-white.png"));
-    panelSub.add(makeOverviewCard("Bisovol (ยาแก้ไอ)",
-        "หลังอาหาร 5 มิลลิกรัม", "/liquids/liquid-yellow.png"));
-    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
-        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
-    panelLoop.add(panelSub);
-    panelLoop.add(makeOverviewTime("21.30 น. (อีก 8 ชั่วโมง)"));
-    panelSub = newFlowLayout();
-    panelSub.add(makeOverviewCard("Strepsils (ยาแก้เจ็บคอ)",
-        "1 เม็ด ทุก ๆ 3 ชั่วโมง", "/tablets/tablet-orange.png"));
-    panelLoop.add(panelSub);
-    panelLoop.add(makeOverviewTime("22.30 น. (อีก 9 ชั่วโมง)"));
-    panelSub = newFlowLayout();
-    panelSub.add(makeOverviewCard("Chlorpheniramine (ยาแก้แพ้)",
-        "ก่อนนอน 1 เม็ด", "/tablets/tablet-yellow.png"));
-    panelLoop.add(panelSub);
-    // End DEMO
-
     setPadding(panelLoop, 0, 0, 20, 0);
 
     JScrollPane scrollPane = makeScrollPane(panelLoop);
@@ -153,7 +121,6 @@ public class GUI {
 
     panelRight.add(panelOverview, "ภาพรวม");
   }
-
 
   private static void panelNearbyHospitals() {
     /*
@@ -252,7 +219,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.7"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.8"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -275,8 +242,10 @@ public class GUI {
     frameWelcome = new JFrame("jMedicine: เข้าสู่ระบบ");
 
     // Panels
-    panelLoadingSignIn = getLoadingPanel(false);
+    panelLoading = getLoadingPanel(false);
     panelErrorSignIn = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
+    panelErrorSignUpUsername = getErrorPanel("ชื่อผู้ใช้งานนี้เคยสมัครไปแล้ว");
+    panelErrorSignUpPassword = getErrorPanel("รหัสผ่านทั้งสองช่องไม่ตรงกัน");
     panelWelcome = new JPanel(new CardLayout());
     panelSignIn = new JPanel(new GridBagLayout());
     JPanel panelFirstMed = new JPanel();
@@ -306,8 +275,10 @@ public class GUI {
     setPadding(labelPasswordConfirm, 0, 0, -10, 0);
     setPadding(labelRegister, 20, 60);
     setPadding(labelSignIn, 20, 60);
-    panelLoadingSignIn.setVisible(false);
+    panelLoading.setVisible(false);
     panelErrorSignIn.setVisible(false);
+    panelErrorSignUpUsername.setVisible(false);
+    panelErrorSignUpPassword.setVisible(false);
     labelPasswordConfirm.setVisible(false);
     tfPasswordConfirm.setVisible(false);
     btnSignUp.setVisible(false);
@@ -379,9 +350,13 @@ public class GUI {
     gbc.gridy++;
     panelSignIn.add(tfPasswordConfirm, gbc);
     gbc.gridy++;
-    panelSignIn.add(panelLoadingSignIn, gbc);
+    panelSignIn.add(panelLoading, gbc);
     gbc.gridy++;
     panelSignIn.add(panelErrorSignIn, gbc);
+    gbc.gridy++;
+    panelSignIn.add(panelErrorSignUpUsername, gbc);
+    gbc.gridy++;
+    panelSignIn.add(panelErrorSignUpPassword, gbc);
     gbc.gridy++;
     panelSignIn.add(btnSignUp, gbc);
     gbc.gridy++;
@@ -470,77 +445,6 @@ public class GUI {
     gbc.weighty = 1000;
     panelLeft.add(space, gbc);
     panelLeft.setBackground(mainBlue);
-  }
-
-  private static JPanel makeOverviewTime(String time) {
-    /* Creates a card that will be used on the Overview panel only. */
-
-    // JPanels
-    JPanel panelLoopInfo = new JPanel(new BorderLayout());
-    JPanel panelTime = newFlowLayout();
-
-    // JLabels
-    JLabel labelTime = makeSubTitleLabel(time);
-
-    // Styling
-    setPadding(panelLoopInfo, 18, 0, -2);
-
-    panelTime.add(labelTime);
-    panelLoopInfo.add(panelTime);
-
-    return panelLoopInfo;
-  }
-
-  private static JPanel makeOverviewCard(String medName, String dose, String imgURL) {
-    /* FOR DEMO ONLY */
-
-    // JPanels
-    JPanel panelLoopInfo = new JPanel(new BorderLayout());
-    JPanel panelCard = new JPanel();
-    JPanel panelMed = newFlowLayout();
-    JPanel panelMedInfo = new JPanel();
-    JPanel panelBtn = newFlowLayout();
-
-    // JLabels
-    JLabel labelPic = new JLabel();
-    JLabel labelMedName = makeBoldLabel(medName);
-    JLabel labelAmount = makeSmallerLabel(dose);
-
-    try {
-      Image img = ImageIO.read(new File(imgPath + imgURL));
-      labelPic.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) {
-    }
-
-    // JButtons
-    JButton btnAte = makeGreyToBlueButton("ทานแล้ว");
-    JButton btnSkip = makeGreyToRedButton("ข้ามเวลานี้");
-
-    // Styling
-    panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));
-    panelCard.setLayout(new BoxLayout(panelCard, BoxLayout.PAGE_AXIS));
-    panelCard.setBorder(newCardBorder());
-    setPadding(labelPic, 6, 0, 0, 8);
-    setPadding(labelMedName, 7, 0, -12, 0);
-    setPadding(labelAmount, 0, 0, 2, 0);
-    setPadding(panelLoopInfo, 0, 20, 4, 0);
-    setPadding(panelMed, 6, 36, 12, 0);
-    setPadding(panelBtn, 0, 0, -6, -3);
-
-    panelMedInfo.add(labelMedName);
-    panelMedInfo.add(labelAmount);
-
-    panelMed.add(labelPic);
-    panelMed.add(panelMedInfo);
-    panelCard.add(panelMed);
-
-    panelBtn.add(btnAte);
-    panelBtn.add(btnSkip);
-    panelCard.add(new JSeparator(SwingConstants.HORIZONTAL));
-    panelCard.add(panelBtn);
-
-    panelLoopInfo.add(panelCard);
-    return panelLoopInfo;
   }
 
   private static void panelEditProfile() {
