@@ -41,7 +41,7 @@ import javax.swing.SwingConstants;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.9
+ * @version 0.7.10
  * @since 0.7.0
  */
 
@@ -190,18 +190,21 @@ public class MedicineUI {
 
     panelBody.add(new JSeparator(SwingConstants.HORIZONTAL));
 
+    panelSub = newFlowLayout();
     for (int i = 0; i < medicine.getMedTime().size(); i++) {
-      panelSub = newFlowLayout();
-      JLabel labelMedTime = makeLabel(medicine.getMedTime().get(i));
-      JLabel labelMedDoseStr = makeLabel(medicine.getMedDoseStr());
-      panelSub.add(labelMedTime);
-      panelSub.add(labelMedDoseStr);
-      setPadding(panelSub, 0, 0, -10);
-      panelBody.add(panelSub);
+      panelSub.add(makeLabel(medicine.getMedTime().get(i)));
     }
+    setPadding(panelSub, 0, 0, -10);
+    panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("จำนวน " + medicine.getMedDose() + " " + medicine.getMedUnit()));
+    String space = " ";
+    if (medicine.getMedDoseStr().equals("")) {
+      space = "";
+    }
+    panelSub.add(makeLabel(
+        medicine.getMedDoseStr() + space + "ครั้งละ " + medicine.getMedDose() + " " + medicine.getMedUnit()
+    ));
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();

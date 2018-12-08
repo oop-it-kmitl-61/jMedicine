@@ -1,7 +1,6 @@
 package api;
 
 import static core.Utils.*;
-import static GUI.GUIHelper.formatTimestamp;
 
 import core.Database;
 import core.Medicine;
@@ -11,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
