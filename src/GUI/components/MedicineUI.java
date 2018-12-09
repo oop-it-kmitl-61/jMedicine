@@ -42,7 +42,7 @@ import javax.swing.SwingConstants;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.11
+ * @version 0.7.12
  * @since 0.7.0
  */
 
@@ -58,7 +58,6 @@ public class MedicineUI {
   private static ButtonGroup bgMedDoseStr;
   private static DatePicker pickerStart, pickerEXP;
   private static TimePicker pickerStartTime;
-  private static JButton btnSave, btnEdit, btnSkip;
 
   public static void panelAllMedicines() {
     /*
@@ -106,7 +105,7 @@ public class MedicineUI {
     panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
   }
 
-  public static JPanel panelViewMedicine(Medicine medicine) {
+  private static JPanel panelViewMedicine(Medicine medicine) {
     /* Creates GUI displaying all information of a single medicine */
 
     // JPanels
@@ -144,6 +143,7 @@ public class MedicineUI {
           MedicineDB.removeMedicine(medicine);
           labelMessage = getRemoveSuccessfulMessage("ยา");
           fireSuccessDialog(labelMessage);
+          reloadOverview();
         } catch (SQLException ex) {
           labelMessage = getRemoveFailedMessage("ยา");
           fireErrorDialog(labelMessage);
@@ -153,8 +153,6 @@ public class MedicineUI {
         panelAllMedicines();
         backTo("ยาทั้งหมด");
         panelRight.remove(panelViewMedicine(medicine));
-      } else {
-
       }
     });
 
@@ -267,7 +265,7 @@ public class MedicineUI {
     return panelView;
   }
 
-  public static JPanel panelAddMedicine() {
+  private static JPanel panelAddMedicine() {
     /* Creates outer GUI when user add a new medicine from all medicines page. */
 
     // JPanels
@@ -277,7 +275,7 @@ public class MedicineUI {
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มยาใหม่", "ยาทั้งหมด");
-    btnSave = makeBlueButton("บันทึกยา");
+    JButton btnSave = makeBlueButton("บันทึกยา");
 
     // Styling
     setPadding(panelAddMedicine, -2, 0, 0, -16);
@@ -347,6 +345,7 @@ public class MedicineUI {
         panelRight.remove(panelAddMedicine());
         panelRight.remove(panelBody);
         panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
+        reloadOverview();
       } catch (SQLException e1) {
         fireDBErrorDialog();
         e1.printStackTrace();
@@ -372,8 +371,8 @@ public class MedicineUI {
     JPanel panelBtn = new JPanel(new BorderLayout());
 
     // JButton
-    btnSave = makeBlueButton("บันทึกยา");
-    btnSkip = makeRedButton("ข้ามขั้นตอนนี้");
+    JButton btnSave = makeBlueButton("บันทึกยา");
+    JButton btnSkip = makeRedButton("ข้ามขั้นตอนนี้");
 
     panelTitle.add(makeTitleLabel("เพิ่มยาตัวแรกของคุณ"));
 
@@ -454,6 +453,7 @@ public class MedicineUI {
         frameWelcome.setVisible(false);
         frameMain.setVisible(true);
         frameWelcome = null;
+        reloadOverview();
       } catch (SQLException e1) {
         fireDBErrorDialog();
         e1.printStackTrace();
@@ -476,7 +476,7 @@ public class MedicineUI {
     return panelFirstMed;
   }
 
-  public static JPanel panelEditMedicine(Medicine medicine) {
+  private static JPanel panelEditMedicine(Medicine medicine) {
     /* Creates GUI of the form for editing a new medicine. */
 
     // JPanels
@@ -487,7 +487,7 @@ public class MedicineUI {
 
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขยา", medicine.getMedName());
-    btnEdit = makeBlueButton("บันทึก");
+    JButton btnEdit = makeBlueButton("บันทึก");
 
     panelTitle.add(btnBack);
     panelBody.add(form, BorderLayout.CENTER);
@@ -648,6 +648,7 @@ public class MedicineUI {
         reload();
         backTo("ยาทั้งหมด");
         panelRight.remove(panelEditMedicine(medicine));
+        reloadOverview();
       } catch (SQLException e1) {
         fireDBErrorDialog();
         e1.printStackTrace();
@@ -659,7 +660,7 @@ public class MedicineUI {
     return panelEditMed;
   }
 
-  public static JScrollPane form() {
+  private static JScrollPane form() {
     /* Creates GUI of the form for adding a new medicine. */
     String medUnit = "เม็ด";
 
@@ -952,9 +953,57 @@ public class MedicineUI {
         rbImmediately.setEnabled(true);
       }
     });
+    cbBed.addActionListener(e -> {
+      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening.isSelected()) {
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
+    cbEvening.addActionListener(e -> {
+      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening.isSelected()) {
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
+    cbAfternoon.addActionListener(e -> {
+      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening.isSelected()) {
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
+    cbMorning.addActionListener(e -> {
+      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening.isSelected()) {
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
   }
 
-  static void reload() {
+  private static void reload() {
     panelRight.remove(panelMedicines);
     panelAllMedicines();
   }

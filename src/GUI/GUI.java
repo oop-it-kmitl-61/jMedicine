@@ -36,17 +36,15 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.11
+ * @version 0.7.12
  * @since 0.1.0
  */
 
 public class GUI {
 
   public static JFrame frameWelcome, frameMain;
-  static JPanel panelLeft;
-  public static JPanel panelRight;
-  static JPanel panelWelcome;
-  static JPanel panelSignIn, panelLoading, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
+  public static JPanel panelRight, panelOverview, panelWelcome;
+  static JPanel panelLeft, panelSignIn, panelLoading, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp;
@@ -101,7 +99,7 @@ public class GUI {
     Overview overview = new Overview();
 
     // JPanels
-    JPanel panelOverview = new JPanel(new BorderLayout());
+    panelOverview = new JPanel(new BorderLayout());
     JPanel panelTitle = newFlowLayout();
     JPanel panelLoop = overview.renderOverview();
 
@@ -119,6 +117,11 @@ public class GUI {
     panelOverview.add(scrollPane);
 
     panelRight.add(panelOverview, "ภาพรวม");
+  }
+
+  public static void reloadOverview() {
+    panelRight.remove(panelOverview);
+    panelOverview();
   }
 
   private static void panelNearbyHospitals() {
@@ -218,7 +221,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.11"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.12"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
