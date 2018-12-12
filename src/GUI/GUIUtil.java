@@ -2,6 +2,7 @@ package GUI;
 
 import static GUI.GUI.*;
 import static api.Login.doSignIn;
+import static api.Login.doSignUp;
 
 import api.LoginException;
 import core.Core;
@@ -13,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import javax.swing.SwingWorker;
 
 /**
@@ -34,14 +36,14 @@ public class GUIUtil implements ActionListener, KeyListener {
     tfPassword.addKeyListener(this);
   }
 
-  public User getSignedInUser() {
-    return this.user;
-  }
-
   void executeSignIn() {
+    panelErrorSignUpUsername.setVisible(false);
+    panelErrorSignUpPassword.setVisible(false);
     if (tfUserName.getText().equals("") || tfPassword.getPassword().equals("")) {
-      panelErrorSignIn.setVisible(true);
+      panelNoInput.setVisible(true);
+      panelErrorSignIn.setVisible(false);
     } else {
+      panelNoInput.setVisible(false);
       panelErrorSignIn.setVisible(false);
       panelLoading.setVisible(true);
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
@@ -83,31 +85,31 @@ public class GUIUtil implements ActionListener, KeyListener {
   }
 
   void executeSignUp() {
+    panelErrorSignIn.setVisible(false);
     if (tfUserName.getText().equals("")) {
-      // CHANGE THIS IF STATEMENT TO CHECK IF PASSWORD MISMATCH BEFORE STARTING doSignUp()
+      panelNoInput.setVisible(true);
+      panelErrorSignUpPassword.setVisible(false);
+    } else if (!Arrays.equals(tfPassword.getPassword(), tfPasswordConfirm.getPassword())) {
+      panelNoInput.setVisible(false);
+      panelErrorSignUpPassword.setVisible(true);
     } else {
       panelLoading.setVisible(true);
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
-          // doSignUp() TRY CATCH HERE
+          // TODO: ASSUME THAT doSignUp() HAD ALREADY THROWN SOMETHING IF DUPLICATED USER
+          doSignUp(new User(tfUserName.getText()), tfPassword.getPassword());
           return null;
         }
 
         @Override
         protected void done() {
-          // PLEASE LOGIN THE USER THAT JUST SIGNED UP HERE USING doSignIn()
-          if (user != null) {
-            main();
-            CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-            cl.show(panelWelcome, "เพิ่มยาตัวแรก");
-          }
+          executeSignIn();
         }
       };
       swingWorker.execute();
     }
   }
-
 
   @Override
   public void actionPerformed(ActionEvent e) {
@@ -131,9 +133,15 @@ public class GUIUtil implements ActionListener, KeyListener {
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if (e.getSource() == tfUserName || e.getSource() == tfPassword) {
+    if (isSignInPage && (e.getSource() == tfUserName || e.getSource() == tfPassword)) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         executeSignIn();
+      }
+    }
+    if (isSignUpPage && (e.getSource() == tfUserName || e.getSource() == tfPassword
+        || e.getSource() == tfPasswordConfirm)) {
+      if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+        executeSignUp();
       }
     }
   }

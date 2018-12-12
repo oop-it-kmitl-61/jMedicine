@@ -10,7 +10,6 @@ import static core.UserUtil.getGenders;
 import static core.UserUtil.getPrefixIndex;
 import static core.UserUtil.getPrefixes;
 
-import GUI.components.MedicineUI;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
@@ -19,14 +18,13 @@ import core.Overview;
 import core.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
+import javax.print.Doc;
 import javax.swing.*;
 import core.LocationHelper;
 
@@ -44,10 +42,11 @@ public class GUI {
 
   public static JFrame frameWelcome, frameMain;
   public static JPanel panelRight, panelOverview, panelWelcome;
-  static JPanel panelLeft, panelSignIn, panelLoading, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
+  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp;
+  static boolean isSignInPage, isSignUpPage;
   private static Dimension windowSize, minSize;
   private static GUIUtil util;
 
@@ -172,7 +171,7 @@ public class GUI {
     JLabel labelEditProfile = makeLabel("แก้ไขข้อมูลส่วนตัว");
     JLabel labelEditTime = makeLabel("ตั้งค่าเวลา");
     JLabel labelSignOut = makeLabel("ออกจากระบบ");
-    JLabel labelUserName = makeTitleLabel(getUser().getUserName());
+    JLabel labelUserName = makeTitleLabel(getUser().getUserFullName());
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
@@ -245,6 +244,7 @@ public class GUI {
 
     // Panels
     panelLoading = getLoadingPanel(false);
+    panelNoInput = getErrorPanel("กรุณากรอกข้อมูลลงในช่องว่าง");
     panelErrorSignIn = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
     panelErrorSignUpUsername = getErrorPanel("ชื่อผู้ใช้งานนี้เคยสมัครไปแล้ว");
     panelErrorSignUpPassword = getErrorPanel("รหัสผ่านทั้งสองช่องไม่ตรงกัน");
@@ -277,6 +277,7 @@ public class GUI {
     setPadding(labelRegister, 20, 60);
     setPadding(labelSignIn, 20, 60);
     panelLoading.setVisible(false);
+    panelNoInput.setVisible(false);
     panelErrorSignIn.setVisible(false);
     panelErrorSignUpUsername.setVisible(false);
     panelErrorSignUpPassword.setVisible(false);
@@ -287,10 +288,14 @@ public class GUI {
     makeLabelCenter(labelWelcome);
     makeLabelCenter(labelWelcomeSub);
 
+    isSignInPage = true;
+
     // Listeners
     labelRegister.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
+        isSignUpPage = true;
+        isSignInPage = false;
         labelPasswordConfirm.setVisible(true);
         tfPasswordConfirm.setVisible(true);
         btnSignIn.setVisible(false);
@@ -304,6 +309,8 @@ public class GUI {
     labelSignIn.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
+        isSignUpPage = false;
+        isSignInPage = true;
         labelPasswordConfirm.setVisible(false);
         tfPasswordConfirm.setVisible(false);
         btnSignIn.setVisible(true);
@@ -352,6 +359,8 @@ public class GUI {
     panelSignIn.add(tfPasswordConfirm, gbc);
     gbc.gridy++;
     panelSignIn.add(panelLoading, gbc);
+    gbc.gridy++;
+    panelSignIn.add(panelNoInput, gbc);
     gbc.gridy++;
     panelSignIn.add(panelErrorSignIn, gbc);
     gbc.gridy++;
@@ -457,12 +466,12 @@ public class GUI {
     JTextField tfHeight = makeNumberField(4);
     JTextField tfAge = makeNumberField(2);
 
-    // tfUsername.setText(user.getUserName());
+    // tfUsername.setText(user.getUserFullName());
     tfFName.setText(user.getUserFirstName());
     tfLName.setText(user.getUserLastName());
-    tfWeight.setText(user.getUserWeight());
-    tfHeight.setText(user.getUserHeight());
-    tfAge.setText(user.getUserAge());
+    tfWeight.setText(String.valueOf(user.getUserWeight()));
+    tfHeight.setText(String.valueOf(user.getUserHeight()));
+    tfAge.setText(String.valueOf(user.getUserAge()));
 
     // JPasswordFields
     JPasswordField tfPassword = makePasswordField(20);
@@ -472,7 +481,7 @@ public class GUI {
     JComboBox cbPrefix = makeComboBox(getPrefixes());
     JComboBox cbGender = makeComboBox(getGenders());
 
-    cbPrefix.setSelectedIndex(getPrefixIndex(user.getUserTitle()));
+    cbPrefix.setSelectedIndex(getPrefixIndex(user.getUserPrefix()));
     cbGender.setSelectedIndex(getGenderIndex(user.getUserGender()));
 
     // JLabels

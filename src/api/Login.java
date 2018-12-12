@@ -41,10 +41,11 @@ public class Login {
     ResultSet result = pStatement.executeQuery();
 
     if (result.next()) {
-      User user = new User(result.getString("id"), result.getString("title"),
+      User user = new User(result.getString("id"), result.getString("username"),
+          result.getString("title"),
           result.getString("firstname"), result.getString("lastname"), result.getString("email"),
-          result.getString("gender"), String.valueOf(result.getInt("age")),
-          String.valueOf(result.getFloat("weight")), String.valueOf(result.getFloat("height")));
+          result.getString("gender"), result.getInt("age"),
+          result.getDouble("weight"), result.getDouble("height"));
 
       user.setUserMedicines(getAllMedicine(user.getUserId()));
       user.setUserDoctors(getAllDoctor(user.getUserId()));
@@ -63,16 +64,16 @@ public class Login {
     String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
-    pStatement.setString(1, user.getUserName());
+    pStatement.setString(1, user.getUserFullName());
     pStatement.setString(2, encrypted);
     pStatement.setString(3, user.getUserEmail());
-    pStatement.setString(4, user.getUserTitle());
+    pStatement.setString(4, user.getUserPrefix());
     pStatement.setString(5, user.getUserFirstName());
     pStatement.setString(6, user.getUserLastName());
     pStatement.setString(7, user.getUserGender());
-    pStatement.setFloat(8, Float.valueOf(user.getUserWeight()));
-    pStatement.setFloat(9, Float.valueOf(user.getUserHeight()));
-    pStatement.setInt(10, Integer.valueOf(user.getUserAge()));
+    pStatement.setDouble(8, user.getUserWeight());
+    pStatement.setDouble(9, user.getUserHeight());
+    pStatement.setInt(10, user.getUserAge());
 
     ResultSet result = pStatement.executeQuery();
 
