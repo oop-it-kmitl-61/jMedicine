@@ -63,7 +63,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.8
+ * @version 0.7.9
  * @since 0.3.0
  */
 
@@ -74,11 +74,12 @@ public class GUIHelper {
 
   final static LocalDate today = LocalDate.now();
   public static DateFormat formatHM = new SimpleDateFormat("HH:mm");
+  public static DateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
-  public static DateFormat formatDatePicker = new SimpleDateFormat("MMMM dd, yyyy");
+  public static DateFormat formatDatePicker = new SimpleDateFormat("MMMM d, yyyy");
   public static DateFormat formatDMYFull = new SimpleDateFormat("dd MMMM yyyy", locale);
   public static DateFormat formatDMYHM = new SimpleDateFormat("dd/MM/yyyy HH.mm");
-  public static DateFormat formatDMYFullHM = new SimpleDateFormat("dd MMMM yyyy HH.mm", locale);
+  public static DateFormat formatTimestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 
   public static String imgPath = "src/GUI/img";
   static String imgSuccessSrc = imgPath + "/system/success.png";
@@ -260,6 +261,7 @@ public class GUIHelper {
   public static TimePicker makeTimeNowPicker() {
     TimePickerSettings timeSettings = new TimePickerSettings(locale);
     timeSettings.initialTime = LocalTime.of(8, 00);
+    timeSettings.setSizeTextFieldMinimumWidth(70);
     TimePicker timePicker = new TimePicker(timeSettings);
     timePicker.setTimeToNow();
     return timePicker;
@@ -267,6 +269,7 @@ public class GUIHelper {
 
   public static TimePicker makeTimePicker() {
     TimePickerSettings timeSettings = new TimePickerSettings(locale);
+    timeSettings.setSizeTextFieldMinimumWidth(70);
     timeSettings.initialTime = LocalTime.of(8, 00);
     TimePicker timePicker = new TimePicker(timeSettings);
     return timePicker;

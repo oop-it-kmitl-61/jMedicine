@@ -3,31 +3,27 @@ package core;
 import java.util.ArrayList;
 
 /**
- * Stores user information.
- * Use a constructor to new a user.
+ * Stores user information. Use a constructor to new a user.
  */
 
 public class User {
 
-  private String userId;
-  private String userTitle;
-  private String userFirstName;
-  private String userLastName;
-  private String userName;
-  private String userEmail;
-  private String userGender;
-  private String userAge;
-  private String userWeight;
-  private String userHeight;
+  private String userId, userName, userPrefix, userFirstName, userLastName, userFullName;
+  private String userEmail, userGender;
+  private int userAge;
+  private double userWeight, userHeight;
   private String[] userTime;
   private ArrayList<Medicine> userMedicines;
   private ArrayList<Doctor> userDoctors;
   private ArrayList<Appointment> userAppointments;
 
-  public User(String userId, String userTitle, String userFirstName, String userLastName,
-      String userEmail, String userGender, String userAge, String userWeight, String userHeight) {
+
+  public User(String userId, String userName, String userPrefix, String userFirstName,
+      String userLastName, String userEmail, String userGender, int userAge,
+      double userWeight, double userHeight) {
     this.userId = userId;
-    this.userTitle = userTitle;
+    this.userName = userName;
+    this.userPrefix = userPrefix;
     this.userFirstName = userFirstName;
     this.userLastName = userLastName;
     this.userEmail = userEmail;
@@ -35,18 +31,28 @@ public class User {
     this.userAge = userAge;
     this.userWeight = userWeight;
     this.userHeight = userHeight;
-    this.userName = userTitle + userFirstName + " " + userLastName;
+    this.userFullName = userPrefix + userFirstName + " " + userLastName;
+    this.userTime = new String[]{"08:30", "12:30", "18:30", "22:30"};
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();
     this.userAppointments = new ArrayList<>();
   }
 
-  public String getUserTitle() {
-    return userTitle;
+  public User(String userName) {
+    this.userName = userName;
+    this.userFullName = "(ยังไม่ได้ตั้งชื่อ)";
+    this.userTime = new String[]{"08:30", "12:30", "18:30", "22:30"};
+    this.userMedicines = new ArrayList<>();
+    this.userDoctors = new ArrayList<>();
+    this.userAppointments = new ArrayList<>();
   }
 
-  public void setUserTitle(String userTitle) {
-    this.userTitle = userTitle;
+  public String getUserPrefix() {
+    return userPrefix;
+  }
+
+  public void setUserPrefix(String userPrefix) {
+    this.userPrefix = userPrefix;
   }
 
   public String getUserFirstName() {
@@ -81,12 +87,12 @@ public class User {
     this.userId = userId;
   }
 
-  public String getUserName() {
-    return userName;
+  public String getUserFullName() {
+    return userFullName;
   }
 
-  public void setUserName(String userName) {
-    this.userName = userName;
+  public void setUserFullName(String userFullName) {
+    this.userFullName = userFullName;
   }
 
   public String getUserGender() {
@@ -97,27 +103,35 @@ public class User {
     this.userGender = userGender;
   }
 
-  public String getUserAge() {
+  public String getUserName() {
+    return userName;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+
+  public int getUserAge() {
     return userAge;
   }
 
-  public void setUserAge(String userAge) {
+  public void setUserAge(int userAge) {
     this.userAge = userAge;
   }
 
-  public String getUserWeight() {
+  public double getUserWeight() {
     return userWeight;
   }
 
-  public void setUserWeight(String userWeight) {
+  public void setUserWeight(double userWeight) {
     this.userWeight = userWeight;
   }
 
-  public String getUserHeight() {
+  public double getUserHeight() {
     return userHeight;
   }
 
-  public void setUserHeight(String userHeight) {
+  public void setUserHeight(double userHeight) {
     this.userHeight = userHeight;
   }
 
@@ -196,7 +210,7 @@ public class User {
   @Override
   public String toString() {
     return "User{" +
-        "userName='" + userName + '\'' +
+        "userFullName='" + userFullName + '\'' +
         ", userGender='" + userGender + '\'' +
         ", userAge='" + userAge + '\'' +
         ", userWeight='" + userWeight + '\'' +

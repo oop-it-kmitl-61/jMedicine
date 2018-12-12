@@ -10,13 +10,15 @@ import static GUI.GUIHelper.newFlowLayout;
 import static GUI.GUIHelper.newPanelLoop;
 import static GUI.GUIHelper.setPadding;
 import static core.Core.getUser;
+import static core.Utils.*;
 import static core.MedicineUtil.getMedIcon;
 
 import api.MedicineDB;
 import java.awt.BorderLayout;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.TreeMap;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -25,13 +27,37 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
 public class Overview {
+  private TreeMap<String, ArrayList> overviewItem;
+
+  private void initTreeMap() {
+    overviewItem = new TreeMap<>();
+  }
+
+  private void appendMedicine(String time, Medicine medicine) {
+    ArrayList<Medicine> medData = (ArrayList<Medicine>) overviewItem.get(time);
+    if (medData == null) {
+      medData = new ArrayList<>();
+    }
+    medData.add(medicine);
+    overviewItem.put(time, medData);
+  }
 
   public JPanel renderOverview() {
-    // JPanels
-    JPanel panelMain = newPanelLoop();
-    JPanel panelSub = newFlowLayout();
+    initTreeMap();
+    LocalTime now = LocalTime.now();
+    Boolean morning, afternoon, evening, bed;
+    if (now.minusHours(1).getHour() == 7 && now.plusHours(1).getHour() == 9) {
+      morning = true;
+    } else if (now.minusHours(1).getHour() == 11 && now.plusHours(1).getHour() == 13) {
+      afternoon = true;
+    } else if (now.minusHours(1).getHour() == 17 && now.plusHours(1).getHour() == 19) {
+      evening = true;
+    } else if (now.minusHours(1).getHour() == 21 && now.plusHours(1).getHour() == 23) {
+      bed = true;
+    }
 
-    Date now = new Date();
+    JPanel panelMain = newPanelLoop();
+    //Date now = new Date();
 
     // Fetches all medicines
     ArrayList<Medicine> userMedicines = null;
@@ -42,68 +68,43 @@ public class Overview {
     }
 
     // Filters only active medicines
-    ArrayList<Medicine> morningMedicines = new ArrayList<>();
-    ArrayList<Medicine> afternoonMedicines = new ArrayList<>();
-    ArrayList<Medicine> eveningMedicines = new ArrayList<>();
-    ArrayList<Medicine> bedMedicines = new ArrayList<>();
-    // TODO : Intervals
-    ArrayList<Medicine> intervalMedicines = new ArrayList<>();
-
+    // TODO : Set "time" to what user defined
+    String time;
     for (Medicine medicine : userMedicines) {
       if (medicine.getMedRemaining() > 0) {
         if (medicine.getMedTime().contains("เช้า")) {
-          morningMedicines.add(medicine);
+          time = "08:30 น.";
+          appendMedicine(time, medicine);
         }
         if (medicine.getMedTime().contains("กลางวัน")) {
-          afternoonMedicines.add(medicine);
+          time = "12:30 น.";
+          appendMedicine(time, medicine);
         }
         if (medicine.getMedTime().contains("เย็น")) {
-          eveningMedicines.add(medicine);
+          time = "18:30 น.";
+          appendMedicine(time, medicine);
         }
         if (medicine.getMedTime().contains("ก่อนนอน")) {
-          bedMedicines.add(medicine);
+          time = "22:30 น.";
+          appendMedicine(time, medicine);
+        }
+        if (medicine.getMedTime().contains("ทุก ๆ ")) {
+          if (medicine.getLastTaken() == null) {
+            String startTime = timestampToTime(medicine.getDateStart());
+            time = startTime + " น.";
+          } else {
+            String startTime = timestampToTime(medicine.getLastTaken());
+            time = startTime + " น.";
+          }
+          appendMedicine(time, medicine);
         }
       }
     }
 
-    // Morning Medicines
-    if (morningMedicines.size() > 0 ) {
-      // TODO : GET TIME FORM THE USER'S SETTINGS
-      panelMain.add(getTimePanel("08.30 น."));
-      for (Medicine med : morningMedicines) {
-        panelSub.add(getDetailsPanel(med));
-      }
-      panelMain.add(panelSub);
-    }
-
-    // Afternoon Medicines
-    if (afternoonMedicines.size() > 0 ) {
-      // TODO : GET TIME FORM THE USER'S SETTINGS
-      panelMain.add(getTimePanel("12.30 น."));
-      panelSub = newFlowLayout();
-      for (Medicine med : afternoonMedicines) {
-        panelSub.add(getDetailsPanel(med));
-      }
-      panelMain.add(panelSub);
-    }
-
-    // Evening Medicines
-    if (eveningMedicines.size() > 0 ) {
-      // TODO : GET TIME FORM THE USER'S SETTINGS
-      panelMain.add(getTimePanel("18.30 น."));
-      panelSub = newFlowLayout();
-      for (Medicine med : eveningMedicines) {
-        panelSub.add(getDetailsPanel(med));
-      }
-      panelMain.add(panelSub);
-    }
-
-    // Bed Medicines
-    if (bedMedicines.size() > 0 ) {
-      // TODO : GET TIME FORM THE USER'S SETTINGS
-      panelMain.add(getTimePanel("22.30 น."));
-      panelSub = newFlowLayout();
-      for (Medicine med : bedMedicines) {
+    for (String key : overviewItem.keySet()) {
+      JPanel panelSub = newFlowLayout();
+      panelMain.add(getTimePanel(key));
+      for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
         panelSub.add(getDetailsPanel(med));
       }
       panelMain.add(panelSub);
@@ -147,7 +148,12 @@ public class Overview {
     // JLabels
     JLabel labelPic = getMedIcon(medicine);
     JLabel labelMedName = makeBoldLabel(medicine.getMedName());
-    JLabel labelAmount = makeSmallerLabel(medicine.getMedDose() + " " + medicine.getMedUnit() + " " + doseStr);
+    JLabel labelAmount;
+    if (medicine.getMedTime().get(0).equals("ทุก ๆ ")) {
+      labelAmount = makeSmallerLabel(medicine.getMedDose() + " " + medicine.getMedUnit() + " " + medicine.getMedTime().get(0) + doseStr);
+    } else {
+      labelAmount = makeSmallerLabel(medicine.getMedDose() + " " + medicine.getMedUnit() + " " + doseStr);
+    }
 
     // JButtons
     JButton btnAte = makeGreyToBlueButton("ทานแล้ว");
