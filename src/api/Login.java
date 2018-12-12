@@ -12,7 +12,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 
 public class Login {
@@ -41,15 +45,17 @@ public class Login {
     ResultSet result = pStatement.executeQuery();
 
     if (result.next()) {
+      String[] userTime = (String[]) result.getArray("time").getArray();
+
       User user = new User(result.getString("id"), result.getString("username"),
-          result.getString("title"),
-          result.getString("firstname"), result.getString("lastname"), result.getString("email"),
-          result.getString("gender"), result.getInt("age"),
+          result.getString("title"), result.getString("firstname"), result.getString("lastname"),
+          result.getString("email"), result.getString("gender"), result.getInt("age"),
           result.getDouble("weight"), result.getDouble("height"));
 
       user.setUserMedicines(getAllMedicine(user.getUserId()));
       user.setUserDoctors(getAllDoctor(user.getUserId()));
       user.setUserAppointments(getAllAppointment(user.getUserId()));
+      user.setUserTime(userTime);
 
       return user;
     }
@@ -61,16 +67,28 @@ public class Login {
       throws NoSuchAlgorithmException, SQLException {
     String encrypted = sha256(String.valueOf(password));
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+
+    String SQLCheckCommand = "SELECT * FROM users WHERE username = ?";
+
+    PreparedStatement pStatementCheck = connection.prepareStatement(SQLCheckCommand);
+    pStatementCheck.setString(1, user.getUserName());
+
+    ResultSet resultCheck = pStatementCheck.executeQuery();
+
+    if (resultCheck.next()) {
+      throw new LoginException("This username has been used.");
+    }
+
+    String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
-    pStatement.setString(1, user.getUserFullName());
+    pStatement.setString(1, user.getUserName());
     pStatement.setString(2, encrypted);
     pStatement.setString(3, user.getUserEmail());
     pStatement.setString(4, user.getUserPrefix());
     pStatement.setString(5, user.getUserFirstName());
     pStatement.setString(6, user.getUserLastName());
-    pStatement.setString(7, user.getUserGender());
+    pStatement.setObject(7, user.getUserGender(), Types.OTHER);
     pStatement.setDouble(8, user.getUserWeight());
     pStatement.setDouble(9, user.getUserHeight());
     pStatement.setInt(10, user.getUserAge());
@@ -82,5 +100,27 @@ public class Login {
     user.setUserId(result.getString("id"));
 
     return user;
+  }
+
+  public static User updateUserTime(User user) throws SQLException {
+
+    String SQLCommand = "UPDATE users SET \"time\" = ? WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setArray(1, connection.createArrayOf("text", user.getUserTime()));
+    pStatement.setObject(2, user.getUserId(), Types.OTHER);
+
+    pStatement.executeUpdate();
+
+    return user;
+  }
+
+  public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
+    User user = doSignUp(new User("", "test",
+        "นาย", "firstname", "lastname",
+        "test@localhost", "male", 12,
+        112, 120), "123456".toCharArray());
+
+    System.out.println(user);
   }
 }
