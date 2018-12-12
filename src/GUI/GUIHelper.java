@@ -63,7 +63,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.9
+ * @version 0.7.13
  * @since 0.3.0
  */
 
@@ -188,8 +188,21 @@ public class GUIHelper {
     return "มีข้อผิดพลาดเกิดขึ้น ไม่สามารถลบ" + type + "ได้";
   }
 
+  public static JLabel getInfoPic() {
+    String src = imgPath + "/system/info.png";
+    JLabel labelPic = new JLabel();
+    try {
+      ImageIcon img = new ImageIcon(src);
+      labelPic.setIcon(img);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    setPadding(labelPic, 0, 0, 6);
+    return labelPic;
+  }
+
   public static JPanel getLoadingPanel(boolean withBG) {
-    String src = "src/GUI/img/system/loading";
+    String src = imgPath + "/system/loading";
     if (withBG) {
       src += "-bg";
     } else {
@@ -214,7 +227,7 @@ public class GUIHelper {
   }
 
   public static JPanel getErrorPanel(String errorMessage) {
-    String src = "src/GUI/img/system/error.png";
+    String src = imgPath + "/system/error.png";
     JPanel panelError = new JPanel();
     JLabel labelPic = new JLabel();
     JLabel labelError = makeLabel(errorMessage);

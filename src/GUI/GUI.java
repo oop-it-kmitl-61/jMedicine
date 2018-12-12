@@ -34,7 +34,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.12
+ * @version 0.7.13
  * @since 0.1.0
  */
 
@@ -220,7 +220,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.12"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.13"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel

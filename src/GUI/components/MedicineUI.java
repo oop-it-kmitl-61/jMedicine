@@ -13,6 +13,7 @@ import com.github.lgooddatepicker.components.TimePicker;
 import core.Medicine;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,7 +29,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -37,27 +37,23 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.12
+ * @version 0.7.13
  * @since 0.7.0
  */
 
 public class MedicineUI {
 
-  private static JPanel panelMedicines, panelColor, panelTabletColor, panelCapsuleColor, panelLiquidColor;
-
-  private static JLabel labelUnit1, labelUnit2;
-  private static JTextField tfMedName, tfMedDescription, tfAmount, tfTotalMeds, tfEvery;
-  private static JComboBox cbMedType, cbTabletColor, cbLiquidColor, cbCapsuleColor01, cbCapsuleColor02;
-  private static JCheckBox cbMorning, cbAfternoon, cbEvening, cbBed, cbEvery;
-  private static JRadioButton rbBefore, rbAfter, rbImmediately;
-  private static ButtonGroup bgMedDoseStr;
-  private static DatePicker pickerStart, pickerEXP;
-  private static TimePicker pickerStartTime;
+  private static JPanel panelMedicines;
+  private static JButton btnSave;
+  private static JButton btnEdit;
+  private static JButton btnAddFirst;
 
   public static void panelAllMedicines() {
     /*
@@ -119,20 +115,19 @@ public class MedicineUI {
     String medName = medicine.getMedName();
 
     // JButtons
-    JButton btnEdit = makeBlueButton("แก้ไขข้อมูล");
+    JButton btnEditMed = makeBlueButton("แก้ไขข้อมูล");
     JButton btnRemove = makeRemoveButton();
     JButton labelTitle = makeBackButton(medName, "ยาทั้งหมด");
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
-    //panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
     setPadding(labelPic, 0, 0, 10);
     setPadding(panelTitle, -6, 0, 20, 8);
     setPadding(panelBody, 0, 0, 0, 38);
     setPadding(panelView, 0, 0, 0, -20);
 
     // Listeners
-    btnEdit.addActionListener(e -> editSwitcher(panelRight, panelEditMedicine(medicine)));
+    btnEditMed.addActionListener(e -> editSwitcher(panelRight, panelEditMedicine(medicine)));
     btnRemove.addActionListener(e -> {
       int dialogResult = fireConfirmDialog(
           "ต้องการลบยานี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถแก้ไขการกระทำนี้ได้อีกในภายหลัง");
@@ -202,7 +197,9 @@ public class MedicineUI {
     if (medicine.getMedTime().get(0).equals("ทุก ๆ ")) {
       panelSub = newFlowLayout();
       panelSub.add(makeLabel(medicine.getMedTime().get(0)));
-      panelSub.add(makeLabel(medicine.getMedDoseStr() + " ครั้งละ " + medicine.getMedDose() + " " + medicine.getMedUnit()));
+      panelSub.add(makeLabel(
+          medicine.getMedDoseStr() + " ครั้งละ " + medicine.getMedDose() + " " + medicine
+              .getMedUnit()));
       panelBody.add(panelSub);
     } else {
       panelSub = newFlowLayout();
@@ -218,7 +215,8 @@ public class MedicineUI {
         space = "";
       }
       panelSub.add(makeLabel(
-          medicine.getMedDoseStr() + space + "ครั้งละ " + medicine.getMedDose() + " " + medicine.getMedUnit()
+          medicine.getMedDoseStr() + space + "ครั้งละ " + medicine.getMedDose() + " " + medicine
+              .getMedUnit()
       ));
       panelBody.add(panelSub);
     }
@@ -253,7 +251,7 @@ public class MedicineUI {
     panelSub.add(makeLabel(GUIHelper.formatYMD.format(medicine.getMedEXP())));
     panelBody.add(panelSub);
 
-    panelButtons.add(btnEdit, BorderLayout.CENTER);
+    panelButtons.add(btnEditMed, BorderLayout.CENTER);
     panelButtons.add(btnRemove, BorderLayout.EAST);
 
     JScrollPane scrollPane = makeScrollPane(panelBody);
@@ -275,85 +273,15 @@ public class MedicineUI {
 
     // JButtons
     JButton btnBack = makeBackButton("เพิ่มยาใหม่", "ยาทั้งหมด");
-    JButton btnSave = makeBlueButton("บันทึกยา");
+    btnSave = makeBlueButton("บันทึกยา");
 
     // Styling
     setPadding(panelAddMedicine, -2, 0, 0, -16);
     setPadding(panelBody, 0, 0, 20, 40);
     setPadding(panelTitle, 0, 0, 20);
 
-    // Listeners
-    btnSave.addActionListener(e -> {
-      String selectedMedType = getMedType()[cbMedType.getSelectedIndex()];
-      String type;
-      String selectedColor = "";
-      if (selectedMedType.equals("ยาแคปซูล")) {
-        type = "capsule";
-        selectedColor = getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
-        selectedColor += "-";
-        selectedColor += getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
-      } else if (selectedMedType.equals("ยาเม็ด")) {
-        type = "tablet";
-        selectedColor = getTabletColor()[cbTabletColor.getSelectedIndex()];
-      } else if (selectedMedType.equals("ยาน้ำ")) {
-        type = "liquid";
-        selectedColor = getLiquidColor()[cbLiquidColor.getSelectedIndex()];
-      } else {
-        type = "spray";
-      }
-
-      // Dose Information
-      ArrayList<String> selectedMedTime = new ArrayList<>();
-      String selectedDoseStr = "";
-      if (cbMorning.isSelected()) {
-        selectedMedTime.add("เช้า");
-      }
-      if (cbAfternoon.isSelected()) {
-        selectedMedTime.add("กลางวัน");
-      }
-      if (cbEvening.isSelected()) {
-        selectedMedTime.add("เย็น");
-      }
-      if (cbBed.isSelected()) {
-        selectedMedTime.add("ก่อนนอน");
-      }
-      if (cbEvery.isSelected()) {
-        selectedMedTime.add("ทุก ๆ ");
-        selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
-      }
-
-      if (rbBefore.isSelected()) {
-        selectedDoseStr = "ก่อนอาหาร";
-      } else if (rbAfter.isSelected()) {
-        selectedDoseStr = "หลังอาหาร";
-      } else if (rbImmediately.isSelected()) {
-        selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
-      }
-
-      Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-      String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
-      Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
-          tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
-          Integer.valueOf(tfAmount.getText()),
-          Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
-      try {
-        MedicineDB.addMedicine(med, getUser().getUserId());
-        fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
-        panelRight.remove(panelMedicines);
-        panelAllMedicines();
-        backTo("ยาทั้งหมด");
-        panelRight.remove(panelAddMedicine());
-        panelRight.remove(panelBody);
-        panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
-        reloadOverview();
-      } catch (SQLException e1) {
-        fireDBErrorDialog();
-        e1.printStackTrace();
-      }
-    });
-
     panelTitle.add(btnBack);
-    panelBody.add(form(), BorderLayout.CENTER);
+    panelBody.add(form("add", null), BorderLayout.CENTER);
     panelBody.add(btnSave, BorderLayout.SOUTH);
 
     panelAddMedicine.add(panelTitle, BorderLayout.NORTH);
@@ -371,15 +299,15 @@ public class MedicineUI {
     JPanel panelBtn = new JPanel(new BorderLayout());
 
     // JButton
-    JButton btnSave = makeBlueButton("บันทึกยา");
+    btnAddFirst = makeBlueButton("บันทึกยา");
     JButton btnSkip = makeRedButton("ข้ามขั้นตอนนี้");
 
     panelTitle.add(makeTitleLabel("เพิ่มยาตัวแรกของคุณ"));
 
-    panelBtn.add(btnSave, BorderLayout.CENTER);
+    panelBtn.add(btnAddFirst, BorderLayout.CENTER);
     panelBtn.add(btnSkip, BorderLayout.EAST);
 
-    panelBody.add(form(), BorderLayout.CENTER);
+    panelBody.add(form("first", null), BorderLayout.CENTER);
     panelBody.add(panelBtn, BorderLayout.SOUTH);
 
     // Styling
@@ -387,78 +315,7 @@ public class MedicineUI {
     setPadding(panelBody, 0, 0, 20, 20);
     setPadding(panelTitle, 20, 0, 20, 20);
 
-    // Listeners
-    btnSave.addActionListener(e -> {
-      String selectedMedType = getMedType()[cbMedType.getSelectedIndex()];
-      String type;
-      String selectedColor = "";
-      if (selectedMedType.equals("ยาแคปซูล")) {
-        type = "capsule";
-        selectedColor = getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
-        selectedColor += "-";
-        selectedColor += getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
-      } else if (selectedMedType.equals("ยาเม็ด")) {
-        type = "tablet";
-        selectedColor = getTabletColor()[cbTabletColor.getSelectedIndex()];
-      } else if (selectedMedType.equals("ยาน้ำ")) {
-        type = "liquid";
-        selectedColor = getLiquidColor()[cbLiquidColor.getSelectedIndex()];
-      } else {
-        type = "spray";
-      }
-
-      // Dose Information
-      ArrayList<String> selectedMedTime = new ArrayList<>();
-      String selectedDoseStr = "";
-      if (cbMorning.isSelected()) {
-        selectedMedTime.add("เช้า");
-      }
-      if (cbAfternoon.isSelected()) {
-        selectedMedTime.add("กลางวัน");
-      }
-      if (cbEvening.isSelected()) {
-        selectedMedTime.add("เย็น");
-      }
-      if (cbBed.isSelected()) {
-        selectedMedTime.add("ก่อนนอน");
-      }
-      if (cbEvery.isSelected()) {
-        selectedMedTime.add("ทุก ๆ ");
-        selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
-      }
-
-      if (rbBefore.isSelected()) {
-        selectedDoseStr = "ก่อนอาหาร";
-      } else if (rbAfter.isSelected()) {
-        selectedDoseStr = "หลังอาหาร";
-      } else if (rbImmediately.isSelected()) {
-        selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
-      }
-      System.out.println(pickerEXP.getDate());
-      Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-      String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
-      Medicine med = new Medicine(tfMedName.getText(), type, selectedColor,
-          tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
-          Integer.valueOf(tfAmount.getText()),
-          Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
-      try {
-        MedicineDB.addMedicine(med, getUser().getUserId());
-        fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
-        panelRight.remove(panelMedicines);
-        panelAllMedicines();
-        backTo("ยาทั้งหมด");
-        panelRight.remove(panelAddMedicine());
-        panelRight.remove(panelBody);
-        panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
-        frameWelcome.setVisible(false);
-        frameMain.setVisible(true);
-        frameWelcome = null;
-        reloadOverview();
-      } catch (SQLException e1) {
-        fireDBErrorDialog();
-        e1.printStackTrace();
-      }
-    });
+    // Listener
     btnSkip.addActionListener(e -> {
       if (frameWelcome == null) {
         CardLayout cl = (CardLayout) (panelRight.getLayout());
@@ -479,15 +336,15 @@ public class MedicineUI {
   private static JPanel panelEditMedicine(Medicine medicine) {
     /* Creates GUI of the form for editing a new medicine. */
 
+    // JButtons
+    JButton btnBack = makeBackButton("แก้ไขยา", medicine.getMedName());
+    btnEdit = makeBlueButton("บันทึก");
+
     // JPanels
     JPanel panelEditMed = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
     JPanel panelBody = new JPanel(new BorderLayout());
-    JScrollPane form = form();
-
-    // JButtons
-    JButton btnBack = makeBackButton("แก้ไขยา", medicine.getMedName());
-    JButton btnEdit = makeBlueButton("บันทึก");
+    JScrollPane form = form("edit", medicine);
 
     panelTitle.add(btnBack);
     panelBody.add(form, BorderLayout.CENTER);
@@ -496,195 +353,40 @@ public class MedicineUI {
     // Styling
     setPadding(form, 0, 0, 10, 16);
 
-    // Set existed info
-    tfAmount.setText(String.valueOf(medicine.getMedDose()));
-    tfMedName.setText(medicine.getMedName());
-    tfMedDescription.setText(medicine.getMedDescription());
-    tfTotalMeds.setText(String.valueOf(medicine.getMedTotal()));
-
-    String[] dateStart = medicine.getDateStart().split(" ");
-    String startDate = "";
-    String startTime = "";
-    try {
-      Date date = formatYMD.parse(dateStart[0]);
-      startDate = formatDatePicker.format(date);
-      Date time = formatHM.parse(dateStart[1]);
-      startTime = formatHM.format(time);
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-    pickerStart.setText(startDate);
-    pickerStartTime.setText(startTime);
-    pickerEXP.setText(formatDatePicker.format(medicine.getMedEXP()));
-
-    switch (medicine.getMedType()) {
-      case "tablet":
-        cbMedType.setSelectedIndex(0);
-        cbTabletColor.setSelectedIndex(getTabletColorIndex(medicine.getMedColor()));
-        panelColor.setVisible(true);
-        panelTabletColor.setVisible(true);
-        panelCapsuleColor.setVisible(false);
-        panelLiquidColor.setVisible(false);
-        break;
-      case "capsule":
-        cbMedType.setSelectedIndex(1);
-        String[] currentColors = medicine.getMedColor().split("-");
-        cbCapsuleColor01.setSelectedIndex(getTabletColorIndex(currentColors[0]));
-        cbCapsuleColor02.setSelectedIndex(getTabletColorIndex(currentColors[1]));
-        panelColor.setVisible(true);
-        panelTabletColor.setVisible(false);
-        panelCapsuleColor.setVisible(true);
-        panelLiquidColor.setVisible(false);
-        break;
-      case "liquid":
-        cbMedType.setSelectedIndex(2);
-        cbLiquidColor.setSelectedIndex(getLiquidColorIndex(medicine.getMedColor()));
-        panelColor.setVisible(true);
-        panelTabletColor.setVisible(false);
-        panelCapsuleColor.setVisible(false);
-        panelLiquidColor.setVisible(true);
-        break;
-      case "spray":
-        cbMedType.setSelectedIndex(3);
-    }
-
-    for (int i = 0; i < medicine.getMedTime().size(); i++) {
-      switch (medicine.getMedTime().get(i)) {
-        case "เช้า":
-          cbMorning.setSelected(true);
-          break;
-        case "กลางวัน":
-          cbAfternoon.setSelected(true);
-          break;
-        case "เย็น":
-          cbEvening.setSelected(true);
-          break;
-        case "ก่อนนอน":
-          cbBed.setSelected(true);
-          break;
-        case "ทุก ๆ ":
-          cbEvery.setSelected(true);
-          tfEvery.setText(medicine.getMedDoseStr().split(" ")[0]);
-          cbMorning.setEnabled(false);
-          cbMorning.setSelected(false);
-          cbAfternoon.setEnabled(false);
-          cbAfternoon.setSelected(false);
-          cbEvening.setEnabled(false);
-          cbEvening.setSelected(false);
-          cbBed.setEnabled(false);
-          cbBed.setSelected(false);
-          bgMedDoseStr.clearSelection();
-          rbBefore.setEnabled(false);
-          rbAfter.setEnabled(false);
-          rbImmediately.setEnabled(false);
-      }
-    }
-
-    // Listeners
-    medTimeRadioHandler(medicine);
-    btnEdit.addActionListener(e -> {
-      String selectedMedType = getMedType()[cbMedType.getSelectedIndex()];
-      String type;
-      String selectedColor = "";
-      if (selectedMedType.equals("ยาแคปซูล")) {
-        type = "capsule";
-        selectedColor = getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
-        selectedColor += "-";
-        selectedColor += getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
-      } else if (selectedMedType.equals("ยาเม็ด")) {
-        type = "tablet";
-        selectedColor = getTabletColor()[cbTabletColor.getSelectedIndex()];
-      } else if (selectedMedType.equals("ยาน้ำ")) {
-        type = "liquid";
-        selectedColor = getLiquidColor()[cbLiquidColor.getSelectedIndex()];
-      } else {
-        type = "spray";
-      }
-
-      // DOSE INFORMATION
-      ArrayList<String> selectedMedTime = new ArrayList<>();
-      String selectedDoseStr = "";
-      if (cbMorning.isSelected()) {
-        selectedMedTime.add("เช้า");
-      }
-      if (cbAfternoon.isSelected()) {
-        selectedMedTime.add("กลางวัน");
-      }
-      if (cbEvening.isSelected()) {
-        selectedMedTime.add("เย็น");
-      }
-      if (cbBed.isSelected()) {
-        selectedMedTime.add("ก่อนนอน");
-      }
-      if (cbEvery.isSelected()) {
-        selectedMedTime.add("ทุก ๆ ");
-        selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
-      }
-
-      if (rbBefore.isSelected()) {
-        selectedDoseStr = "ก่อนอาหาร";
-      } else if (rbAfter.isSelected()) {
-        selectedDoseStr = "หลังอาหาร";
-      } else if (rbImmediately.isSelected()) {
-        selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
-      }
-      Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-      String newDateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
-      medicine.setMedName(tfMedName.getText());
-      medicine.setMedType(type);
-      medicine.setMedColor(selectedColor);
-      medicine.setMedDescription(tfMedDescription.getText());
-      medicine.setMedTime(selectedMedTime);
-      medicine.setMedDoseStr(selectedDoseStr);
-      medicine.setMedDose(Integer.valueOf(tfAmount.getText()));
-      medicine.setMedTotal(Integer.valueOf(tfTotalMeds.getText()));
-      medicine.setMedEXP(exp);
-      medicine.setDateStart(newDateStart);
-      try {
-        MedicineDB.updateMedicine(medicine);
-        fireSuccessDialog("แก้ไขยา " + medicine.getMedName() + " เรียบร้อยแล้ว");
-        panelRight.remove(panelViewMedicine(medicine));
-        panelRight.add(panelViewMedicine(medicine));
-        reload();
-        backTo("ยาทั้งหมด");
-        panelRight.remove(panelEditMedicine(medicine));
-        reloadOverview();
-      } catch (SQLException e1) {
-        fireDBErrorDialog();
-        e1.printStackTrace();
-      }
-    });
-
     panelEditMed.add(panelTitle, BorderLayout.NORTH);
     panelEditMed.add(panelBody, BorderLayout.CENTER);
     return panelEditMed;
   }
 
-  private static JScrollPane form() {
+  private static JScrollPane form(String type, Medicine medicine) {
     /* Creates GUI of the form for adding a new medicine. */
     String medUnit = "เม็ด";
 
     // JPanels
     JPanel panelBody = new JPanel();
     JPanel panelSub = newFlowLayout();
-    panelColor = newFlowLayout();
-    panelTabletColor = newFlowLayout();
-    panelCapsuleColor = newFlowLayout();
-    panelLiquidColor = newFlowLayout();
+    JPanel panelLiquidHint = new JPanel();
+    JPanel panelColor = newFlowLayout();
+    JPanel panelTabletColor = newFlowLayout();
+    JPanel panelCapsuleColor = newFlowLayout();
+    JPanel panelLiquidColor = newFlowLayout();
 
     // JTextFields
-    tfMedName = makeTextField(16);
-    tfMedDescription = makeTextField(16);
-    tfAmount = makeNumberField(2);
-    tfTotalMeds = makeNumberField(2);
-    tfEvery = makeNumberField(2);
+    JTextField tfMedName = makeTextField(16);
+    JTextField tfMedDescription = makeTextField(16);
+    JTextField tfAmount = makeNumberField(2);
+    JTextField tfTotalMeds = makeNumberField(2);
+    JTextField tfEvery = makeNumberField(2);
 
     // JLabels
-    labelUnit1 = makeLabel(medUnit);
-    labelUnit2 = makeLabel(medUnit);
+    JLabel labelUnit1 = makeLabel(medUnit);
+    JLabel labelUnit2 = makeLabel(medUnit);
     JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
     JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
     JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
+    JLabel labelHint1 = makeSmallerLabel("1 ช้อนชา = 5 มิลลิลิตร");
+    JLabel labelHint2 = makeSmallerLabel("1 ช้อนโต๊ะ = 15 มิลลิลิตร");
+    JLabel labelAutoConvert = makeLabel(" ");
 
     // Arrays
     String[] medType = getMedType();
@@ -703,46 +405,532 @@ public class MedicineUI {
     }
 
     // JComboBoxes
-    cbMedType = makeComboBox(medType);
-    cbTabletColor = makeComboBox(tabletColorIcons);
-    cbLiquidColor = makeComboBox(liquidColorIcons);
-    cbCapsuleColor01 = makeComboBox(tabletColorIcons);
-    cbCapsuleColor02 = makeComboBox(tabletColorIcons);
+    JComboBox cbMedType = makeComboBox(medType);
+    JComboBox cbTabletColor = makeComboBox(tabletColorIcons);
+    JComboBox cbLiquidColor = makeComboBox(liquidColorIcons);
+    JComboBox cbCapsuleColor01 = makeComboBox(tabletColorIcons);
+    JComboBox cbCapsuleColor02 = makeComboBox(tabletColorIcons);
 
     // JCheckBoxes
-    cbMorning = makeCheckBox(medTime[0]);
-    cbAfternoon = makeCheckBox(medTime[1]);
-    cbEvening = makeCheckBox(medTime[2]);
-    cbBed = makeCheckBox(medTime[3]);
-    cbEvery = makeCheckBox("ทุก ๆ ");
+    JCheckBox cbMorning = makeCheckBox(medTime[0]);
+    JCheckBox cbAfternoon = makeCheckBox(medTime[1]);
+    JCheckBox cbEvening = makeCheckBox(medTime[2]);
+    JCheckBox cbBed = makeCheckBox(medTime[3]);
+    JCheckBox cbEvery = makeCheckBox("ทุก ๆ ");
 
     // JRadioButtons
-    rbBefore = makeRadioButton(medDoseStr[0]);
-    rbAfter = makeRadioButton(medDoseStr[1]);
-    rbImmediately = makeRadioButton(medDoseStr[2]);
+    JRadioButton rbBefore = makeRadioButton(medDoseStr[0]);
+    JRadioButton rbAfter = makeRadioButton(medDoseStr[1]);
+    JRadioButton rbImmediately = makeRadioButton(medDoseStr[2]);
 
     // Radio Groups
-    bgMedDoseStr = new ButtonGroup();
+    ButtonGroup bgMedDoseStr = new ButtonGroup();
     bgMedDoseStr.add(rbBefore);
     bgMedDoseStr.add(rbAfter);
     bgMedDoseStr.add(rbImmediately);
 
     // Pickers
-    pickerStart = makeTodayPicker();
-    pickerEXP = makeDatePicker();
-    pickerStartTime = makeTimeNowPicker();
+    DatePicker pickerStart = makeTodayPicker();
+    DatePicker pickerEXP = makeDatePicker();
+    TimePicker pickerStartTime = makeTimeNowPicker();
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    panelLiquidHint.setLayout(new BoxLayout(panelLiquidHint, BoxLayout.PAGE_AXIS));
+    panelLiquidHint.setBackground(mainBlue);
     setPadding(panelBody, 0, 0, 40);
     setPadding(labelHeading2, 20, 0, 0);
     setPadding(labelHeading3, 20, 0, 0);
+    setPadding(panelLiquidHint, 16);
+    panelLiquidHint.setVisible(false);
     panelCapsuleColor.setVisible(false);
     panelLiquidColor.setVisible(false);
+    labelAutoConvert.setVisible(false);
+    labelHint1.setForeground(Color.WHITE);
+    labelHint2.setForeground(Color.WHITE);
 
     // Listeners
-    medTypeUIHandler();
-    toggleCheckBox();
+
+    if (type.equals("edit")) {
+      // ========================= EDIT ==========================
+      switch (medicine.getMedDoseStr()) {
+        case "ก่อนอาหาร":
+          rbBefore.setSelected(true);
+          break;
+        case "หลังอาหาร":
+          rbAfter.setSelected(true);
+          break;
+        case "หลังอาหารทันที / พร้อมอาหาร":
+          rbImmediately.setSelected(true);
+          break;
+      }
+      tfAmount.setText(String.valueOf(medicine.getMedDose()));
+      tfMedName.setText(medicine.getMedName());
+      tfMedDescription.setText(medicine.getMedDescription());
+      tfTotalMeds.setText(String.valueOf(medicine.getMedTotal()));
+      String[] dateStart = medicine.getDateStart().split(" ");
+      String startDate = "";
+      String startTime = "";
+      try {
+        Date date = formatYMD.parse(dateStart[0]);
+        startDate = formatDatePicker.format(date);
+        Date time = formatHM.parse(dateStart[1]);
+        startTime = formatHM.format(time);
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+      pickerStart.setText(startDate);
+      pickerStartTime.setText(startTime);
+      pickerEXP.setText(formatDatePicker.format(medicine.getMedEXP()));
+
+      switch (medicine.getMedType()) {
+        case "tablet":
+          cbMedType.setSelectedIndex(0);
+          cbTabletColor.setSelectedIndex(getTabletColorIndex(medicine.getMedColor()));
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(true);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          break;
+        case "capsule":
+          cbMedType.setSelectedIndex(1);
+          String[] currentColors = medicine.getMedColor().split("-");
+          cbCapsuleColor01.setSelectedIndex(getTabletColorIndex(currentColors[0]));
+          cbCapsuleColor02.setSelectedIndex(getTabletColorIndex(currentColors[1]));
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(true);
+          panelLiquidColor.setVisible(false);
+          break;
+        case "liquid":
+          cbMedType.setSelectedIndex(2);
+          cbLiquidColor.setSelectedIndex(getLiquidColorIndex(medicine.getMedColor()));
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(true);
+          break;
+        case "spray":
+          cbMedType.setSelectedIndex(3);
+      }
+
+      for (int i = 0; i < medicine.getMedTime().size(); i++) {
+        switch (medicine.getMedTime().get(i)) {
+          case "เช้า":
+            cbMorning.setSelected(true);
+            break;
+          case "กลางวัน":
+            cbAfternoon.setSelected(true);
+            break;
+          case "เย็น":
+            cbEvening.setSelected(true);
+            break;
+          case "ก่อนนอน":
+            cbBed.setSelected(true);
+            break;
+          case "ทุก ๆ ":
+            cbEvery.setSelected(true);
+            tfEvery.setText(medicine.getMedDoseStr().split(" ")[0]);
+            cbMorning.setEnabled(false);
+            cbMorning.setSelected(false);
+            cbAfternoon.setEnabled(false);
+            cbAfternoon.setSelected(false);
+            cbEvening.setEnabled(false);
+            cbEvening.setSelected(false);
+            cbBed.setEnabled(false);
+            cbBed.setSelected(false);
+            bgMedDoseStr.clearSelection();
+            rbBefore.setEnabled(false);
+            rbAfter.setEnabled(false);
+            rbImmediately.setEnabled(false);
+        }
+      }
+      btnEdit.addActionListener(e -> {
+        String selectedMedType = getMedType()[cbMedType.getSelectedIndex()];
+        String currType;
+        String selectedColor = "";
+        if (selectedMedType.equals("ยาแคปซูล")) {
+          currType = "capsule";
+          selectedColor = getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
+          selectedColor += "-";
+          selectedColor += getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
+        } else if (selectedMedType.equals("ยาเม็ด")) {
+          currType = "tablet";
+          selectedColor = getTabletColor()[cbTabletColor.getSelectedIndex()];
+        } else if (selectedMedType.equals("ยาน้ำ")) {
+          currType = "liquid";
+          selectedColor = getLiquidColor()[cbLiquidColor.getSelectedIndex()];
+        } else {
+          currType = "spray";
+        }
+
+        // DOSE INFORMATION
+        ArrayList<String> selectedMedTime = new ArrayList<>();
+        String selectedDoseStr = "";
+        if (cbMorning.isSelected()) {
+          selectedMedTime.add("เช้า");
+        }
+        if (cbAfternoon.isSelected()) {
+          selectedMedTime.add("กลางวัน");
+        }
+        if (cbEvening.isSelected()) {
+          selectedMedTime.add("เย็น");
+        }
+        if (cbBed.isSelected()) {
+          selectedMedTime.add("ก่อนนอน");
+        }
+        if (cbEvery.isSelected()) {
+          selectedMedTime.add("ทุก ๆ ");
+          selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
+        }
+
+        if (rbBefore.isSelected()) {
+          selectedDoseStr = "ก่อนอาหาร";
+        } else if (rbAfter.isSelected()) {
+          selectedDoseStr = "หลังอาหาร";
+        } else if (rbImmediately.isSelected()) {
+          selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+        }
+        Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        String newDateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
+        medicine.setMedName(tfMedName.getText());
+        medicine.setMedType(currType);
+        medicine.setMedColor(selectedColor);
+        medicine.setMedDescription(tfMedDescription.getText());
+        medicine.setMedTime(selectedMedTime);
+        medicine.setMedDoseStr(selectedDoseStr);
+        medicine.setMedDose(Integer.valueOf(tfAmount.getText()));
+        medicine.setMedTotal(Integer.valueOf(tfTotalMeds.getText()));
+        medicine.setMedEXP(exp);
+        medicine.setDateStart(newDateStart);
+        try {
+          MedicineDB.updateMedicine(medicine);
+          fireSuccessDialog("แก้ไขยา " + medicine.getMedName() + " เรียบร้อยแล้ว");
+          panelRight.remove(panelViewMedicine(medicine));
+          panelRight.add(panelViewMedicine(medicine));
+          reload();
+          backTo("ยาทั้งหมด");
+          panelRight.remove(panelEditMedicine(medicine));
+          reloadOverview();
+        } catch (SQLException e1) {
+          fireDBErrorDialog();
+          e1.printStackTrace();
+        }
+      });
+      // ===================== END EDIT =====================
+    } else if (type.equals("add")) {
+      btnSave.addActionListener(e -> {
+        String selectedMedType = getMedType()[cbMedType.getSelectedIndex()];
+        String currType;
+        String selectedColor = "";
+        if (selectedMedType.equals("ยาแคปซูล")) {
+          currType = "capsule";
+          selectedColor = getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
+          selectedColor += "-";
+          selectedColor += getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
+        } else if (selectedMedType.equals("ยาเม็ด")) {
+          currType = "tablet";
+          selectedColor = getTabletColor()[cbTabletColor.getSelectedIndex()];
+        } else if (selectedMedType.equals("ยาน้ำ")) {
+          currType = "liquid";
+          selectedColor = getLiquidColor()[cbLiquidColor.getSelectedIndex()];
+        } else {
+          currType = "spray";
+        }
+
+        // Dose Information
+        ArrayList<String> selectedMedTime = new ArrayList<>();
+        String selectedDoseStr = "";
+        if (cbMorning.isSelected()) {
+          selectedMedTime.add("เช้า");
+        }
+        if (cbAfternoon.isSelected()) {
+          selectedMedTime.add("กลางวัน");
+        }
+        if (cbEvening.isSelected()) {
+          selectedMedTime.add("เย็น");
+        }
+        if (cbBed.isSelected()) {
+          selectedMedTime.add("ก่อนนอน");
+        }
+        if (cbEvery.isSelected()) {
+          selectedMedTime.add("ทุก ๆ ");
+          selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
+        }
+
+        if (rbBefore.isSelected()) {
+          selectedDoseStr = "ก่อนอาหาร";
+        } else if (rbAfter.isSelected()) {
+          selectedDoseStr = "หลังอาหาร";
+        } else if (rbImmediately.isSelected()) {
+          selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+        }
+
+        Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
+        Medicine med = new Medicine(tfMedName.getText(), currType, selectedColor,
+            tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
+            Integer.valueOf(tfAmount.getText()),
+            Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
+        try {
+          MedicineDB.addMedicine(med, getUser().getUserId());
+          fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
+          panelRight.remove(panelMedicines);
+          panelAllMedicines();
+          backTo("ยาทั้งหมด");
+          panelRight.remove(panelAddMedicine());
+          panelRight.remove(panelBody);
+          panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
+          reloadOverview();
+        } catch (SQLException e1) {
+          fireDBErrorDialog();
+          e1.printStackTrace();
+        }
+      });
+    } else if (type.equals("first")) {
+      btnAddFirst.addActionListener(e -> {
+        String selectedMedType = getMedType()[cbMedType.getSelectedIndex()];
+        String currType;
+        String selectedColor = "";
+        if (selectedMedType.equals("ยาแคปซูล")) {
+          currType = "capsule";
+          selectedColor = getTabletColor()[cbCapsuleColor01.getSelectedIndex()];
+          selectedColor += "-";
+          selectedColor += getTabletColor()[cbCapsuleColor02.getSelectedIndex()];
+        } else if (selectedMedType.equals("ยาเม็ด")) {
+          currType = "tablet";
+          selectedColor = getTabletColor()[cbTabletColor.getSelectedIndex()];
+        } else if (selectedMedType.equals("ยาน้ำ")) {
+          currType = "liquid";
+          selectedColor = getLiquidColor()[cbLiquidColor.getSelectedIndex()];
+        } else {
+          currType = "spray";
+        }
+
+        // Dose Information
+        ArrayList<String> selectedMedTime = new ArrayList<>();
+        String selectedDoseStr = "";
+        if (cbMorning.isSelected()) {
+          selectedMedTime.add("เช้า");
+        }
+        if (cbAfternoon.isSelected()) {
+          selectedMedTime.add("กลางวัน");
+        }
+        if (cbEvening.isSelected()) {
+          selectedMedTime.add("เย็น");
+        }
+        if (cbBed.isSelected()) {
+          selectedMedTime.add("ก่อนนอน");
+        }
+        if (cbEvery.isSelected()) {
+          selectedMedTime.add("ทุก ๆ ");
+          selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
+        }
+
+        if (rbBefore.isSelected()) {
+          selectedDoseStr = "ก่อนอาหาร";
+        } else if (rbAfter.isSelected()) {
+          selectedDoseStr = "หลังอาหาร";
+        } else if (rbImmediately.isSelected()) {
+          selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+        }
+        System.out.println(pickerEXP.getDate());
+        Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
+        Medicine med = new Medicine(tfMedName.getText(), currType, selectedColor,
+            tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
+            Integer.valueOf(tfAmount.getText()),
+            Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
+        try {
+          MedicineDB.addMedicine(med, getUser().getUserId());
+          fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
+          panelRight.remove(panelMedicines);
+          panelAllMedicines();
+          backTo("ยาทั้งหมด");
+          panelRight.remove(panelAddMedicine());
+          panelRight.remove(panelBody);
+          panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
+          frameWelcome.setVisible(false);
+          frameMain.setVisible(true);
+          frameWelcome = null;
+          reloadOverview();
+        } catch (SQLException e1) {
+          fireDBErrorDialog();
+          e1.printStackTrace();
+        }
+      });
+    }
+
+    tfAmount.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        updateLabel();
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        updateLabel();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        updateLabel();
+      }
+
+      private void updateLabel() {
+        int table;
+        int tea;
+        try {
+          table = tableSpoonCalc(Integer.valueOf(tfAmount.getText()));
+          tea = teaSpoonCalc(Integer.valueOf(tfAmount.getText()));
+        } catch (NumberFormatException ignored) {
+          table = 0;
+          tea = 0;
+        }
+
+        String labelText = "(";
+        if (table > 0) {
+          labelText += table;
+          labelText += " ช้อนโต๊ะ";
+          if (tea > 0) {
+            labelText += " ";
+            labelText += tea;
+            labelText += " ช้อนชา";
+          }
+        } else {
+          labelText += tea;
+          labelText += " ช้อนชา";
+        }
+        labelText += ")";
+        labelAutoConvert.setText(labelText);
+      }
+    });
+
+    cbMedType.addActionListener(e -> {
+      switch (cbMedType.getSelectedIndex()) {
+        case 0:
+          panelLiquidHint.setVisible(false);
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(true);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          labelAutoConvert.setVisible(false);
+          labelUnit1.setText("เม็ด");
+          labelUnit2.setText("เม็ด");
+          break;
+        case 1:
+          panelLiquidHint.setVisible(false);
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(true);
+          panelLiquidColor.setVisible(false);
+          labelAutoConvert.setVisible(false);
+          labelUnit1.setText("แคปซูล");
+          labelUnit2.setText("แคปซูล");
+          break;
+        case 2:
+          panelColor.setVisible(true);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(true);
+          panelLiquidHint.setVisible(true);
+          labelAutoConvert.setVisible(true);
+          labelUnit1.setText("มิลลิลิตร");
+          labelUnit2.setText("มิลลิลิตร");
+          break;
+        default:
+          panelLiquidHint.setVisible(false);
+          panelColor.setVisible(false);
+          panelTabletColor.setVisible(false);
+          panelCapsuleColor.setVisible(false);
+          panelLiquidColor.setVisible(false);
+          labelAutoConvert.setVisible(false);
+          labelUnit1.setText("มิลลิลิตร");
+          labelUnit2.setText("มิลลิลิตร");
+          break;
+      }
+    });
+
+    cbEvery.addActionListener(e -> {
+      if (cbEvery.isSelected()) {
+        cbMorning.setEnabled(false);
+        cbMorning.setSelected(false);
+        cbAfternoon.setEnabled(false);
+        cbAfternoon.setSelected(false);
+        cbEvening.setEnabled(false);
+        cbEvening.setSelected(false);
+        cbBed.setEnabled(false);
+        cbBed.setSelected(false);
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        cbMorning.setEnabled(true);
+        cbAfternoon.setEnabled(true);
+        cbEvening.setEnabled(true);
+        cbBed.setEnabled(true);
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
+    cbBed.addActionListener(e -> {
+      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening
+          .isSelected()) {
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
+    cbEvening.addActionListener(e -> {
+      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening
+          .isSelected()) {
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
+    cbAfternoon.addActionListener(e -> {
+      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening
+          .isSelected()) {
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
+    cbMorning.addActionListener(e -> {
+      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening
+          .isSelected()) {
+        bgMedDoseStr.clearSelection();
+        rbBefore.setEnabled(false);
+        rbAfter.setEnabled(false);
+        rbImmediately.setEnabled(false);
+      } else {
+        rbBefore.setEnabled(true);
+        rbAfter.setEnabled(true);
+        rbImmediately.setEnabled(true);
+      }
+    });
+
+    panelLiquidHint.add(getInfoPic());
+    panelLiquidHint.add(labelHint1);
+    panelLiquidHint.add(labelHint2);
 
     panelSub.add(labelHeading1);
     panelBody.add(panelSub);
@@ -802,6 +990,11 @@ public class MedicineUI {
     panelSub.add(makeLabel("จำนวน"));
     panelSub.add(tfAmount);
     panelSub.add(labelUnit1);
+    panelSub.add(labelAutoConvert);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(panelLiquidHint);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
@@ -877,130 +1070,6 @@ public class MedicineUI {
     });
 
     return panelLoopInfo;
-  }
-
-  private static void medTimeRadioHandler(Medicine medicine) {
-    if (medicine.getMedDoseStr().equals("ก่อนอาหาร")) {
-      rbBefore.setSelected(true);
-    } else if (medicine.getMedDoseStr().equals("หลังอาหาร")) {
-      rbAfter.setSelected(true);
-    } else if (medicine.getMedDoseStr().equals("หลังอาหารทันที / พร้อมอาหาร")) {
-      rbImmediately.setSelected(true);
-    }
-  }
-
-  private static void medTypeUIHandler() {
-    cbMedType.addActionListener(e -> {
-      switch (cbMedType.getSelectedIndex()) {
-        case 0:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(true);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(false);
-          labelUnit1.setText("เม็ด");
-          labelUnit2.setText("เม็ด");
-          break;
-        case 1:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(true);
-          panelLiquidColor.setVisible(false);
-          labelUnit1.setText("แคปซูล");
-          labelUnit2.setText("แคปซูล");
-          break;
-        case 2:
-          panelColor.setVisible(true);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(true);
-          labelUnit1.setText("มิลลิลิตร");
-          labelUnit2.setText("แคปซูล");
-          break;
-        default:
-          panelColor.setVisible(false);
-          panelTabletColor.setVisible(false);
-          panelCapsuleColor.setVisible(false);
-          panelLiquidColor.setVisible(false);
-          labelUnit1.setText("มิลลิลิตร");
-          labelUnit2.setText("แคปซูล");
-          break;
-      }
-    });
-  }
-
-  private static void toggleCheckBox() {
-    cbEvery.addActionListener(e -> {
-      if (cbEvery.isSelected()) {
-        cbMorning.setEnabled(false);
-        cbMorning.setSelected(false);
-        cbAfternoon.setEnabled(false);
-        cbAfternoon.setSelected(false);
-        cbEvening.setEnabled(false);
-        cbEvening.setSelected(false);
-        cbBed.setEnabled(false);
-        cbBed.setSelected(false);
-        bgMedDoseStr.clearSelection();
-        rbBefore.setEnabled(false);
-        rbAfter.setEnabled(false);
-        rbImmediately.setEnabled(false);
-      } else {
-        cbMorning.setEnabled(true);
-        cbAfternoon.setEnabled(true);
-        cbEvening.setEnabled(true);
-        cbBed.setEnabled(true);
-        rbBefore.setEnabled(true);
-        rbAfter.setEnabled(true);
-        rbImmediately.setEnabled(true);
-      }
-    });
-    cbBed.addActionListener(e -> {
-      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening.isSelected()) {
-        bgMedDoseStr.clearSelection();
-        rbBefore.setEnabled(false);
-        rbAfter.setEnabled(false);
-        rbImmediately.setEnabled(false);
-      } else {
-        rbBefore.setEnabled(true);
-        rbAfter.setEnabled(true);
-        rbImmediately.setEnabled(true);
-      }
-    });
-    cbEvening.addActionListener(e -> {
-      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening.isSelected()) {
-        bgMedDoseStr.clearSelection();
-        rbBefore.setEnabled(false);
-        rbAfter.setEnabled(false);
-        rbImmediately.setEnabled(false);
-      } else {
-        rbBefore.setEnabled(true);
-        rbAfter.setEnabled(true);
-        rbImmediately.setEnabled(true);
-      }
-    });
-    cbAfternoon.addActionListener(e -> {
-      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening.isSelected()) {
-        bgMedDoseStr.clearSelection();
-        rbBefore.setEnabled(false);
-        rbAfter.setEnabled(false);
-        rbImmediately.setEnabled(false);
-      } else {
-        rbBefore.setEnabled(true);
-        rbAfter.setEnabled(true);
-        rbImmediately.setEnabled(true);
-      }
-    });
-    cbMorning.addActionListener(e -> {
-      if (cbBed.isSelected() && !cbMorning.isSelected() && !cbAfternoon.isSelected() && !cbEvening.isSelected()) {
-        bgMedDoseStr.clearSelection();
-        rbBefore.setEnabled(false);
-        rbAfter.setEnabled(false);
-        rbImmediately.setEnabled(false);
-      } else {
-        rbBefore.setEnabled(true);
-        rbAfter.setEnabled(true);
-        rbImmediately.setEnabled(true);
-      }
-    });
   }
 
   private static void reload() {
