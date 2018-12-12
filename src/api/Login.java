@@ -67,16 +67,28 @@ public class Login {
       throws NoSuchAlgorithmException, SQLException {
     String encrypted = sha256(String.valueOf(password));
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+
+    String SQLCheckCommand = "SELECT * FROM users WHERE username = ?";
+
+    PreparedStatement pStatementCheck = connection.prepareStatement(SQLCheckCommand);
+    pStatementCheck.setString(1, user.getUserName());
+
+    ResultSet resultCheck = pStatementCheck.executeQuery();
+
+    if (resultCheck.next()) {
+      throw new LoginException("This username has been used.");
+    }
+
+    String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
-    pStatement.setString(1, user.getUserFullName());
+    pStatement.setString(1, user.getUserName());
     pStatement.setString(2, encrypted);
     pStatement.setString(3, user.getUserEmail());
     pStatement.setString(4, user.getUserPrefix());
     pStatement.setString(5, user.getUserFirstName());
     pStatement.setString(6, user.getUserLastName());
-    pStatement.setString(7, user.getUserGender());
+    pStatement.setObject(7, user.getUserGender(), Types.OTHER);
     pStatement.setDouble(8, user.getUserWeight());
     pStatement.setDouble(9, user.getUserHeight());
     pStatement.setInt(10, user.getUserAge());
@@ -101,5 +113,14 @@ public class Login {
     pStatement.executeUpdate();
 
     return user;
+  }
+
+  public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
+    User user = doSignUp(new User("", "test",
+        "นาย", "firstname", "lastname",
+        "test@localhost", "male", 12,
+        112, 120), "123456".toCharArray());
+
+    System.out.println(user);
   }
 }
