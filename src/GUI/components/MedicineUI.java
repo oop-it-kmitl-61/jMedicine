@@ -44,7 +44,7 @@ import javax.swing.event.DocumentListener;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.13
+ * @version 0.7.14
  * @since 0.7.0
  */
 
@@ -76,6 +76,7 @@ public class MedicineUI {
       userMedicines = MedicineDB.getAllMedicine(getUser().getUserId());
     } catch (SQLException e) {
       e.printStackTrace();
+      fireDBErrorDialog();
     }
 
     // Init panel loop

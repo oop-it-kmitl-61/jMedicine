@@ -21,7 +21,7 @@ import javax.swing.SwingWorker;
  * An utility class for GUI.java
  *
  * @author jMedicine
- * @version 0.7.11
+ * @version 0.7.14
  * @since 0.7.0
  */
 
@@ -32,6 +32,7 @@ public class GUIUtil implements ActionListener, KeyListener {
   public void listeners() {
     btnSignIn.addActionListener(this);
     btnSignUp.addActionListener(this);
+    btnSkipAddingInfo.addActionListener(this);
     tfUserName.addKeyListener(this);
     tfPassword.addKeyListener(this);
   }
@@ -67,15 +68,11 @@ public class GUIUtil implements ActionListener, KeyListener {
         protected void done() {
           if (user != null) {
             main();
-            if (user.getUserMedicines().size() > 0) {
-              frameWelcome.setVisible(false);
-              frameMain.setVisible(true);
-              frameWelcome = null;
-              CardLayout cl = (CardLayout) (panelRight.getLayout());
-              cl.show(panelRight, "ภาพรวม");
-            } else {
+            if (user.getUserFirstName().equals("")) {
               CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-              cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+              cl.show(panelWelcome, "เพิ่มข้อมูลส่วนตัว");
+            } else {
+              promptFirstMedicine();
             }
           }
         }
@@ -88,17 +85,22 @@ public class GUIUtil implements ActionListener, KeyListener {
     panelErrorSignIn.setVisible(false);
     if (tfUserName.getText().equals("")) {
       panelNoInput.setVisible(true);
+      panelErrorSignUpUsername.setVisible(false);
       panelErrorSignUpPassword.setVisible(false);
     } else if (!Arrays.equals(tfPassword.getPassword(), tfPasswordConfirm.getPassword())) {
       panelNoInput.setVisible(false);
+      panelErrorSignUpUsername.setVisible(false);
       panelErrorSignUpPassword.setVisible(true);
     } else {
       panelLoading.setVisible(true);
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
-          // TODO: ASSUME THAT doSignUp() HAD ALREADY THROWN SOMETHING IF DUPLICATED USER
-          doSignUp(new User(tfUserName.getText()), tfPassword.getPassword());
+          try {
+            doSignUp(new User(tfUserName.getText()), tfPassword.getPassword());
+          } catch (LoginException ex) {
+            panelErrorSignUpUsername.setVisible(true);
+          }
           return null;
         }
 
@@ -113,16 +115,30 @@ public class GUIUtil implements ActionListener, KeyListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    String btnCommand = e.getActionCommand();
+    Object btn = e.getSource();
 
-    switch (btnCommand) {
-      case "เข้าสู่ระบบ":
-        executeSignIn();
-        break;
+    if (btn == btnSignIn) {
+      executeSignIn();
+    }
+    if (btn == btnSignUp) {
+      executeSignUp();
+    }
+    if (btn == btnSkipAddingInfo) {
+      promptFirstMedicine();
+    }
 
-      case "ลงทะเบียน":
-        executeSignUp();
-        break;
+  }
+
+  private void promptFirstMedicine() {
+    if (user.getUserMedicines().size() == 0) {
+      CardLayout cl = (CardLayout) (panelWelcome.getLayout());
+      cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+    } else {
+      frameWelcome.setVisible(false);
+      frameMain.setVisible(true);
+      frameWelcome = null;
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, "ภาพรวม");
     }
   }
 

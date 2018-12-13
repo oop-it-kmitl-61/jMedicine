@@ -34,7 +34,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.13
+ * @version 0.7.14
  * @since 0.1.0
  */
 
@@ -45,7 +45,7 @@ public class GUI {
   static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
-  static JButton buttons[], btnSignIn, btnSignUp;
+  static JButton buttons[], btnSignIn, btnSignUp, btnSkipAddingInfo;
   static boolean isSignInPage, isSignUpPage;
   private static Dimension windowSize, minSize;
   private static GUIUtil util;
@@ -107,13 +107,16 @@ public class GUI {
 
     // Styling
     setPadding(panelTitle, 0, 0, -12, 2);
-    setPadding(panelLoop, 0, 0, 20, 0);
-
-    JScrollPane scrollPane = makeScrollPane(panelLoop);
 
     // Add all panels into the main panel
     panelOverview.add(panelTitle, BorderLayout.NORTH);
-    panelOverview.add(scrollPane);
+    if (overview.getOverviewCount() < 3) {
+      setPadding(panelLoop, 0, 0, 1000, 0);
+      panelOverview.add(panelLoop);
+    } else {
+      setPadding(panelLoop, 0, 0, 20, 0);
+      panelOverview.add(makeScrollPane(panelLoop));
+    }
 
     panelRight.add(panelOverview, "ภาพรวม");
   }
@@ -220,7 +223,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.13"));
+    panelSub.add(makeLabel("เวอร์ชั่น 0.7.14"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -379,10 +382,11 @@ public class GUI {
     gbc.weighty = 300;
     panelSignIn.add(space, gbc);
 
-    util.listeners();
-
     panelWelcome.add(panelSignIn, "ยังไม่ได้เข้าสู่ระบบ");
+    panelWelcome.add(panelFirstInfo(), "เพิ่มข้อมูลส่วนตัว");
     panelWelcome.add(panelFirstMedicine(), "เพิ่มยาตัวแรก");
+
+    util.listeners();
 
     frameWelcome.add(panelWelcome);
     frameWelcome.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -391,6 +395,90 @@ public class GUI {
     frameWelcome.setLocationRelativeTo(null);
     frameWelcome.setVisible(true);
   }
+
+  public static JPanel panelFirstInfo() {
+
+    // JPanels
+    JPanel panelFirstInfo = new JPanel(new BorderLayout());
+    JPanel panelBody = new JPanel(new BorderLayout());
+    JPanel panelTitle = new JPanel(new BorderLayout());
+    JPanel panelBtn = new JPanel(new BorderLayout());
+
+    // JButton
+    JButton btnSave = makeBlueButton("บันทึก");
+    btnSkipAddingInfo = makeRedButton("ข้ามขั้นตอนนี้");
+
+    panelTitle.add(makeTitleLabel("เพิ่มข้อมูลส่วนตัวของคุณ"));
+
+    panelBtn.add(btnSave, BorderLayout.CENTER);
+    panelBtn.add(btnSkipAddingInfo, BorderLayout.EAST);
+
+    // JTextFields
+    JTextField tfEmail = makeTextField(20);
+    JTextField tfFName = makeTextField(20);
+    JTextField tfLName = makeTextField(20);
+    JTextField tfWeight = makeNumberField(4);
+    JTextField tfHeight = makeNumberField(4);
+    JTextField tfAge = makeNumberField(2);
+
+    // JComboBoxes
+    JComboBox cbPrefix = makeComboBox(getPrefixes());
+    JComboBox cbGender = makeComboBox(getGenders());
+
+    // JLabels
+    JLabel labelFName = makeLabel("ชื่อ");
+    JLabel labelLName = makeLabel("นามสกุล");
+    JLabel labelEmail = makeLabel("อีเมล");
+    JLabel labelAge = makeLabel("อายุ");
+    JLabel labelAgeUnit = makeLabel("ปี");
+    JLabel labelGender = makeLabel("เพศ");
+    JLabel labelWeight = makeLabel("น้ำหนัก");
+    JLabel labelWeightUnit = makeLabel("กิโลกรัม");
+    JLabel labelHeight = makeLabel("ส่วนสูง");
+    JLabel labelHeightUnit = makeLabel("เซนติเมตร");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelFirstInfo, 20, 20, 20);
+    setPadding(panelTitle, 20, 0, 20, 20);
+    setPadding(panelBody, 0, 0, 1000, 28);
+
+    JPanel panelSub = newFlowLayout();
+    panelSub.add(cbPrefix);
+    panelSub.add(labelFName);
+    panelSub.add(tfFName);
+    panelSub.add(labelLName);
+    panelSub.add(tfLName);
+    setPadding(panelSub, 10, 0, 0);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelGender);
+    panelSub.add(cbGender);
+    panelSub.add(labelAge);
+    panelSub.add(tfAge);
+    panelSub.add(labelAgeUnit);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelWeight);
+    panelSub.add(tfWeight);
+    panelSub.add(labelWeightUnit);
+    panelSub.add(labelHeight);
+    panelSub.add(tfHeight);
+    panelSub.add(labelHeightUnit);
+    panelBody.add(panelSub);
+
+    // Listener
+    // TODO : ActionPerformed for adding info
+
+    panelFirstInfo.add(panelTitle, BorderLayout.NORTH);
+    panelFirstInfo.add(panelBody, BorderLayout.CENTER);
+    panelFirstInfo.add(panelBtn, BorderLayout.SOUTH);
+
+    return panelFirstInfo;
+  }
+
 
   private static void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
@@ -554,6 +642,8 @@ public class GUI {
     panelSub.add(tfHeight);
     panelSub.add(labelHeightUnit);
     panelBody.add(panelSub);
+
+    // TODO : ActionPerformed for saving info
 
     panelMain.add(panelTitle, BorderLayout.NORTH);
     panelMain.add(panelBody, BorderLayout.CENTER);

@@ -10,7 +10,7 @@ package core;
 
 public class UserUtil {
 
-  private static String[] prefixes = {"ไม่ระบุ", "ด.ช.", "นาย", "นาง", "นางสาว"};
+  private static String[] prefixes = {"ไม่ระบุ", "ด.ช.", "ด.ญ.", "นาย", "นาง", "นางสาว"};
   private static String[] genders = {"ไม่ระบุ", "ชาย", "หญิง", "อื่น ๆ"};
 
   public static String[] getPrefixes() {

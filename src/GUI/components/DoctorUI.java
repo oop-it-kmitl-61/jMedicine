@@ -35,7 +35,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about a doctor will be written here.
  *
  * @author jMedicine
- * @version 0.7.8
+ * @version 0.7.14
  * @since 0.7.0
  */
 
@@ -60,15 +60,23 @@ public class DoctorUI {
 
     panelLoop.add(makeNewButton("เพิ่มแพทย์ใหม่"));
 
-    // Fetch all doctors
+    // Fetch all doctors from the records
+    ArrayList<Doctor> userDoctors = null;
     try {
+      userDoctors = DoctorDB.getAllDoctor(getUser().getUserId());
+    } catch (SQLException e) {
+      e.printStackTrace();
+      fireDBErrorDialog();
+    }
+
+    if (userDoctors.isEmpty()) {
+      labelTitle.setText("คุณยังไม่มีแพทย์ที่บันทึกไว้");
+    } else {
       labelTitle.setText("แพทย์");
-      for (Doctor doctorCurrent : DoctorDB.getAllDoctor(getUser().getUserId())) {
+      for (Doctor doctorCurrent : userDoctors) {
         JPanel cardLoop = makeDoctorCard(doctorCurrent);
         panelLoop.add(cardLoop);
       }
-    } catch (SQLException ignored) {
-      labelTitle.setText("คุณยังไม่มีแพทย์ที่บันทึกไว้");
     }
 
     // Add all panels into the main panel

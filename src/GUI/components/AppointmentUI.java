@@ -46,7 +46,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.7.8
+ * @version 0.7.14
  * @since 0.7.0
  */
 
@@ -71,17 +71,23 @@ public class AppointmentUI {
     // Init panel loop
     panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
 
-    // Fetch all medicines from the records
+    // Fetch all appointments from the records
+    ArrayList<Appointment> userAppointments = null;
     try {
-      for (Appointment appCurrent : AppointmentDB.getAllAppointment(getUser().getUserId())) {
+      userAppointments = AppointmentDB.getAllAppointment(getUser().getUserId());
+    } catch (SQLException | ParseException e) {
+      e.printStackTrace();
+      fireDBErrorDialog();
+    }
+
+    if (userAppointments.isEmpty()) {
+      labelTitle.setText("คุณยังไม่มีนัดแพทย์ที่บันทึกไว้");
+    } else {
+      labelTitle.setText("นัดแพทย์");
+      for (Appointment appCurrent : userAppointments) {
         JPanel cardLoop = makeAppointmentCard(appCurrent);
         panelLoop.add(cardLoop);
       }
-    } catch (SQLException e) {
-      labelTitle.setText("คุณยังไม่มีนัดแพทย์ที่บันทึกไว้");
-    } catch (ParseException e) {
-      fireDBErrorDialog();
-      e.printStackTrace();
     }
 
     panelTitle.add(labelTitle);
