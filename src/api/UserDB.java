@@ -31,4 +31,11 @@ public class UserDB {
 
     return user;
   }
+
+  public static User updateUserData(User user) throws SQLException {
+
+    // TODO: Update user data in DB
+
+    return user;
+  }
 }

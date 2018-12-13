@@ -656,13 +656,29 @@ public class GUI {
     panelSub.add(labelHeightUnit);
     panelBody.add(panelSub);
 
-    // TODO : ActionPerformed for saving info
-
     panelMain.add(panelTitle, BorderLayout.NORTH);
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
     panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
+
+    btnSave.addActionListener(e -> {
+      user.setUserPrefix(cbPrefix.getSelectedItem().toString());
+      user.setUserFirstName(tfFName.getText());
+      user.setUserLastName(tfLName.getText());
+      user.setUserGender(cbGender.getSelectedItem().toString());
+      user.setUserAge(Integer.parseInt(tfAge.getText()));
+      user.setUserWeight(Double.parseDouble(tfWeight.getText()));
+      user.setUserHeight(Double.parseDouble(tfHeight.getText()));
+
+      try {
+        UserDB.updateUserData(user);
+        fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+        fireDBErrorDialog();
+      }
+    });
   }
 
   private static void panelEditTime() {
@@ -752,8 +768,10 @@ public class GUI {
       getUser().setUserTime(new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(), tpBed.getText()});
       try {
         UserDB.updateUserTime(getUser());
+        fireSuccessDialog("บันทึกเวลาสำเร็จ");
       } catch (SQLException ex) {
         ex.printStackTrace();
+        fireDBErrorDialog();
       }
     });
   }
