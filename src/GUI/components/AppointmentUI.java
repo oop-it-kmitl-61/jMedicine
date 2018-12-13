@@ -46,7 +46,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.7.8
+ * @version 0.7.14
  * @since 0.7.0
  */
 
@@ -54,6 +54,7 @@ public class AppointmentUI {
 
   private static JPanel panelAppointment;
   private static JPanel panelAddAppointment;
+  private static boolean newDoctor;
 
   public static void panelAllAppointments() {
     /*
@@ -71,17 +72,23 @@ public class AppointmentUI {
     // Init panel loop
     panelLoop.add(makeNewButton("เพิ่มนัดใหม่"));
 
-    // Fetch all medicines from the records
+    // Fetch all appointments from the records
+    ArrayList<Appointment> userAppointments = null;
     try {
-      for (Appointment appCurrent : AppointmentDB.getAllAppointment(getUser().getUserId())) {
+      userAppointments = AppointmentDB.getAllAppointment(getUser().getUserId());
+    } catch (SQLException | ParseException e) {
+      e.printStackTrace();
+      fireDBErrorDialog();
+    }
+
+    if (userAppointments.isEmpty()) {
+      labelTitle.setText("คุณยังไม่มีนัดแพทย์ที่บันทึกไว้");
+    } else {
+      labelTitle.setText("นัดแพทย์");
+      for (Appointment appCurrent : userAppointments) {
         JPanel cardLoop = makeAppointmentCard(appCurrent);
         panelLoop.add(cardLoop);
       }
-    } catch (SQLException e) {
-      labelTitle.setText("คุณยังไม่มีนัดแพทย์ที่บันทึกไว้");
-    } catch (ParseException e) {
-      fireDBErrorDialog();
-      e.printStackTrace();
     }
 
     panelTitle.add(labelTitle);
@@ -208,9 +215,9 @@ public class AppointmentUI {
     JLabel labelDoctor = makeLabel("แพทย์ที่นัด*");
     JLabel labelNote = makeLabel("หมายเหตุการนัด");
     JLabel labelNewDr = makeBoldLabel("กรอกข้อมูลแพทย์ใหม่");
-    JLabel labelNewDrFName = makeLabel("ชื่อ");
-    JLabel labelNewDrLName = makeLabel("นามสกุล");
-    JLabel labelNewDrHpt = makeLabel("ชื่อสถานพยาบาล");
+    JLabel labelNewDrFName = makeLabel("ชื่อ*");
+    JLabel labelNewDrLName = makeLabel("นามสกุล*");
+    JLabel labelNewDrHpt = makeLabel("ชื่อสถานพยาบาล*");
     JLabel labelNewDrWard = makeLabel("แผนก");
 
     // JComboBoxes
@@ -257,27 +264,36 @@ public class AppointmentUI {
     // Listeners
     newDoctorListener(panelNewDr, cbDoctor);
     btnAdd.addActionListener(e -> {
-      Date date = Date.from(datePicker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-      String timeStart = timePickerStart.getText();
-      String timeEnd = timePickerEnd.getText();
-      String note = tfNote.getText();
-      DoctorItem selectedDoctor = (DoctorItem) cbDoctor.getSelectedItem();
-      Doctor doctor = newDoctor(tfDrFName, tfDrLName, tfDrHpt, tfDrWard, cbPrefixes,
-          selectedDoctor);
+      if (datePicker.getText().equals("") || timePickerStart.getText().equals("") || timePickerEnd
+          .getText().equals("")) {
+        fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+      } else if (newDoctor && (tfDrFName.getText().equals("") || tfDrLName.getText().equals("")
+          || tfDrHpt.getText().equals(""))) {
+        fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+      } else {
+        Date date = Date
+            .from(datePicker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        String timeStart = timePickerStart.getText();
+        String timeEnd = timePickerEnd.getText();
+        String note = tfNote.getText();
+        DoctorItem selectedDoctor = (DoctorItem) cbDoctor.getSelectedItem();
+        Doctor doctor = newDoctor(tfDrFName, tfDrLName, tfDrHpt, tfDrWard, cbPrefixes,
+            selectedDoctor);
 
-      Appointment app = new Appointment(date, timeStart, timeEnd, doctor, note);
-      try {
-        AppointmentDB.addAppointment(app, getUser().getUserId());
-        fireSuccessDialog("เพิ่มนัดเรียบร้อยแล้ว");
-        panelRight.remove(panelAppointment);
-        panelAppointment = null;
-        panelAllAppointments();
-        backTo("นัดแพทย์");
-        panelRight.remove(panelAddAppointment);
-        panelRight.add(panelAddAppointment, "เพิ่มนัดใหม่");
-      } catch (SQLException e1) {
-        e1.printStackTrace();
-        fireDBErrorDialog();
+        Appointment app = new Appointment(date, timeStart, timeEnd, doctor, note);
+        try {
+          AppointmentDB.addAppointment(app, getUser().getUserId());
+          fireSuccessDialog("เพิ่มนัดเรียบร้อยแล้ว");
+          panelRight.remove(panelAppointment);
+          panelAppointment = null;
+          panelAllAppointments();
+          backTo("นัดแพทย์");
+          panelRight.remove(panelAddAppointment);
+          panelRight.add(panelAddAppointment, "เพิ่มนัดใหม่");
+        } catch (SQLException e1) {
+          e1.printStackTrace();
+          fireDBErrorDialog();
+        }
       }
     });
 
@@ -423,31 +439,39 @@ public class AppointmentUI {
     // Listeners
     newDoctorListener(panelNewDr, cbDoctor);
     btnAdd.addActionListener(e -> {
-      Instant var = datePicker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
-      Date date = Date.from(var);
-      String timeStart = timePickerStart.getText();
-      String timeEnd = timePickerEnd.getText();
-      String note = tfNote.getText();
-      DoctorItem selectedDoctor = (DoctorItem) cbDoctor.getSelectedItem();
-      Doctor doctor;
-      doctor = newDoctor(tfDrFName, tfDrLName, tfDrHpt, tfDrWard, cbPrefixes, selectedDoctor);
+      if (datePicker.getText().equals("") || timePickerStart.getText().equals("") || timePickerEnd
+          .getText().equals("")) {
+        fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+      } else if (newDoctor && (tfDrFName.getText().equals("") || tfDrLName.getText().equals("")
+          || tfDrHpt.getText().equals(""))) {
+        fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+      } else {
+        Instant var = datePicker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Date date = Date.from(var);
+        String timeStart = timePickerStart.getText();
+        String timeEnd = timePickerEnd.getText();
+        String note = tfNote.getText();
+        DoctorItem selectedDoctor = (DoctorItem) cbDoctor.getSelectedItem();
+        Doctor doctor;
+        doctor = newDoctor(tfDrFName, tfDrLName, tfDrHpt, tfDrWard, cbPrefixes, selectedDoctor);
 
-      appointment.setDate(date);
-      appointment.setTimeStart(timeStart);
-      appointment.setTimeStop(timeEnd);
-      appointment.setDoctor(doctor);
-      appointment.setNote(note);
-      try {
-        AppointmentDB.updateAppointment(appointment);
-        fireSuccessDialog("แก้ไขนัดเรียบร้อยแล้ว");
-        panelRight.remove(panelAppointment);
-        panelAppointment = null;
-        panelAllAppointments();
-        backTo("นัดแพทย์");
-        panelRight.remove(panelEditAppointment(appointment));
-      } catch (SQLException e1) {
-        e1.printStackTrace();
-        fireDBErrorDialog();
+        appointment.setDate(date);
+        appointment.setTimeStart(timeStart);
+        appointment.setTimeStop(timeEnd);
+        appointment.setDoctor(doctor);
+        appointment.setNote(note);
+        try {
+          AppointmentDB.updateAppointment(appointment);
+          fireSuccessDialog("แก้ไขนัดเรียบร้อยแล้ว");
+          panelRight.remove(panelAppointment);
+          panelAppointment = null;
+          panelAllAppointments();
+          backTo("นัดแพทย์");
+          panelRight.remove(panelEditAppointment(appointment));
+        } catch (SQLException e1) {
+          e1.printStackTrace();
+          fireDBErrorDialog();
+        }
       }
     });
 
@@ -540,8 +564,10 @@ public class AppointmentUI {
       DoctorItem current = (DoctorItem) cbDoctor.getSelectedItem();
       if (current.getDoctor() == null) {
         panelNewDr.setVisible(true);
+        newDoctor = true;
       } else {
         panelNewDr.setVisible(false);
+        newDoctor = false;
       }
     });
   }

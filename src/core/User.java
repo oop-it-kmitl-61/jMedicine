@@ -3,7 +3,11 @@ package core;
 import java.util.ArrayList;
 
 /**
- * Stores user information. Use a constructor to new a user.
+ * Stores all user's information.
+ *
+ * @author jMedicine
+ * @version 0.7.14
+ * @since 0.3.0
  */
 
 public class User {
@@ -20,7 +24,7 @@ public class User {
 
   public User(String userId, String userName, String userPrefix, String userFirstName,
       String userLastName, String userEmail, String userGender, int userAge,
-      double userWeight, double userHeight) {
+      double userWeight, double userHeight, String[] userTime) {
     this.userId = userId;
     this.userName = userName;
     this.userPrefix = userPrefix;
@@ -31,16 +35,19 @@ public class User {
     this.userAge = userAge;
     this.userWeight = userWeight;
     this.userHeight = userHeight;
-    this.userFullName = userPrefix + userFirstName + " " + userLastName;
-    this.userTime = new String[]{"08:30", "12:30", "18:30", "22:30"};
+    this.userTime = userTime;
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();
     this.userAppointments = new ArrayList<>();
+    if (this.userFirstName.equals("")) {
+      this.userFullName = "(ยังไม่ได้ตั้งชื่อ)";
+    } else {
+      this.userFullName = userPrefix + userFirstName + " " + userLastName;
+    }
   }
 
   public User(String userName) {
     this.userName = userName;
-    this.userFullName = "(ยังไม่ได้ตั้งชื่อ)";
     this.userTime = new String[]{"08:30", "12:30", "18:30", "22:30"};
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();

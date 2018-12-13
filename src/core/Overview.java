@@ -3,6 +3,7 @@ package core;
 import static GUI.GUIHelper.makeBoldLabel;
 import static GUI.GUIHelper.makeGreyToBlueButton;
 import static GUI.GUIHelper.makeGreyToRedButton;
+import static GUI.GUIHelper.makeLabel;
 import static GUI.GUIHelper.makeSmallerLabel;
 import static GUI.GUIHelper.makeSubTitleLabel;
 import static GUI.GUIHelper.newCardBorder;
@@ -27,7 +28,9 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
 public class Overview {
+
   private TreeMap<String, ArrayList> overviewItem;
+  private int overviewCount;
 
   private void initTreeMap() {
     overviewItem = new TreeMap<>();
@@ -101,12 +104,23 @@ public class Overview {
       }
     }
 
+    overviewCount = 0;
+
     for (String key : overviewItem.keySet()) {
+      overviewCount++;
       JPanel panelSub = newFlowLayout();
       panelMain.add(getTimePanel(key));
       for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
         panelSub.add(getDetailsPanel(med));
       }
+      panelMain.add(panelSub);
+    }
+
+    if (overviewCount == 0) {
+      JPanel panelSub = newFlowLayout();
+      JLabel labelNothing = makeLabel("คุณยังไม่มียาที่ต้องรับประทานในขณะนี้");
+      setPadding(labelNothing, 10, 0, 0, 4);
+      panelSub.add(labelNothing);
       panelMain.add(panelSub);
     }
 
@@ -150,9 +164,12 @@ public class Overview {
     JLabel labelMedName = makeBoldLabel(medicine.getMedName());
     JLabel labelAmount;
     if (medicine.getMedTime().get(0).equals("ทุก ๆ ")) {
-      labelAmount = makeSmallerLabel(medicine.getMedDose() + " " + medicine.getMedUnit() + " " + medicine.getMedTime().get(0) + doseStr);
+      labelAmount = makeSmallerLabel(
+          medicine.getMedDose() + " " + medicine.getMedUnit() + " " + medicine.getMedTime().get(0)
+              + doseStr);
     } else {
-      labelAmount = makeSmallerLabel(medicine.getMedDose() + " " + medicine.getMedUnit() + " " + doseStr);
+      labelAmount = makeSmallerLabel(
+          medicine.getMedDose() + " " + medicine.getMedUnit() + " " + doseStr);
     }
 
     // JButtons
@@ -184,5 +201,9 @@ public class Overview {
 
     panelLoopInfo.add(panelCard);
     return panelLoopInfo;
+  }
+
+  public int getOverviewCount() {
+    return overviewCount;
   }
 }

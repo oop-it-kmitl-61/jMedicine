@@ -50,7 +50,7 @@ public class Login {
       User user = new User(result.getString("id"), result.getString("username"),
           result.getString("title"), result.getString("firstname"), result.getString("lastname"),
           result.getString("email"), result.getString("gender"), result.getInt("age"),
-          result.getDouble("weight"), result.getDouble("height"));
+          result.getDouble("weight"), result.getDouble("height"), userTime);
 
       user.setUserMedicines(getAllMedicine(user.getUserId()));
       user.setUserDoctors(getAllDoctor(user.getUserId()));
@@ -67,7 +67,6 @@ public class Login {
       throws NoSuchAlgorithmException, SQLException {
     String encrypted = sha256(String.valueOf(password));
 
-
     String SQLCheckCommand = "SELECT * FROM users WHERE username = ?";
 
     PreparedStatement pStatementCheck = connection.prepareStatement(SQLCheckCommand);
@@ -79,7 +78,7 @@ public class Login {
       throw new LoginException("This username has been used.");
     }
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age, \"time\") VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, user.getUserName());
@@ -88,10 +87,11 @@ public class Login {
     pStatement.setString(4, user.getUserPrefix());
     pStatement.setString(5, user.getUserFirstName());
     pStatement.setString(6, user.getUserLastName());
-    pStatement.setObject(7, user.getUserGender(), Types.OTHER);
+    pStatement.setString(7, user.getUserGender());
     pStatement.setDouble(8, user.getUserWeight());
     pStatement.setDouble(9, user.getUserHeight());
     pStatement.setInt(10, user.getUserAge());
+    pStatement.setArray(11, connection.createArrayOf("text", user.getUserTime()));
 
     ResultSet result = pStatement.executeQuery();
 
@@ -102,12 +102,16 @@ public class Login {
     return user;
   }
 
-  public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
-    User user = doSignUp(new User("", "test",
-        "นาย", "firstname", "lastname",
-        "test@localhost", "male", 12,
-        112, 120), "123456".toCharArray());
+  public static User updateUserTime(User user) throws SQLException {
 
-    System.out.println(user);
+    String SQLCommand = "UPDATE users SET \"time\" = ? WHERE id = ?";
+
+    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
+    pStatement.setArray(1, connection.createArrayOf("text", user.getUserTime()));
+    pStatement.setObject(2, user.getUserId(), Types.OTHER);
+
+    pStatement.executeUpdate();
+
+    return user;
   }
 }

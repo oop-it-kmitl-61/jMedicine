@@ -10,7 +10,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 /**
- * Helps displaying an attribute of a medicine.
+ * Provides static methods and variables for MedicineUI
+ *
+ * @author jMedicine
+ * @version 0.7.13
+ * @since 0.3.0
  */
 
 public class MedicineUtil {
@@ -101,5 +105,13 @@ public class MedicineUtil {
     }
 
     return labelPic;
+  }
+
+  public static int tableSpoonCalc(int millilitres) {
+    return millilitres / 15;
+  }
+
+  public static int teaSpoonCalc(int millilitres) {
+    return (millilitres % 15) / 5;
   }
 }

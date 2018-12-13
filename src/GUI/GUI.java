@@ -23,6 +23,7 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -40,7 +41,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.12
+ * @version 0.7.16
  * @since 0.1.0
  */
 
@@ -51,7 +52,7 @@ public class GUI {
   static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
-  static JButton buttons[], btnSignIn, btnSignUp;
+  static JButton buttons[], btnSignIn, btnSignUp, btnSkipAddingInfo;
   static boolean isSignInPage, isSignUpPage;
   private static Dimension windowSize, minSize;
   private static GUIUtil util;
@@ -113,13 +114,16 @@ public class GUI {
 
     // Styling
     setPadding(panelTitle, 0, 0, -12, 2);
-    setPadding(panelLoop, 0, 0, 20, 0);
-
-    JScrollPane scrollPane = makeScrollPane(panelLoop);
 
     // Add all panels into the main panel
     panelOverview.add(panelTitle, BorderLayout.NORTH);
-    panelOverview.add(scrollPane);
+    if (overview.getOverviewCount() < 3) {
+      setPadding(panelLoop, 0, 0, 1000, 0);
+      panelOverview.add(panelLoop);
+    } else {
+      setPadding(panelLoop, 0, 0, 20, 0);
+      panelOverview.add(makeScrollPane(panelLoop));
+    }
 
     panelRight.add(panelOverview, "ภาพรวม");
   }
@@ -177,6 +181,7 @@ public class GUI {
     JLabel labelEditProfile = makeLabel("แก้ไขข้อมูลส่วนตัว");
     JLabel labelEditTime = makeLabel("ตั้งค่าเวลา");
     JLabel labelSignOut = makeLabel("ออกจากระบบ");
+    JLabel labelAbout = makeLabel("เกี่ยวกับ");
     JLabel labelUserName = makeTitleLabel(getUser().getUserFullName());
 
     // Styling
@@ -187,6 +192,7 @@ public class GUI {
 
     makeLabelClickable(labelEditProfile, "แก้ไขข้อมูลส่วนตัว");
     makeLabelClickable(labelEditTime, "ตั้งค่าเวลา");
+    makeLabelClickable(labelAbout, "เกี่ยวกับ");
     makeLabelClickable(labelSignOut, "ยังไม่ได้เข้าสู่ระบบ");
 
     JPanel panelSub = newFlowLayout();
@@ -226,7 +232,11 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.12"));
+    panelSub.add(labelAbout);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.16"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -237,6 +247,7 @@ public class GUI {
 
     panelEditProfile();
     panelEditTime();
+    panelAbout();
   }
 
   public static void initWelcome() {
@@ -385,10 +396,11 @@ public class GUI {
     gbc.weighty = 300;
     panelSignIn.add(space, gbc);
 
-    util.listeners();
-
     panelWelcome.add(panelSignIn, "ยังไม่ได้เข้าสู่ระบบ");
+    panelWelcome.add(panelFirstInfo(), "เพิ่มข้อมูลส่วนตัว");
     panelWelcome.add(panelFirstMedicine(), "เพิ่มยาตัวแรก");
+
+    util.listeners();
 
     frameWelcome.add(panelWelcome);
     frameWelcome.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -396,6 +408,89 @@ public class GUI {
     frameWelcome.setSize(windowSize);
     frameWelcome.setLocationRelativeTo(null);
     frameWelcome.setVisible(true);
+  }
+
+  public static JPanel panelFirstInfo() {
+
+    // JPanels
+    JPanel panelFirstInfo = new JPanel(new BorderLayout());
+    JPanel panelBody = new JPanel(new BorderLayout());
+    JPanel panelTitle = new JPanel(new BorderLayout());
+    JPanel panelBtn = new JPanel(new BorderLayout());
+
+    // JButton
+    JButton btnSave = makeBlueButton("บันทึก");
+    btnSkipAddingInfo = makeRedButton("ข้ามขั้นตอนนี้");
+
+    panelTitle.add(makeTitleLabel("เพิ่มข้อมูลส่วนตัวของคุณ"));
+
+    panelBtn.add(btnSave, BorderLayout.CENTER);
+    panelBtn.add(btnSkipAddingInfo, BorderLayout.EAST);
+
+    // JTextFields
+    JTextField tfEmail = makeTextField(20);
+    JTextField tfFName = makeTextField(20);
+    JTextField tfLName = makeTextField(20);
+    JTextField tfWeight = makeNumberField(4);
+    JTextField tfHeight = makeNumberField(4);
+    JTextField tfAge = makeNumberField(2);
+
+    // JComboBoxes
+    JComboBox cbPrefix = makeComboBox(getPrefixes());
+    JComboBox cbGender = makeComboBox(getGenders());
+
+    // JLabels
+    JLabel labelFName = makeLabel("ชื่อ");
+    JLabel labelLName = makeLabel("นามสกุล");
+    JLabel labelEmail = makeLabel("อีเมล");
+    JLabel labelAge = makeLabel("อายุ");
+    JLabel labelAgeUnit = makeLabel("ปี");
+    JLabel labelGender = makeLabel("เพศ");
+    JLabel labelWeight = makeLabel("น้ำหนัก");
+    JLabel labelWeightUnit = makeLabel("กิโลกรัม");
+    JLabel labelHeight = makeLabel("ส่วนสูง");
+    JLabel labelHeightUnit = makeLabel("เซนติเมตร");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelFirstInfo, 20, 20, 20);
+    setPadding(panelTitle, 20, 0, 20, 20);
+    setPadding(panelBody, 0, 0, 1000, 28);
+
+    JPanel panelSub = newFlowLayout();
+    panelSub.add(cbPrefix);
+    panelSub.add(labelFName);
+    panelSub.add(tfFName);
+    panelSub.add(labelLName);
+    panelSub.add(tfLName);
+    setPadding(panelSub, 10, 0, 0);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelGender);
+    panelSub.add(cbGender);
+    panelSub.add(labelAge);
+    panelSub.add(tfAge);
+    panelSub.add(labelAgeUnit);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelWeight);
+    panelSub.add(tfWeight);
+    panelSub.add(labelWeightUnit);
+    panelSub.add(labelHeight);
+    panelSub.add(tfHeight);
+    panelSub.add(labelHeightUnit);
+    panelBody.add(panelSub);
+
+    // Listener
+    // TODO : ActionPerformed for adding info
+
+    panelFirstInfo.add(panelTitle, BorderLayout.NORTH);
+    panelFirstInfo.add(panelBody, BorderLayout.CENTER);
+    panelFirstInfo.add(panelBtn, BorderLayout.SOUTH);
+
+    return panelFirstInfo;
   }
 
   private static void makeLeftNavigation() {
@@ -561,6 +656,8 @@ public class GUI {
     panelSub.add(labelHeightUnit);
     panelBody.add(panelSub);
 
+    // TODO : ActionPerformed for saving info
+
     panelMain.add(panelTitle, BorderLayout.NORTH);
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
@@ -659,6 +756,75 @@ public class GUI {
         ex.printStackTrace();
       }
     });
+  }
+
+  private static void panelAbout() {
+
+    // JPanels
+    JPanel panelMain = new JPanel(new BorderLayout());
+    JPanel panelTitle = newFlowLayout();
+    JPanel panelBody = new JPanel();
+
+    // JButtons
+    JButton btnBack = makeBackButton("เกี่ยวกับ", "การตั้งค่า");
+
+    // JLabels
+    JLabel labelHeading1 = makeBoldLabel("คณะผู้จัดทำ");
+    JLabel labelHeading2 = makeBoldLabel("ลิขสิทธิ์");
+    JLabel labelHeading3 = makeBoldLabel("ขอบคุณ");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelMain, -11, 0, 20, -18);
+    setPadding(panelBody, 0, 20, 10, 28);
+    setPadding(panelTitle, 0, 0, 20);
+
+    // Panel Title
+    panelTitle.add(btnBack);
+
+    JPanel panelSub = newFlowLayout();
+    panelSub.add(labelHeading1);
+    panelBody.add(panelSub);
+    panelBody.add(new JSeparator());
+
+    panelSub = new JPanel(new GridLayout(5, 1));
+    panelSub.add(makeLabel("1. นายวิพุธ ภู่ทอง (60070090)"));
+    panelSub.add(makeLabel("2. นายสาคร เสาแก้ว (60070102)"));
+    panelSub.add(makeLabel("3. นายธีรภัทร ไกรศรีสิริกุล (60070183)"));
+    panelSub.add(makeLabel("นักศึกษาชั้นปีที่ 2 คณะเทคโนโลยีสารสนเทศ"));
+    panelSub.add(makeLabel("สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง"));
+    setPadding(panelSub, 10, 0, 20, 4);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelHeading2);
+    panelBody.add(panelSub);
+    panelBody.add(new JSeparator());
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeLabel("jMedicine เป็นโปรเจกต์แบบ Open Source บน Apache License 2.0"));
+    setPadding(panelSub, 10, 0, 20, 0);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelHeading3);
+    panelBody.add(panelSub);
+    panelBody.add(new JSeparator());
+
+    panelSub = new JPanel(new GridLayout(4, 1));
+    panelSub.add(makeBoldLabel("ไอคอน success, error และ bin"));
+    panelSub.add(makeLabel(
+        "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
+    panelSub.add(makeBoldLabel("ไอคอน warning และ spray"));
+    panelSub.add(makeLabel(
+        "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
+    setPadding(panelSub, 10, 0, 20, 4);
+    panelBody.add(panelSub);
+
+    panelMain.add(panelTitle, BorderLayout.NORTH);
+    panelMain.add(makeScrollPane(panelBody), BorderLayout.CENTER);
+
+    panelRight.add(panelMain, "เกี่ยวกับ");
   }
 
   static JButton[] getButtons() {
