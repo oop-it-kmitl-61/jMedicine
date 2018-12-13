@@ -21,6 +21,7 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
@@ -34,7 +35,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.14
+ * @version 0.7.15
  * @since 0.1.0
  */
 
@@ -174,6 +175,7 @@ public class GUI {
     JLabel labelEditProfile = makeLabel("แก้ไขข้อมูลส่วนตัว");
     JLabel labelEditTime = makeLabel("ตั้งค่าเวลา");
     JLabel labelSignOut = makeLabel("ออกจากระบบ");
+    JLabel labelAbout = makeLabel("เกี่ยวกับ");
     JLabel labelUserName = makeTitleLabel(getUser().getUserFullName());
 
     // Styling
@@ -184,6 +186,7 @@ public class GUI {
 
     makeLabelClickable(labelEditProfile, "แก้ไขข้อมูลส่วนตัว");
     makeLabelClickable(labelEditTime, "ตั้งค่าเวลา");
+    makeLabelClickable(labelAbout, "เกี่ยวกับ");
     makeLabelClickable(labelSignOut, "ยังไม่ได้เข้าสู่ระบบ");
 
     JPanel panelSub = newFlowLayout();
@@ -223,7 +226,11 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("เวอร์ชั่น 0.7.14"));
+    panelSub.add(labelAbout);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.15"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -234,6 +241,7 @@ public class GUI {
 
     panelEditProfile();
     panelEditTime();
+    panelAbout();
   }
 
   public static void initWelcome() {
@@ -478,7 +486,6 @@ public class GUI {
 
     return panelFirstInfo;
   }
-
 
   private static void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
@@ -733,6 +740,75 @@ public class GUI {
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
     panelRight.add(panelMain, "ตั้งค่าเวลา");
+  }
+
+  private static void panelAbout() {
+
+    // JPanels
+    JPanel panelMain = new JPanel(new BorderLayout());
+    JPanel panelTitle = newFlowLayout();
+    JPanel panelBody = new JPanel();
+
+    // JButtons
+    JButton btnBack = makeBackButton("เกี่ยวกับ", "การตั้งค่า");
+
+    // JLabels
+    JLabel labelHeading1 = makeBoldLabel("คณะผู้จัดทำ");
+    JLabel labelHeading2 = makeBoldLabel("ลิขสิทธิ์");
+    JLabel labelHeading3 = makeBoldLabel("ขอบคุณ");
+
+    // Styling
+    panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
+    setPadding(panelMain, -11, 0, 20, -18);
+    setPadding(panelBody, 0, 20, 10, 28);
+    setPadding(panelTitle, 0, 0, 20);
+
+    // Panel Title
+    panelTitle.add(btnBack);
+
+    JPanel panelSub = newFlowLayout();
+    panelSub.add(labelHeading1);
+    panelBody.add(panelSub);
+    panelBody.add(new JSeparator());
+
+    panelSub = new JPanel(new GridLayout(5, 1));
+    panelSub.add(makeLabel("1. นายวิพุธ ภู่ทอง (60070090)"));
+    panelSub.add(makeLabel("2. นายสาคร เสาแก้ว (60070102)"));
+    panelSub.add(makeLabel("3. นายธีรภัทร ไกรศรีสิริกุล (60070183)"));
+    panelSub.add(makeLabel("นักศึกษาชั้นปีที่ 2 คณะเทคโนโลยีสารสนเทศ"));
+    panelSub.add(makeLabel("สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง"));
+    setPadding(panelSub, 10, 0, 20, 4);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelHeading2);
+    panelBody.add(panelSub);
+    panelBody.add(new JSeparator());
+
+    panelSub = newFlowLayout();
+    panelSub.add(makeLabel("jMedicine เป็นโปรเจกต์แบบ Open Source บน Apache License 2.0"));
+    setPadding(panelSub, 10, 0, 20, 0);
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(labelHeading3);
+    panelBody.add(panelSub);
+    panelBody.add(new JSeparator());
+
+    panelSub = new JPanel(new GridLayout(4, 1));
+    panelSub.add(makeBoldLabel("ไอคอน success, error และ bin"));
+    panelSub.add(makeLabel(
+        "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
+    panelSub.add(makeBoldLabel("ไอคอน warning และ spray"));
+    panelSub.add(makeLabel(
+        "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
+    setPadding(panelSub, 10, 0, 20, 4);
+    panelBody.add(panelSub);
+
+    panelMain.add(panelTitle, BorderLayout.NORTH);
+    panelMain.add(makeScrollPane(panelBody), BorderLayout.CENTER);
+
+    panelRight.add(panelMain, "เกี่ยวกับ");
   }
 
   static JButton[] getButtons() {

@@ -44,7 +44,7 @@ import javax.swing.event.DocumentListener;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.14
+ * @version 0.7.15
  * @since 0.7.0
  */
 
@@ -592,7 +592,11 @@ public class MedicineUI {
         } else if (rbImmediately.isSelected()) {
           selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
         }
-        Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date exp = null;
+        try {
+          exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        } catch (NullPointerException ignored) {
+        }
         String newDateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
         medicine.setMedName(tfMedName.getText());
         medicine.setMedType(currType);
@@ -666,8 +670,12 @@ public class MedicineUI {
         } else if (rbImmediately.isSelected()) {
           selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
         }
+        Date exp = null;
+        try {
+          exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        } catch (NullPointerException ignored) {
+        }
 
-        Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
         String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
         Medicine med = new Medicine(tfMedName.getText(), currType, selectedColor,
             tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
