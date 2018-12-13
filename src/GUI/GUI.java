@@ -10,22 +10,28 @@ import static core.UserUtil.getGenders;
 import static core.UserUtil.getPrefixIndex;
 import static core.UserUtil.getPrefixes;
 
+import api.UserDB;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.Overview;
 import core.User;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.Date;
 import javax.print.Doc;
 import javax.swing.*;
+
 import core.LocationHelper;
 
 
@@ -145,8 +151,8 @@ public class GUI {
     browser.setPermissionHandler(request -> PermissionStatus.GRANTED);
     // Load URL that query the hospital around the current position
     browser.loadURL(
-        "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
-            + ",12z");
+            "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
+                    + ",12z");
 
     // Add all sub panels into the main panel
     panelNearBy.add(panelTitle, BorderLayout.NORTH);
@@ -395,12 +401,12 @@ public class GUI {
   private static void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
     buttons = new JButton[]{
-        makeLeftNavigationButton("ภาพรวม"),
-        makeLeftNavigationButton("ยาทั้งหมด"),
-        makeLeftNavigationButton("นัดแพทย์"),
-        makeLeftNavigationButton("แพทย์"),
-        makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
-        makeLeftNavigationButton("การตั้งค่า"),
+            makeLeftNavigationButton("ภาพรวม"),
+            makeLeftNavigationButton("ยาทั้งหมด"),
+            makeLeftNavigationButton("นัดแพทย์"),
+            makeLeftNavigationButton("แพทย์"),
+            makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
+            makeLeftNavigationButton("การตั้งค่า"),
     };
 
     int buttonY = 0;
@@ -579,15 +585,15 @@ public class GUI {
     TimePicker tpEvening = makeTimePicker();
     TimePicker tpBed = makeTimePicker();
 
-    // TODO: getUser()->time
-    tpMorning.setText("08:30");
-    tpAfternoon.setText("12:30");
-    tpEvening.setText("18:30");
-    tpBed.setText("22:30");
+    // Get Time from user preferences
+    tpMorning.setText(getUser().getUserTime()[0]);
+    tpAfternoon.setText(getUser().getUserTime()[1]);
+    tpEvening.setText(getUser().getUserTime()[2]);
+    tpBed.setText(getUser().getUserTime()[3]);
 
     // JLabels
     JLabel labelDescription = makeLabel(
-        "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
+            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
     JLabel labelMorning = makeBoldLabel("เช้า");
     JLabel labelAfternoon = makeBoldLabel("กลางวัน");
     JLabel labelEvening = makeBoldLabel("เย็น");
@@ -643,6 +649,16 @@ public class GUI {
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
     panelRight.add(panelMain, "ตั้งค่าเวลา");
+
+    // Save Configured Time
+    btnSave.addActionListener(e -> {
+      getUser().setUserTime(new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(), tpBed.getText()});
+      try {
+        UserDB.updateUserTime(getUser());
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+    });
   }
 
   static JButton[] getButtons() {

@@ -102,19 +102,6 @@ public class Login {
     return user;
   }
 
-  public static User updateUserTime(User user) throws SQLException {
-
-    String SQLCommand = "UPDATE users SET \"time\" = ? WHERE id = ?";
-
-    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
-    pStatement.setArray(1, connection.createArrayOf("text", user.getUserTime()));
-    pStatement.setObject(2, user.getUserId(), Types.OTHER);
-
-    pStatement.executeUpdate();
-
-    return user;
-  }
-
   public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
     User user = doSignUp(new User("", "test",
         "นาย", "firstname", "lastname",
