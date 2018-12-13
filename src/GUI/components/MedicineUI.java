@@ -383,7 +383,7 @@ public class MedicineUI {
     JLabel labelUnit1 = makeLabel(medUnit);
     JLabel labelUnit2 = makeLabel(medUnit);
     JLabel labelHeading1 = makeBoldLabel("ข้อมูลพื้นฐาน");
-    JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน");
+    JLabel labelHeading2 = makeBoldLabel("ขนาดและเวลาที่ต้องรับประทาน*");
     JLabel labelHeading3 = makeBoldLabel("ข้อมูลอื่น ๆ");
     JLabel labelHint1 = makeSmallerLabel("1 ช้อนชา = 5 มิลลิลิตร");
     JLabel labelHint2 = makeSmallerLabel("1 ช้อนโต๊ะ = 15 มิลลิลิตร");
@@ -567,59 +567,78 @@ public class MedicineUI {
 
         // DOSE INFORMATION
         ArrayList<String> selectedMedTime = new ArrayList<>();
+        boolean isSelectedMedTime = false;
+        boolean isSelectedStr = false;
         String selectedDoseStr = "";
         if (cbMorning.isSelected()) {
           selectedMedTime.add("เช้า");
+          isSelectedMedTime = true;
         }
         if (cbAfternoon.isSelected()) {
           selectedMedTime.add("กลางวัน");
+          isSelectedMedTime = true;
         }
         if (cbEvening.isSelected()) {
           selectedMedTime.add("เย็น");
+          isSelectedMedTime = true;
         }
         if (cbBed.isSelected()) {
           selectedMedTime.add("ก่อนนอน");
+          isSelectedMedTime = true;
+          isSelectedStr = true;
         }
         if (cbEvery.isSelected()) {
           selectedMedTime.add("ทุก ๆ ");
           selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
+          isSelectedMedTime = true;
+          isSelectedStr = true;
         }
 
         if (rbBefore.isSelected()) {
           selectedDoseStr = "ก่อนอาหาร";
+          isSelectedStr = true;
         } else if (rbAfter.isSelected()) {
           selectedDoseStr = "หลังอาหาร";
+          isSelectedStr = true;
         } else if (rbImmediately.isSelected()) {
           selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+          isSelectedStr = true;
         }
         Date exp = null;
         try {
           exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
         } catch (NullPointerException ignored) {
         }
-        String newDateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
-        medicine.setMedName(tfMedName.getText());
-        medicine.setMedType(currType);
-        medicine.setMedColor(selectedColor);
-        medicine.setMedDescription(tfMedDescription.getText());
-        medicine.setMedTime(selectedMedTime);
-        medicine.setMedDoseStr(selectedDoseStr);
-        medicine.setMedDose(Integer.valueOf(tfAmount.getText()));
-        medicine.setMedTotal(Integer.valueOf(tfTotalMeds.getText()));
-        medicine.setMedEXP(exp);
-        medicine.setDateStart(newDateStart);
-        try {
-          MedicineDB.updateMedicine(medicine);
-          fireSuccessDialog("แก้ไขยา " + medicine.getMedName() + " เรียบร้อยแล้ว");
-          panelRight.remove(panelViewMedicine(medicine));
-          panelRight.add(panelViewMedicine(medicine));
-          reload();
-          backTo("ยาทั้งหมด");
-          panelRight.remove(panelEditMedicine(medicine));
-          reloadOverview();
-        } catch (SQLException e1) {
-          fireDBErrorDialog();
-          e1.printStackTrace();
+
+        if (tfMedName.getText().equals("") || tfAmount.getText().equals("") || tfTotalMeds.getText()
+            .equals("") || !isSelectedMedTime || !isSelectedStr || pickerStart.getText().equals("")
+            || pickerStartTime.getText().equals("")) {
+          fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+        } else {
+          String newDateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
+          medicine.setMedName(tfMedName.getText());
+          medicine.setMedType(currType);
+          medicine.setMedColor(selectedColor);
+          medicine.setMedDescription(tfMedDescription.getText());
+          medicine.setMedTime(selectedMedTime);
+          medicine.setMedDoseStr(selectedDoseStr);
+          medicine.setMedDose(Integer.valueOf(tfAmount.getText()));
+          medicine.setMedTotal(Integer.valueOf(tfTotalMeds.getText()));
+          medicine.setMedEXP(exp);
+          medicine.setDateStart(newDateStart);
+          try {
+            MedicineDB.updateMedicine(medicine);
+            fireSuccessDialog("แก้ไขยา " + medicine.getMedName() + " เรียบร้อยแล้ว");
+            panelRight.remove(panelViewMedicine(medicine));
+            panelRight.add(panelViewMedicine(medicine));
+            reload();
+            backTo("ยาทั้งหมด");
+            panelRight.remove(panelEditMedicine(medicine));
+            reloadOverview();
+          } catch (SQLException e1) {
+            fireDBErrorDialog();
+            e1.printStackTrace();
+          }
         }
       });
       // ===================== END EDIT =====================
@@ -645,30 +664,42 @@ public class MedicineUI {
 
         // Dose Information
         ArrayList<String> selectedMedTime = new ArrayList<>();
+        boolean isSelectedMedTime = false;
+        boolean isSelectedStr = false;
         String selectedDoseStr = "";
         if (cbMorning.isSelected()) {
           selectedMedTime.add("เช้า");
+          isSelectedMedTime = true;
         }
         if (cbAfternoon.isSelected()) {
           selectedMedTime.add("กลางวัน");
+          isSelectedMedTime = true;
         }
         if (cbEvening.isSelected()) {
           selectedMedTime.add("เย็น");
+          isSelectedMedTime = true;
         }
         if (cbBed.isSelected()) {
           selectedMedTime.add("ก่อนนอน");
+          isSelectedMedTime = true;
+          isSelectedStr = true;
         }
         if (cbEvery.isSelected()) {
           selectedMedTime.add("ทุก ๆ ");
           selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
+          isSelectedMedTime = true;
+          isSelectedStr = true;
         }
 
         if (rbBefore.isSelected()) {
           selectedDoseStr = "ก่อนอาหาร";
+          isSelectedStr = true;
         } else if (rbAfter.isSelected()) {
           selectedDoseStr = "หลังอาหาร";
+          isSelectedStr = true;
         } else if (rbImmediately.isSelected()) {
           selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+          isSelectedStr = true;
         }
         Date exp = null;
         try {
@@ -676,24 +707,30 @@ public class MedicineUI {
         } catch (NullPointerException ignored) {
         }
 
-        String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
-        Medicine med = new Medicine(tfMedName.getText(), currType, selectedColor,
-            tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
-            Integer.valueOf(tfAmount.getText()),
-            Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
-        try {
-          MedicineDB.addMedicine(med, getUser().getUserId());
-          fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
-          panelRight.remove(panelMedicines);
-          panelAllMedicines();
-          backTo("ยาทั้งหมด");
-          panelRight.remove(panelAddMedicine());
-          panelRight.remove(panelBody);
-          panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
-          reloadOverview();
-        } catch (SQLException e1) {
-          fireDBErrorDialog();
-          e1.printStackTrace();
+        if (tfMedName.getText().equals("") || tfAmount.getText().equals("") || tfTotalMeds.getText()
+            .equals("") || !isSelectedMedTime || !isSelectedStr || pickerStart.getText().equals("")
+            || pickerStartTime.getText().equals("")) {
+          fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+        } else {
+          String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
+          Medicine med = new Medicine(tfMedName.getText(), currType, selectedColor,
+              tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
+              Integer.valueOf(tfAmount.getText()),
+              Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
+          try {
+            MedicineDB.addMedicine(med, getUser().getUserId());
+            fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
+            panelRight.remove(panelMedicines);
+            panelAllMedicines();
+            backTo("ยาทั้งหมด");
+            panelRight.remove(panelAddMedicine());
+            panelRight.remove(panelBody);
+            panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
+            reloadOverview();
+          } catch (SQLException e1) {
+            fireDBErrorDialog();
+            e1.printStackTrace();
+          }
         }
       });
     } else if (type.equals("first")) {
@@ -718,54 +755,75 @@ public class MedicineUI {
 
         // Dose Information
         ArrayList<String> selectedMedTime = new ArrayList<>();
+        boolean isSelectedMedTime = false;
+        boolean isSelectedStr = false;
         String selectedDoseStr = "";
         if (cbMorning.isSelected()) {
           selectedMedTime.add("เช้า");
+          isSelectedMedTime = true;
         }
         if (cbAfternoon.isSelected()) {
           selectedMedTime.add("กลางวัน");
+          isSelectedMedTime = true;
         }
         if (cbEvening.isSelected()) {
           selectedMedTime.add("เย็น");
+          isSelectedMedTime = true;
         }
         if (cbBed.isSelected()) {
           selectedMedTime.add("ก่อนนอน");
+          isSelectedMedTime = true;
+          isSelectedStr = true;
         }
         if (cbEvery.isSelected()) {
           selectedMedTime.add("ทุก ๆ ");
           selectedDoseStr = tfEvery.getText() + " ชั่วโมง";
+          isSelectedMedTime = true;
+          isSelectedStr = true;
         }
 
         if (rbBefore.isSelected()) {
           selectedDoseStr = "ก่อนอาหาร";
+          isSelectedStr = true;
         } else if (rbAfter.isSelected()) {
           selectedDoseStr = "หลังอาหาร";
+          isSelectedStr = true;
         } else if (rbImmediately.isSelected()) {
           selectedDoseStr = "หลังอาหารทันที / พร้อมอาหาร";
+          isSelectedStr = true;
         }
-        System.out.println(pickerEXP.getDate());
-        Date exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
-        Medicine med = new Medicine(tfMedName.getText(), currType, selectedColor,
-            tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
-            Integer.valueOf(tfAmount.getText()),
-            Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
+        Date exp = null;
         try {
-          MedicineDB.addMedicine(med, getUser().getUserId());
-          fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
-          panelRight.remove(panelMedicines);
-          panelAllMedicines();
-          backTo("ยาทั้งหมด");
-          panelRight.remove(panelAddMedicine());
-          panelRight.remove(panelBody);
-          panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
-          frameWelcome.setVisible(false);
-          frameMain.setVisible(true);
-          frameWelcome = null;
-          reloadOverview();
-        } catch (SQLException e1) {
-          fireDBErrorDialog();
-          e1.printStackTrace();
+          exp = Date.from(pickerEXP.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        } catch (NullPointerException ignored) {
+        }
+        if (tfMedName.getText().equals("") || tfAmount.getText().equals("") || tfTotalMeds.getText()
+            .equals("") || !isSelectedMedTime || !isSelectedStr || pickerStart.getText().equals("")
+            || pickerStartTime.getText().equals("")) {
+          fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+        } else {
+          String dateStart = pickerStart.getDate() + " " + pickerStartTime.getTime();
+          Medicine med = new Medicine(tfMedName.getText(), currType, selectedColor,
+              tfMedDescription.getText(), selectedMedTime, selectedDoseStr,
+              Integer.valueOf(tfAmount.getText()),
+              Integer.valueOf(tfTotalMeds.getText()), exp, dateStart);
+          try {
+            MedicineDB.addMedicine(med, getUser().getUserId());
+            fireSuccessDialog("ยา " + med.getMedName() + " ได้ถูกเพิ่มเรียบร้อยแล้ว");
+            panelRight.remove(panelMedicines);
+            panelAllMedicines();
+            backTo("ยาทั้งหมด");
+            panelRight.remove(panelAddMedicine());
+            panelRight.remove(panelBody);
+            panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
+            frameWelcome.setVisible(false);
+            frameMain.setVisible(true);
+            frameWelcome = null;
+            reloadOverview();
+          } catch (SQLException e1) {
+            fireDBErrorDialog();
+            e1.printStackTrace();
+          }
         }
       });
     }
@@ -945,7 +1003,7 @@ public class MedicineUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("ชื่อยา"));
+    panelSub.add(makeLabel("ชื่อยา*"));
     panelSub.add(tfMedName);
     panelSub.add(makeLabel("คำอธิบายยา (เช่น ยาแก้ปวด)"));
     panelSub.add(tfMedDescription);
@@ -954,11 +1012,11 @@ public class MedicineUI {
     JPanel panelMedSettings = newFlowLayout();
 
     JPanel panelType = newFlowLayout();
-    panelType.add(makeLabel("ประเภท"));
+    panelType.add(makeLabel("ประเภท*"));
     panelType.add(cbMedType);
     panelMedSettings.add(panelType);
 
-    panelColor.add(makeLabel("สีของยา"));
+    panelColor.add(makeLabel("สีของยา*"));
     panelMedSettings.add(panelColor);
 
     panelTabletColor.add(cbTabletColor);
@@ -1011,13 +1069,13 @@ public class MedicineUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("จำนวนยาทั้งหมด"));
+    panelSub.add(makeLabel("จำนวนยาทั้งหมด*"));
     panelSub.add(tfTotalMeds);
     panelSub.add(labelUnit2);
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeLabel("วันและเวลาที่เริ่มทานยา"));
+    panelSub.add(makeLabel("วันและเวลาที่เริ่มทานยา*"));
     panelSub.add(pickerStart);
     panelSub.add(pickerStartTime);
     panelBody.add(panelSub);

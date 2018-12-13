@@ -97,7 +97,11 @@ public class MedicineDB {
     pStatement.setInt(7, medicine.getMedTotal());
     pStatement.setArray(8, connection.createArrayOf("text", medicine.getMedTime().toArray()));
     pStatement.setString(9, medicine.getMedDoseStr());
-    pStatement.setDate(10, new Date(medicine.getMedEXP().getTime()));
+    if (medicine.getMedEXP() == null) {
+      pStatement.setDate(10, null);
+    } else {
+      pStatement.setDate(10, new Date(medicine.getMedEXP().getTime()));
+    }
     pStatement.setTimestamp(11, new java.sql.Timestamp(stringToTimestamp(medicine.getDateStart())));
 
     ResultSet result = pStatement.executeQuery();

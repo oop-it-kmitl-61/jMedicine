@@ -194,7 +194,7 @@ public class DoctorUI {
     panelTitle.add(btnBack);
 
     JPanel panelSub = newFlowLayout();
-    panelSub.add(makeLabel("คำนำหน้า"));
+    panelSub.add(makeLabel("คำนำหน้า*"));
     panelSub.add(cbPrefix);
     panelBody.add(panelSub);
 
@@ -635,45 +635,49 @@ public class DoctorUI {
         sat.add(fridayEndPicker.getText());
         workTime.add(sat);
       }
-      switch (type) {
-        case "add":
-          Doctor newDoctor = new Doctor(prefix, fName, sName, ward, hospital, phone, workTime);
-          try {
-            DoctorDB.addDoctor(newDoctor, getUser().getUserId());
-            fireSuccessDialog("เพิ่ม " + prefix + " " + fName + " เรียบร้อยแล้ว");
-            reloadAppDoctors();
-            panelRight.remove(panelDoctors);
-            panelAllDoctors();
-            backTo("แพทย์");
-            panelRight.remove(panelAddDoctor);
-            panelRight.add(panelAddDoctor);
-          } catch (SQLException e1) {
-            e1.printStackTrace();
-            fireDBErrorDialog();
-          }
-          break;
-        case "update":
-          doctor.setPrefix(prefix);
-          doctor.setFirstName(fName);
-          doctor.setLastName(sName);
-          doctor.setWard(ward);
-          doctor.setPhone(phone);
-          doctor.setWorkTime(workTime);
-          try {
-            DoctorDB.updateDoctor(doctor);
-            fireSuccessDialog("แก้ไข " + prefix + " " + fName + " เรียบร้อยแล้ว");
-            reloadAppDoctors();
-            panelRight.remove(panelDoctors);
-            panelAllDoctors();
-            backTo("แพทย์");
-            panelRight.remove(panelEditDoctor(doctor));
-          } catch (SQLException e1) {
-            e1.printStackTrace();
-            fireDBErrorDialog();
-          }
-          break;
+      if (tfDoctorName.getText().equals("") || tfDoctorHospital.getText().equals("")
+          || tfDoctorSurName.getText().equals("")) {
+        fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+      } else {
+        switch (type) {
+          case "add":
+            Doctor newDoctor = new Doctor(prefix, fName, sName, ward, hospital, phone, workTime);
+            try {
+              DoctorDB.addDoctor(newDoctor, getUser().getUserId());
+              fireSuccessDialog("เพิ่ม " + prefix + " " + fName + " เรียบร้อยแล้ว");
+              reloadAppDoctors();
+              panelRight.remove(panelDoctors);
+              panelAllDoctors();
+              backTo("แพทย์");
+              panelRight.remove(panelAddDoctor);
+              panelRight.add(panelAddDoctor);
+            } catch (SQLException e1) {
+              e1.printStackTrace();
+              fireDBErrorDialog();
+            }
+            break;
+          case "update":
+            doctor.setPrefix(prefix);
+            doctor.setFirstName(fName);
+            doctor.setLastName(sName);
+            doctor.setWard(ward);
+            doctor.setPhone(phone);
+            doctor.setWorkTime(workTime);
+            try {
+              DoctorDB.updateDoctor(doctor);
+              fireSuccessDialog("แก้ไข " + prefix + " " + fName + " เรียบร้อยแล้ว");
+              reloadAppDoctors();
+              panelRight.remove(panelDoctors);
+              panelAllDoctors();
+              backTo("แพทย์");
+              panelRight.remove(panelEditDoctor(doctor));
+            } catch (SQLException e1) {
+              e1.printStackTrace();
+              fireDBErrorDialog();
+            }
+            break;
+        }
       }
-
     });
   }
 
