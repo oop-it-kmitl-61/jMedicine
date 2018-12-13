@@ -155,8 +155,8 @@ public class GUI {
     browser.setPermissionHandler(request -> PermissionStatus.GRANTED);
     // Load URL that query the hospital around the current position
     browser.loadURL(
-            "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
-                    + ",12z");
+        "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
+            + ",12z");
 
     // Add all sub panels into the main panel
     panelNearBy.add(panelTitle, BorderLayout.NORTH);
@@ -496,12 +496,12 @@ public class GUI {
   private static void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
     buttons = new JButton[]{
-            makeLeftNavigationButton("ภาพรวม"),
-            makeLeftNavigationButton("ยาทั้งหมด"),
-            makeLeftNavigationButton("นัดแพทย์"),
-            makeLeftNavigationButton("แพทย์"),
-            makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
-            makeLeftNavigationButton("การตั้งค่า"),
+        makeLeftNavigationButton("ภาพรวม"),
+        makeLeftNavigationButton("ยาทั้งหมด"),
+        makeLeftNavigationButton("นัดแพทย์"),
+        makeLeftNavigationButton("แพทย์"),
+        makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
+        makeLeftNavigationButton("การตั้งค่า"),
     };
 
     int buttonY = 0;
@@ -660,8 +660,6 @@ public class GUI {
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
-    panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
-
     btnSave.addActionListener(e -> {
       user.setUserPrefix(cbPrefix.getSelectedItem().toString());
       user.setUserFirstName(tfFName.getText());
@@ -674,11 +672,17 @@ public class GUI {
       try {
         UserDB.updateUserData(user);
         fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
+        backTo("การตั้งค่า");
+        panelRight.remove(panelMain);
+        panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
       } catch (SQLException ex) {
         ex.printStackTrace();
         fireDBErrorDialog();
       }
     });
+
+    panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
+
   }
 
   private static void panelEditTime() {
@@ -706,7 +710,7 @@ public class GUI {
 
     // JLabels
     JLabel labelDescription = makeLabel(
-            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
+        "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
     JLabel labelMorning = makeBoldLabel("เช้า");
     JLabel labelAfternoon = makeBoldLabel("กลางวัน");
     JLabel labelEvening = makeBoldLabel("เย็น");
@@ -761,19 +765,24 @@ public class GUI {
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
-    panelRight.add(panelMain, "ตั้งค่าเวลา");
-
     // Save Configured Time
     btnSave.addActionListener(e -> {
-      getUser().setUserTime(new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(), tpBed.getText()});
+      getUser().setUserTime(
+          new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
+              tpBed.getText()});
       try {
-        UserDB.updateUserTime(getUser());
+        UserDB.updateUserTime();
         fireSuccessDialog("บันทึกเวลาสำเร็จ");
+        backTo("การตั้งค่า");
+        panelRight.remove(panelMain);
+        panelRight.add(panelMain, "ตั้งค่าเวลา");
       } catch (SQLException ex) {
         ex.printStackTrace();
         fireDBErrorDialog();
       }
     });
+
+    panelRight.add(panelMain, "ตั้งค่าเวลา");
   }
 
   private static void panelAbout() {
