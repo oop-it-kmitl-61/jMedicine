@@ -44,7 +44,7 @@ import javax.swing.event.DocumentListener;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.15
+ * @version 0.7.16
  * @since 0.7.0
  */
 
@@ -86,10 +86,43 @@ public class MedicineUI {
       labelTitle.setText("คุณยังไม่มียาที่บันทึกไว้");
     } else {
       labelTitle.setText("ยาทั้งหมด");
+      ArrayList<Medicine> activeMedicines = new ArrayList<>();
+      ArrayList<Medicine> inActiveMedicines = new ArrayList<>();
+
       for (Medicine medCurrent : userMedicines) {
-        JPanel cardLoop = makeMedCard(medCurrent);
+        // Check if med is active
+        Date now = new Date();
+        Date medExp = medCurrent.getMedEXP();
+        if (medExp.before(now) || medCurrent.getMedRemaining() == 0) {
+          inActiveMedicines.add(medCurrent);
+        } else {
+          activeMedicines.add(medCurrent);
+        }
+
+
+      }
+
+      // Start making active medicine cards
+      JPanel panelHead = newFlowLayout();
+      panelHead.add(makeBoldLabel("ยาปัจจุบัน (" + activeMedicines.size() + ")"));
+      panelLoop.add(panelHead);
+      for (Medicine medCurrent : activeMedicines) {
+        JPanel cardLoop = makeMedCard(medCurrent, true);
         panelLoop.add(cardLoop);
       }
+
+      int inactiveCount = inActiveMedicines.size();
+      if (inactiveCount > 0) {
+        // Start making inactive medicine cards
+        panelHead = newFlowLayout();
+        panelHead.add(makeBoldLabel("ยาที่หมดหรือหมดอายุแล้ว (" + inactiveCount + ")"));
+        panelLoop.add(panelHead);
+        for (Medicine medCurrent : inActiveMedicines) {
+          JPanel cardLoop = makeMedCard(medCurrent, false);
+          panelLoop.add(cardLoop);
+        }
+      }
+
     }
 
     JScrollPane scrollPane = makeScrollPane(panelLoop);
@@ -1090,7 +1123,7 @@ public class MedicineUI {
     return scrollPane;
   }
 
-  private static JPanel makeMedCard(Medicine medicine) {
+  private static JPanel makeMedCard(Medicine medicine, boolean isActive) {
     /* Creates a card that will be used on the All medicines panel only. */
 
     // Strings
@@ -1116,6 +1149,10 @@ public class MedicineUI {
     setPadding(panelLoopInfo, 0, 0, 20, 0);
     panelPic.setLayout(new BoxLayout(panelPic, BoxLayout.X_AXIS));
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
+    if (!isActive) {
+      labelTitle.setForeground(Color.GRAY);
+      labelShortInfo.setForeground(Color.GRAY);
+    }
 
     panelPic.add(labelPic);
     panelInfo.add(labelTitle);
