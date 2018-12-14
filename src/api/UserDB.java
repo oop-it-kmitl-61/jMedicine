@@ -41,4 +41,15 @@ public class UserDB {
 
     return user;
   }
+
+  public static User updateUserPassword(User user, char[] password) throws SQLException {
+
+    // TODO: Update user password in DB
+
+    return user;
+  }
+
+  public static void deleteUser(User user) throws SQLException {
+    // TODO: Delete user from DB
+  }
 }
