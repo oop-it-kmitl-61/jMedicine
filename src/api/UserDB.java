@@ -40,7 +40,7 @@ public class UserDB {
 
   public static User updateUserData(User user) throws SQLException {
 
-    String SQLCommand = "UPDATE  users SET username = ?, email = ?, title = ?, firstname = ?, lastname = ?, gender = ?, weight = ?, height = ?, age = ? WHERE  id = ?";
+    String SQLCommand = "UPDATE users SET username = ?, email = ?, title = ?, firstname = ?, lastname = ?, gender = ?, weight = ?, height = ?, age = ? WHERE  id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, user.getUserName());
