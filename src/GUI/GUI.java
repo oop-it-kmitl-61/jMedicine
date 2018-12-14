@@ -24,11 +24,15 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Font;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Array;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import javax.print.Doc;
 import javax.swing.*;
@@ -155,8 +159,8 @@ public class GUI {
     browser.setPermissionHandler(request -> PermissionStatus.GRANTED);
     // Load URL that query the hospital around the current position
     browser.loadURL(
-        "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
-            + ",12z");
+            "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
+                    + ",12z");
 
     // Add all sub panels into the main panel
     panelNearBy.add(panelTitle, BorderLayout.NORTH);
@@ -496,12 +500,12 @@ public class GUI {
   private static void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
     buttons = new JButton[]{
-        makeLeftNavigationButton("ภาพรวม"),
-        makeLeftNavigationButton("ยาทั้งหมด"),
-        makeLeftNavigationButton("นัดแพทย์"),
-        makeLeftNavigationButton("แพทย์"),
-        makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
-        makeLeftNavigationButton("การตั้งค่า"),
+            makeLeftNavigationButton("ภาพรวม"),
+            makeLeftNavigationButton("ยาทั้งหมด"),
+            makeLeftNavigationButton("นัดแพทย์"),
+            makeLeftNavigationButton("แพทย์"),
+            makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
+            makeLeftNavigationButton("การตั้งค่า"),
     };
 
     int buttonY = 0;
@@ -683,6 +687,69 @@ public class GUI {
 
     panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
 
+    btnEditPwd.addActionListener(e -> {
+      // TODO: Update password changing GUI
+      JFrame passwordEditFrame = new JFrame();
+      passwordEditFrame.setLayout(new GridLayout(4, 2));
+
+      JPasswordField oldPasswordField = makePasswordField(20);
+      JPasswordField newPasswordField = makePasswordField(20);
+      JPasswordField confirmNewPasswordField = makePasswordField(20);
+
+      JLabel oldPasswordLabel = new JLabel("รหัสผ่านเก่า");
+      oldPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
+      JLabel newPasswordLabel = new JLabel("รหัสผ่านใหม่");
+      newPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
+      JLabel confirmNewPasswordLabel = new JLabel("ยืนยันรหัสผ่านใหม่");
+      confirmNewPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
+
+      JButton confirmButton = new JButton("ยืนยัน");
+      confirmButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
+      JButton cancelButton = new JButton("ยกเลิก");
+      cancelButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
+
+      passwordEditFrame.add(oldPasswordLabel);
+      passwordEditFrame.add(oldPasswordField);
+      passwordEditFrame.add(newPasswordLabel);
+      passwordEditFrame.add(newPasswordField);
+      passwordEditFrame.add(confirmNewPasswordLabel);
+      passwordEditFrame.add(confirmNewPasswordField);
+      passwordEditFrame.add(confirmButton);
+      passwordEditFrame.add(cancelButton);
+
+      passwordEditFrame.setSize(480, 240);
+      passwordEditFrame.setVisible(true);
+      passwordEditFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      passwordEditFrame.setLocationRelativeTo(null);
+
+      // TODO: Finish update password code
+      confirmButton.addActionListener(em -> {
+        try {
+          if (true) {
+            // TODO: Finish this
+            fireErrorDialog("รหัสผ่านเดิมไม่ถูกต้อง");
+          } else if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
+            fireErrorDialog("รหัสผ่านใหม่ไม่ตรงกัน");
+          } else if (true) {
+            // TODO: Finish this
+            fireErrorDialog("รหัสผ่านใหม่สั้นเกินไป");
+          } else {
+            UserDB.updateUserPassword(user, newPasswordField.getPassword());
+          }
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+        }
+      });
+
+      cancelButton.addActionListener(em -> {
+        oldPasswordField.setText("");
+        newPasswordField.setText("");
+        confirmNewPasswordField.setText("");
+        passwordEditFrame.setVisible(false);
+      });
+
+    });
+
   }
 
   private static void panelEditTime() {
@@ -710,7 +777,7 @@ public class GUI {
 
     // JLabels
     JLabel labelDescription = makeLabel(
-        "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
+            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
     JLabel labelMorning = makeBoldLabel("เช้า");
     JLabel labelAfternoon = makeBoldLabel("กลางวัน");
     JLabel labelEvening = makeBoldLabel("เย็น");
@@ -768,8 +835,8 @@ public class GUI {
     // Save Configured Time
     btnSave.addActionListener(e -> {
       getUser().setUserTime(
-          new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
-              tpBed.getText()});
+              new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
+                      tpBed.getText()});
       try {
         UserDB.updateUserTime();
         fireSuccessDialog("บันทึกเวลาสำเร็จ");
@@ -841,10 +908,10 @@ public class GUI {
     panelSub = new JPanel(new GridLayout(4, 1));
     panelSub.add(makeBoldLabel("ไอคอน success, error และ bin"));
     panelSub.add(makeLabel(
-        "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
+            "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
     panelSub.add(makeBoldLabel("ไอคอน warning และ spray"));
     panelSub.add(makeLabel(
-        "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
+            "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
     setPadding(panelSub, 10, 0, 20, 4);
     panelBody.add(panelSub);
 
