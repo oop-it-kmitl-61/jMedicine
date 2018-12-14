@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -736,7 +737,7 @@ public class GUI {
           } else {
             UserDB.updateUserPassword(user, newPasswordField.getPassword());
           }
-        } catch (SQLException ex) {
+        } catch (SQLException | NoSuchAlgorithmException ex) {
           ex.printStackTrace();
         }
       });
