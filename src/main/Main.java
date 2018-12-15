@@ -8,7 +8,6 @@ public class Main {
 
   public static void main(String[] args) {
     macSetup();
-//    NotificationFactory.showNotification("lelelelelel");
 
     GUI jMedicine = new GUI(new Dimension(1280, 768));
     jMedicine.initWelcome();

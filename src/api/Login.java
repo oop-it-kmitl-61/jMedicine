@@ -49,7 +49,7 @@ public class Login {
       User user = new User(result.getString("id"), result.getString("username"),
           result.getString("title"), result.getString("firstname"), result.getString("lastname"),
           result.getString("email"), result.getString("gender"), result.getInt("age"),
-          result.getDouble("weight"), result.getDouble("height"), userTime);
+          result.getDouble("weight"), result.getDouble("height"), userTime, result.getBoolean("notification"));
 
       user.setUserMedicines(getAllMedicine(user.getUserId()));
       user.setUserDoctors(getAllDoctor(user.getUserId()));
@@ -77,7 +77,7 @@ public class Login {
       throw new LoginException("This username has been used.");
     }
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age, \"time\") VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO users (username, \"password\", email, title, firstname, lastname, gender, weight, height, age, \"time\", \"notification\") VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, user.getUserName());
@@ -91,6 +91,7 @@ public class Login {
     pStatement.setDouble(9, user.getUserHeight());
     pStatement.setInt(10, user.getUserAge());
     pStatement.setArray(11, connection.createArrayOf("text", user.getUserTime()));
+    pStatement.setBoolean(12, user.isShowNotification());
 
     ResultSet result = pStatement.executeQuery();
 

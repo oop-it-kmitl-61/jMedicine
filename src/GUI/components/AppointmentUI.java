@@ -46,7 +46,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.7.14
+ * @version 0.8.0
  * @since 0.7.0
  */
 
@@ -588,7 +588,7 @@ public class AppointmentUI {
     // JLabels
     JLabel labelTitle = makeBoldLabel(title);
     JLabel labelShortInfo = makeSmallerLabel(shortInfo);
-    JLabel labelPic = new JLabel();
+    JLabel labelPic = getAppointmentIcon();
 
     // Styling
     panelLoopInfo.setLayout(new BoxLayout(panelLoopInfo, BoxLayout.X_AXIS));
@@ -596,18 +596,12 @@ public class AppointmentUI {
     panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.PAGE_AXIS));
     setPadding(panelLoopInfo, 5, 0, 20, 0);
 
-    try {
-      Image img = ImageIO.read(new File(imgPath + "/system/calendar.png"));
-      labelPic.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) {
-    }
-
     panelPic.add(labelPic);
     panelInfo.add(labelTitle);
     panelInfo.add(labelShortInfo);
 
     setPadding(labelTitle, 5, 0, -10, 0);
-    setPadding(labelPic, 5, 10, 0, 0);
+    setPadding(labelPic, 5, 0, 0, 0);
 
     panelLoopInfo.add(panelPic);
     panelLoopInfo.add(panelInfo);
@@ -622,6 +616,16 @@ public class AppointmentUI {
     });
 
     return panelLoopInfo;
+  }
+
+  public static JLabel getAppointmentIcon() {
+    JLabel labelPic = makeLabel(" ");
+    try {
+      Image img = ImageIO.read(new File(imgPath + "/system/calendar.png"));
+      labelPic.setIcon(new ImageIcon(img));
+    } catch (Exception ignored) {
+    }
+    return labelPic;
   }
 
   static void reloadAppDoctors() {

@@ -9,23 +9,44 @@ import static GUI.GUIHelper.makeSubTitleLabel;
 import static GUI.GUIHelper.newCardBorder;
 import static GUI.GUIHelper.newFlowLayout;
 import static GUI.GUIHelper.newPanelLoop;
+import static GUI.GUIHelper.secondaryBlue;
 import static GUI.GUIHelper.setPadding;
+import static GUI.components.AppointmentUI.getAppointmentIcon;
 import static core.Core.getUser;
+import static core.MedicineUtil.tableSpoonCalc;
+import static core.MedicineUtil.teaSpoonCalc;
 import static core.Utils.*;
 import static core.MedicineUtil.getMedIcon;
 
+import api.AppointmentDB;
 import api.MedicineDB;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.TreeMap;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import notification.NotificationFactory;
+
+/**
+ * All methods about rendering overview components is here
+ *
+ * @author jMedicine
+ * @version 0.8.0
+ * @since 0.7.12
+ */
 
 public class Overview {
 
@@ -47,20 +68,37 @@ public class Overview {
 
   public JPanel renderOverview() {
     initTreeMap();
+    LocalDate today = LocalDate.now();
     LocalTime now = LocalTime.now();
-    Boolean morning, afternoon, evening, bed;
-    if (now.minusHours(1).getHour() == 7 && now.plusHours(1).getHour() == 9) {
-      morning = true;
-    } else if (now.minusHours(1).getHour() == 11 && now.plusHours(1).getHour() == 13) {
-      afternoon = true;
-    } else if (now.minusHours(1).getHour() == 17 && now.plusHours(1).getHour() == 19) {
-      evening = true;
-    } else if (now.minusHours(1).getHour() == 21 && now.plusHours(1).getHour() == 23) {
-      bed = true;
-    }
 
     JPanel panelMain = newPanelLoop();
-    //Date now = new Date();
+
+    // Fetches all appointments
+    ArrayList<Appointment> userAppointments = null;
+    try {
+      userAppointments = AppointmentDB.getAllAppointment(getUser().getUserId());
+    } catch (SQLException | ParseException e) {
+      e.printStackTrace();
+    }
+
+    // Filters only upcoming appointments
+    for (Appointment app : userAppointments) {
+      LocalDate appDate = LocalDate.parse(app.getDate().toString());
+      if (today.equals(appDate) || today.plusDays(1).equals(appDate)) {
+        panelMain.add(getTimePanel("app",true));
+        JPanel panelSub = newFlowLayout();
+        panelSub.add(getAppPanel(app));
+        panelSub.setBackground(secondaryBlue);
+        setPadding(panelSub, 10, 20, 20);
+        panelMain.add(panelSub);
+        if (getUser().isShowNotification()) {
+          try {
+            NotificationFactory.showNotification("You have an upcoming appointment");
+          } catch (UnsatisfiedLinkError ignored) {
+          }
+        }
+      }
+    }
 
     // Fetches all medicines
     ArrayList<Medicine> userMedicines = null;
@@ -71,35 +109,28 @@ public class Overview {
     }
 
     // Filters only active medicines
-    // TODO : Set "time" to what user defined
-    String time;
     for (Medicine medicine : userMedicines) {
-      if (medicine.getMedRemaining() > 0) {
+      if (medicine.getMedRemaining() > 0 && medicine.getMedEXP().after(new Date())) {
         if (medicine.getMedTime().contains("เช้า")) {
-          time = "08:30 น.";
-          appendMedicine(time, medicine);
+          appendMedicine(getUser().getUserTime()[0] + " น.", medicine);
         }
         if (medicine.getMedTime().contains("กลางวัน")) {
-          time = "12:30 น.";
-          appendMedicine(time, medicine);
+          appendMedicine(getUser().getUserTime()[1] + " น.", medicine);
         }
         if (medicine.getMedTime().contains("เย็น")) {
-          time = "18:30 น.";
-          appendMedicine(time, medicine);
+          appendMedicine(getUser().getUserTime()[2] + " น.", medicine);
         }
         if (medicine.getMedTime().contains("ก่อนนอน")) {
-          time = "22:30 น.";
-          appendMedicine(time, medicine);
+          appendMedicine(getUser().getUserTime()[3] + " น.", medicine);
         }
         if (medicine.getMedTime().contains("ทุก ๆ ")) {
           if (medicine.getLastTaken() == null) {
-            String startTime = timestampToTime(medicine.getDateStart());
-            time = startTime + " น.";
+            String startTime = timestampToTime(medicine.getDateStart()) + " น.";
+            appendMedicine(startTime, medicine);
           } else {
-            String startTime = timestampToTime(medicine.getLastTaken());
-            time = startTime + " น.";
+            String lastTaken = getNextInterval(medicine.getLastTaken(), Integer.valueOf(medicine.getMedDoseStr()));
+            appendMedicine(lastTaken, medicine);
           }
-          appendMedicine(time, medicine);
         }
       }
     }
@@ -109,9 +140,38 @@ public class Overview {
     for (String key : overviewItem.keySet()) {
       overviewCount++;
       JPanel panelSub = newFlowLayout();
-      panelMain.add(getTimePanel(key));
-      for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
-        panelSub.add(getDetailsPanel(med));
+      LocalTime currentTime = LocalTime.parse(key.split(" ")[0]);
+      boolean focus = false;
+
+      // Active period starts before the actual time for 10 minutes and ends after the actual time for 1 hour.
+      int curMinuteTime = currentTime.getHour() * 60 + currentTime.getMinute();
+      int checkTime = now.getHour() * 60 + now.getMinute();
+      int diff = curMinuteTime - checkTime;
+
+      if (diff <= 10 && diff >= -60) {
+        if (getUser().isShowNotification()) {
+          try {
+            NotificationFactory.showNotification("It's your med time!");
+          } catch (UnsatisfiedLinkError ignored) {
+          }
+        }
+
+        focus = true;
+        panelMain.add(getTimePanel(key, true));
+        for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
+          panelSub.add(getMedPanel(med, true));
+        }
+        panelSub.setBackground(secondaryBlue);
+      } else {
+        panelMain.add(getTimePanel(key, false));
+        for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
+          panelSub.add(getMedPanel(med, false));
+        }
+      }
+      if (focus) {
+        setPadding(panelSub, 10, 20, 20);
+      } else {
+        setPadding(panelSub, 10, 0, 20);
       }
       panelMain.add(panelSub);
     }
@@ -127,23 +187,74 @@ public class Overview {
     return panelMain;
   }
 
-  private JPanel getTimePanel(String time) {
+  private JPanel getTimePanel(String time, boolean now) {
     //JPanels
     JPanel panelMain = new JPanel(new BorderLayout());
     JPanel panelTime = newFlowLayout();
 
     // JLabels
-    JLabel labelTime = makeSubTitleLabel(time);
+    JLabel labelTime = makeSubTitleLabel("");
 
     // Styling
-    setPadding(panelMain, 18, 0, -2);
+    if (now) {
+      if (time.equals("app")) {
+        labelTime.setText("คุณมีนัดแพทย์ที่กำลังมาถึง");
+      } else {
+        labelTime.setText("ได้เวลาทานยารอบเวลา " + time);
+      }
+      panelMain.setBackground(secondaryBlue);
+      panelTime.setBackground(secondaryBlue);
+      labelTime.setForeground(Color.WHITE);
+      setPadding(panelMain, 14, 20, -6);
+    } else {
+      labelTime.setText(time);
+      setPadding(panelMain, 10, 0, -8);
+    }
 
     panelTime.add(labelTime);
     panelMain.add(panelTime);
     return panelMain;
   }
 
-  private JPanel getDetailsPanel(Medicine medicine) {
+  private JPanel getAppPanel(Appointment app) {
+    // JPanels
+    JPanel panelLoopInfo = new JPanel(new BorderLayout());
+    JPanel panelCard = new JPanel();
+    JPanel panelApp = newFlowLayout();
+    JPanel panelAppInfo = new JPanel();
+
+    // JLabels
+    JLabel labelPic = getAppointmentIcon();
+    JLabel labelAppName = makeBoldLabel(app.getDate() + " ตั้งแต่เวลา " + app.getTimeStart() + " น. - " + app.getTimeStop() + " น.");
+    JLabel labelAppSub = makeLabel(app.getDoctor() + " โรงพยาบาล" + app.getDoctor().getHospital());
+
+    // Styling
+    panelAppInfo.setLayout(new BoxLayout(panelAppInfo, BoxLayout.PAGE_AXIS));
+    panelCard.setLayout(new BoxLayout(panelCard, BoxLayout.PAGE_AXIS));
+    setPadding(labelPic, 6, 0, 0, 8);
+    setPadding(labelAppName, 7, 0, -12, 0);
+    setPadding(labelAppSub, 0, 0, 2, 0);
+    setPadding(panelLoopInfo, 0, 20, 4, 0);
+    setPadding(panelApp, 6, 36, 12, 0);
+      panelLoopInfo.setBackground(secondaryBlue);
+      panelCard.setBorder(BorderFactory.createCompoundBorder(
+          BorderFactory.createLineBorder(new Color(166, 166, 166)),
+          BorderFactory.createEmptyBorder(10, 10, 10, 10)
+      ));
+
+
+    panelAppInfo.add(labelAppName);
+    panelAppInfo.add(labelAppSub);
+
+    panelApp.add(labelPic);
+    panelApp.add(panelAppInfo);
+    panelCard.add(panelApp);
+
+    panelLoopInfo.add(panelCard);
+    return panelLoopInfo;
+  }
+
+  private JPanel getMedPanel(Medicine medicine, boolean now) {
 
     // JPanels
     JPanel panelLoopInfo = new JPanel(new BorderLayout());
@@ -163,13 +274,44 @@ public class Overview {
     JLabel labelPic = getMedIcon(medicine);
     JLabel labelMedName = makeBoldLabel(medicine.getMedName());
     JLabel labelAmount;
+
+    int medDose = medicine.getMedDose();
+    String medUnit = medicine.getMedUnit();
+    String doseInfo = medDose + " " + medUnit;
+
+    if (medicine.getMedType().equals("liquid")) {
+      // Convert ml to spoon
+      int table;
+      int tea;
+      try {
+        table = tableSpoonCalc(medDose);
+        tea = teaSpoonCalc(medDose);
+      } catch (NumberFormatException ignored) {
+        table = 0;
+        tea = 0;
+      }
+
+      String labelText = " (";
+      if (table > 0) {
+        labelText += table;
+        labelText += " ช้อนโต๊ะ";
+        if (tea > 0) {
+          labelText += " ";
+          labelText += tea;
+          labelText += " ช้อนชา";
+        }
+      } else {
+        labelText += tea;
+        labelText += " ช้อนชา";
+      }
+      labelText += ")";
+      doseInfo += labelText;
+    }
+
     if (medicine.getMedTime().get(0).equals("ทุก ๆ ")) {
-      labelAmount = makeSmallerLabel(
-          medicine.getMedDose() + " " + medicine.getMedUnit() + " " + medicine.getMedTime().get(0)
-              + doseStr);
+      labelAmount = makeSmallerLabel(doseInfo + " " + medicine.getMedTime().get(0) + doseStr);
     } else {
-      labelAmount = makeSmallerLabel(
-          medicine.getMedDose() + " " + medicine.getMedUnit() + " " + doseStr);
+      labelAmount = makeSmallerLabel(doseInfo + " " + doseStr);
     }
 
     // JButtons
@@ -179,13 +321,22 @@ public class Overview {
     // Styling
     panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));
     panelCard.setLayout(new BoxLayout(panelCard, BoxLayout.PAGE_AXIS));
-    panelCard.setBorder(newCardBorder());
     setPadding(labelPic, 6, 0, 0, 8);
     setPadding(labelMedName, 7, 0, -12, 0);
     setPadding(labelAmount, 0, 0, 2, 0);
     setPadding(panelLoopInfo, 0, 20, 4, 0);
     setPadding(panelMed, 6, 36, 12, 0);
     setPadding(panelBtn, 0, 0, -6, -3);
+    if (now) {
+      panelLoopInfo.setBackground(secondaryBlue);
+      panelCard.setBorder(BorderFactory.createCompoundBorder(
+          BorderFactory.createLineBorder(new Color(166, 166, 166)),
+          BorderFactory.createEmptyBorder(10, 10, 10, 10)
+      ));
+    } else {
+      // Advanced border has problem rendering the background
+      panelCard.setBorder(newCardBorder());
+    }
 
     panelMedInfo.add(labelMedName);
     panelMedInfo.add(labelAmount);
@@ -205,5 +356,12 @@ public class Overview {
 
   public int getOverviewCount() {
     return overviewCount;
+  }
+
+  private static String getNextInterval(String timestamp, int nextHour) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm");
+    LocalDateTime date = LocalDateTime.parse(timestamp, formatter);
+    LocalDateTime next = date.plusHours(nextHour);
+    return next.getHour() + ":" + next.getMinute() + " น.";
   }
 }

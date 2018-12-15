@@ -26,21 +26,21 @@ public class UserDB {
   }
 
   public static User updateUserTime() throws SQLException {
-
+    User user = getUser();
     String SQLCommand = "UPDATE users SET \"time\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setArray(1, connection.createArrayOf("text", getUser().getUserTime()));
-    pStatement.setObject(2, getUser().getUserId(), Types.OTHER);
+    pStatement.setObject(2, user.getUserId(), Types.OTHER);
 
     pStatement.executeUpdate();
 
     return getUser();
   }
 
-  public static User updateUserData(User user) throws SQLException {
-
-    String SQLCommand = "UPDATE users SET username = ?, email = ?, title = ?, firstname = ?, lastname = ?, gender = ?, weight = ?, height = ?, age = ? WHERE  id = ?";
+  public static User updateUserData() throws SQLException {
+    User user = getUser();
+    String SQLCommand = "UPDATE users SET username = ?, email = ?, title = ?, firstname = ?, lastname = ?, gender = ?, weight = ?, height = ?, age = ?, notification = ? WHERE  id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, user.getUserName());
@@ -52,17 +52,18 @@ public class UserDB {
     pStatement.setDouble(7, user.getUserWeight());
     pStatement.setDouble(8, user.getUserHeight());
     pStatement.setDouble(9, user.getUserAge());
-    pStatement.setObject(10, user.getUserId(), Types.OTHER);
+    pStatement.setBoolean(10, user.isShowNotification());
+    pStatement.setObject(11, user.getUserId(), Types.OTHER);
 
     pStatement.executeUpdate();
 
     return user;
   }
 
-  public static User updateUserPassword(User user, char[] password)
+  public static User updateUserPassword(char[] password)
       throws SQLException, NoSuchAlgorithmException {
+    User user = getUser();
     String encrypted = sha256(String.valueOf(password));
-
     String SQLCommand = "UPDATE users SET \"password\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
@@ -74,7 +75,8 @@ public class UserDB {
     return user;
   }
 
-  public static void deleteUser(User user) throws SQLException {
+  public static void deleteUser() throws SQLException {
+    User user = getUser();
     String SQLCommand = "DELETE FROM users WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);

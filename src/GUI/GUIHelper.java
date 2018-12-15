@@ -63,7 +63,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.13
+ * @version 0.7.17
  * @since 0.3.0
  */
 
@@ -71,6 +71,7 @@ public class GUIHelper {
 
   public static Locale locale = new Locale("th", "TH");
   public static Color mainBlue = new Color(20, 101, 155);
+  public static Color secondaryBlue = new Color(68, 157, 209);
 
   final static LocalDate today = LocalDate.now();
   public static DateFormat formatHM = new SimpleDateFormat("HH:mm");
@@ -145,6 +146,22 @@ public class GUIHelper {
     } catch (Exception ignored) {
       JOptionPane
           .showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
+  public static void fireInfoDialog(String message) {
+    JLabel labelMessage = makeLabel(message);
+    setPadding(labelMessage, 0, 10, 0, 0);
+    try {
+      beep("warning");
+      Image img = ImageIO.read(new File(imgWarningSrc));
+      Icon icon = new ImageIcon(img);
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE,
+              icon);
+    } catch (Exception ignored) {
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE);
     }
   }
 
@@ -274,17 +291,23 @@ public class GUIHelper {
   public static TimePicker makeTimeNowPicker() {
     TimePickerSettings timeSettings = new TimePickerSettings(locale);
     timeSettings.initialTime = LocalTime.of(8, 00);
+    timeSettings.setFormatForDisplayTime("HH:mm");
+    timeSettings.setFormatForMenuTimes("HH:mm");
     timeSettings.setSizeTextFieldMinimumWidth(70);
     TimePicker timePicker = new TimePicker(timeSettings);
+    timePicker.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     timePicker.setTimeToNow();
     return timePicker;
   }
 
   public static TimePicker makeTimePicker() {
     TimePickerSettings timeSettings = new TimePickerSettings(locale);
+    timeSettings.setFormatForDisplayTime("HH:mm");
+    timeSettings.setFormatForMenuTimes("HH:mm");
     timeSettings.setSizeTextFieldMinimumWidth(70);
     timeSettings.initialTime = LocalTime.of(8, 00);
     TimePicker timePicker = new TimePicker(timeSettings);
+    timePicker.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     return timePicker;
   }
 
@@ -377,9 +400,17 @@ public class GUIHelper {
 
   public static void backTo(String backTo) {
     /* Navigates user back to some page */
-    if (backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
+    if (backTo.equals("ลงทะเบียน") || backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
+      if (frameWelcome == null) {
+        initWelcome();
+      }
+      frameWelcome.setVisible(true);
       CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-      cl.show(panelWelcome, "ยังไม่ได้เข้าสู่ระบบ");
+      cl.show(panelWelcome, backTo);
+      try {
+        frameMain.setVisible(false);
+      } catch (NullPointerException ignored) {
+      }
     } else {
       CardLayout cl = (CardLayout) (panelRight.getLayout());
       cl.show(panelRight, backTo);
@@ -390,21 +421,7 @@ public class GUIHelper {
     /* Works like <a> */
     label.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-        if (href.equals("ลงทะเบียน") || href.equals("ยังไม่ได้เข้าสู่ระบบ")) {
-          if (frameWelcome == null) {
-            initWelcome();
-          }
-          frameWelcome.setVisible(true);
-          CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-          cl.show(panelWelcome, href);
-          try {
-            frameMain.setVisible(false);
-          } catch (NullPointerException ignored) {
-          }
-        } else {
-          CardLayout cl = (CardLayout) (panelRight.getLayout());
-          cl.show(panelRight, href);
-        }
+        backTo(href);
       }
     });
   }

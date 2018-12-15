@@ -15,8 +15,10 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.ZoneId;
@@ -29,6 +31,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -37,6 +40,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -44,13 +48,13 @@ import javax.swing.event.DocumentListener;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.16
+ * @version 0.8.0
  * @since 0.7.0
  */
 
 public class MedicineUI {
 
-  private static JPanel panelMedicines;
+  private static JPanel panelMedicines, panelAddMedicine;
   private static JButton btnSave;
   private static JButton btnEdit;
   private static JButton btnAddFirst;
@@ -98,8 +102,6 @@ public class MedicineUI {
         } else {
           activeMedicines.add(medCurrent);
         }
-
-
       }
 
       // Start making active medicine cards
@@ -125,11 +127,15 @@ public class MedicineUI {
 
     }
 
-    JScrollPane scrollPane = makeScrollPane(panelLoop);
-
-    // Add all panels into the main panel
     panelMedicines.add(panelTitle, BorderLayout.NORTH);
-    panelMedicines.add(scrollPane);
+
+    if (userMedicines.size() < 4) {
+      setPadding(panelLoop, 0, 0, 1000, 10);
+      panelMedicines.add(panelLoop);
+    } else {
+      setPadding(panelLoop, 0, 0, 20, 10);
+      panelMedicines.add(makeScrollPane(panelLoop));
+    }
 
     panelRight.add(panelMedicines, "ยาทั้งหมด");
     panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
@@ -301,7 +307,7 @@ public class MedicineUI {
     /* Creates outer GUI when user add a new medicine from all medicines page. */
 
     // JPanels
-    JPanel panelAddMedicine = new JPanel(new BorderLayout());
+    panelAddMedicine = new JPanel(new BorderLayout());
     JPanel panelBody = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
 
@@ -347,6 +353,7 @@ public class MedicineUI {
     // Styling
     setPadding(panelFirstMed, 20, 20, 0);
     setPadding(panelBody, 0, 0, 20, 20);
+    setPadding(panelBtn, 0, 0, 0, -8);
     setPadding(panelTitle, 20, 0, 20, 20);
 
     // Listener
@@ -421,6 +428,8 @@ public class MedicineUI {
     JLabel labelHint1 = makeSmallerLabel("1 ช้อนชา = 5 มิลลิลิตร");
     JLabel labelHint2 = makeSmallerLabel("1 ช้อนโต๊ะ = 15 มิลลิลิตร");
     JLabel labelAutoConvert = makeLabel(" ");
+
+    JButton btnAuto = makeBlueButton("คำนวณยาน้ำอัตโนมัติ");
 
     // Arrays
     String[] medType = getMedType();
@@ -1028,10 +1037,131 @@ public class MedicineUI {
       }
     });
 
+    JFrame frameAuto = new JFrame("ระบบคำนวณปริมาณยาน้ำอัตโนมัติ");
+
+    btnAuto.addActionListener(e -> {
+      // JOptionPane is not wrapping text
+      String text = "<html><body><p style='text-align: center; width: 400px;'>ระบบคำนวณการรับประทานยาน้ำอัตโนมัติสำหรับเด็กอายุไม่เกิน 14 ปีของโปรแกรม jMedicine เป็นเพียงเครื่องมือช่วยอำนวยความสะดวกในการกำหนดปริมาณยาที่คำนวณจากอายุและน้ำหนักที่ท่านได้บันทึกไว้ โปรดปรึกษาการใช้ยาจากเภสัชกรก่อนทุกครั้ง การใช้ระบบนี้หมายความว่าท่านได้ทำความเข้าใจและศึกษาข้อมูลยาจากเอกสารประกอบตัวยาเรียบร้อยแล้ว</p></body></html>";
+      fireInfoDialog(text);
+
+      // JPanels
+      JPanel panelMain = new JPanel(new BorderLayout());
+      JPanel panelContainer = new JPanel();
+      JPanel panel = newFlowLayout();
+
+      // Styling
+      panelContainer.setLayout(new BoxLayout(panelContainer, BoxLayout.PAGE_AXIS));
+      setPadding(panelMain, 20);
+
+      // Required information
+      int age = getUser().getUserAge();
+      double weight = getUser().getUserWeight();
+
+      String[] availableMedicines = {"Amoxicillin Syrup", "Bromhexine Syrup", "Cloxacillin Syrup", "CPM Syrup", "Paracetamol Syrup"};
+      String[] availableIntensities = {"125 mg / 5 ml", "4 mg / 5 ml", "125 mg / 5 ml", "2 mg / 5 ml", "120 mg / 5 ml", "125 mg / 5 ml", "2 mg / 5 ml"};
+      String[] medicineDescriptions = {"ยาแก้อักเสบ ฆ่าเชื้อ", "ยาแก้ไอ ละลายเสมหะ", "ยาฆ่าเชื้อ", "ยาแก้แพ้", "ยาแก้ปวด"};
+      double[] medicineDoses = {20*weight/3, 0.7*weight/3, 50*weight/4, 0.35*weight/6, 10*weight/6};
+      ArrayList<String[]> medicineTimes = new ArrayList();
+      medicineTimes.add(new String[] {"ทุก ๆ "});
+      medicineTimes.add(new String[] {"เช้า", "กลางวัน", "เย็น"});
+      medicineTimes.add(new String[] {"เช้า", "กลางวัน", "เย็น", "ก่อนนอน"});
+      medicineTimes.add(new String[] {"ทุก ๆ "});
+      medicineTimes.add(new String[] {"ทุก ๆ "});
+      String[] medicineDoseStrs = {"8", "หลังอาหาร", "หลังอาหาร", "4", "4"};
+
+      JLabel labelIntensity = makeLabel(availableIntensities[0]);
+      JButton btnSubmit = makeBlueButton("คำนวณยา");
+
+      JComboBox<String> cbMedicines = makeComboBox(availableMedicines);
+
+      btnSubmit.addActionListener(action -> {
+        // Reset all
+        cbMorning.setSelected(false);
+        cbAfternoon.setSelected(false);
+        cbEvening.setSelected(false);
+        cbBed.setSelected(false);
+        cbEvery.setSelected(false);
+        rbAfter.setSelected(false);
+        rbBefore.setSelected(false);
+        rbImmediately.setSelected(false);
+        tfEvery.setText("");
+        int selectedIndex = cbMedicines.getSelectedIndex();
+        tfMedName.setText(availableMedicines[selectedIndex]);
+        tfMedDescription.setText(medicineDescriptions[selectedIndex]);
+        cbMedType.setSelectedIndex(2);
+        tfAmount.setText(String.valueOf((int) medicineDoses[selectedIndex]));
+        for (String time : medicineTimes.get(selectedIndex)) {
+          if (time.equals("เช้า")) {
+            cbMorning.setSelected(true);
+          }
+          if (time.equals("กลางวัน")) {
+            cbAfternoon.setSelected(true);
+          }
+          if (time.equals("เย็น")) {
+            cbEvening.setSelected(true);
+          }
+          if (time.equals("ก่อนนอน")) {
+            cbBed.setSelected(true);
+          }
+          if (time.equals("ทุก ๆ ")) {
+            cbEvery.setSelected(true);
+            tfEvery.setText(medicineDoseStrs[selectedIndex]);
+          }
+        }
+        if (medicineDoseStrs[selectedIndex].equals("หลังอาหาร")) {
+          rbAfter.setSelected(true);
+        }
+        frameAuto.setVisible(false);
+      });
+      cbMedicines.addActionListener(selection -> {
+        int current = cbMedicines.getSelectedIndex();
+        labelIntensity.setText(availableIntensities[current]);
+      });
+
+      panel.add(makeBoldLabel("ข้อมูลปัจจุบันของคุณ: "));
+      panel.add(makeLabel("อายุ: " + age + " ปี, น้ำหนัก: " + weight + " กิโลกรัม"));
+      panelContainer.add(panel);
+
+      panel = newFlowLayout();
+      panel.add(makeBoldLabel("เลือกตัวยา:"));
+      panel.add(cbMedicines);
+      panelContainer.add(panel);
+
+      panel = newFlowLayout();
+      panel.add(makeBoldLabel("ความเข้มข้นของยา:"));
+      panel.add(labelIntensity);
+      panelContainer.add(panel);
+
+      panel = newFlowLayout();
+      panel.add(makeLabel("เมื่อกดปุ่มคำนวณยา ระบบจะกรอกปริมาณยาและเวลาที่ต้องรับประทานให้โดยอัตโนมัติ"));
+      panelContainer.add(panel);
+
+      panel = newFlowLayout();
+      panel.add(makeLabel("อย่างไรก็ตาม ท่านต้องกรอกข้อมูลเพิ่มเติมอื่น ๆ ให้ครบถ้วนในช่องที่มีเครื่องหมาย *"));
+      panelContainer.add(panel);
+
+      panelMain.add(panelContainer, BorderLayout.CENTER);
+      panelMain.add(btnSubmit, BorderLayout.SOUTH);
+
+      frameAuto.add(panelMain);
+      frameAuto.setSize(new Dimension(660, 380));
+      frameAuto.setMinimumSize(new Dimension(620, 380));
+      frameAuto.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+      frameAuto.setLocationRelativeTo(null);
+      frameAuto.setVisible(true);
+    });
+
     panelLiquidHint.add(getInfoPic());
     panelLiquidHint.add(labelHint1);
     panelLiquidHint.add(labelHint2);
 
+    if (getUser().getUserAge() > 0 && getUser().getUserAge() < 15) {
+      panelSub = newFlowLayout();
+      panelSub.add(btnAuto);
+      panelBody.add(panelSub);
+    }
+
+    panelSub = newFlowLayout();
     panelSub.add(labelHeading1);
     panelBody.add(panelSub);
 
@@ -1178,6 +1308,8 @@ public class MedicineUI {
 
   private static void reload() {
     panelRight.remove(panelMedicines);
+    panelRight.remove(panelAddMedicine);
+    panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
     panelAllMedicines();
   }
 }

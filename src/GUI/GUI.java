@@ -4,12 +4,16 @@ import static GUI.GUIHelper.*;
 import static GUI.components.AppointmentUI.*;
 import static GUI.components.DoctorUI.*;
 import static GUI.components.MedicineUI.*;
+import static api.UserDB.*;
 import static core.Core.getUser;
+import static core.Core.setUser;
 import static core.UserUtil.getGenderIndex;
 import static core.UserUtil.getGenders;
 import static core.UserUtil.getPrefixIndex;
 import static core.UserUtil.getPrefixes;
 
+import api.Login;
+import api.LoginException;
 import api.UserDB;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
@@ -17,36 +21,28 @@ import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.Overview;
 import core.User;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Font;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Array;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
-import javax.print.Doc;
 import javax.swing.*;
-
 import core.LocationHelper;
-
 
 /**
  * All GUIs will be centralized here. GUI that needed too much methods has been moved to
  * /components
  *
  * @author jMedicine
- * @version 0.7.16
+ * @version 0.8.0
  * @since 0.1.0
  */
 
@@ -54,7 +50,7 @@ public class GUI {
 
   public static JFrame frameWelcome, frameMain;
   public static JPanel panelRight, panelOverview, panelWelcome;
-  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
+  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword, panelSettings;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp, btnSkipAddingInfo;
@@ -65,7 +61,7 @@ public class GUI {
   public GUI(Dimension windowSize) {
     GUI.util = new GUIUtil();
     GUI.windowSize = windowSize;
-    GUI.minSize = new Dimension(800, 600);
+    GUI.minSize = new Dimension(800, 680);
     JOptionPane.setDefaultLocale(locale);
     GUIHelper.setup();
   }
@@ -118,15 +114,15 @@ public class GUI {
     panelTitle.add(makeTitleLabel(today));
 
     // Styling
-    setPadding(panelTitle, 0, 0, -12, 2);
+    setPadding(panelTitle, 0, 0, 0, 2);
 
     // Add all panels into the main panel
     panelOverview.add(panelTitle, BorderLayout.NORTH);
     if (overview.getOverviewCount() < 3) {
-      setPadding(panelLoop, 0, 0, 1000, 0);
+      setPadding(panelLoop, 0, 0, 1000, 10);
       panelOverview.add(panelLoop);
     } else {
-      setPadding(panelLoop, 0, 0, 20, 0);
+      setPadding(panelLoop, 0, 0, 20, 10);
       panelOverview.add(makeScrollPane(panelLoop));
     }
 
@@ -173,7 +169,7 @@ public class GUI {
     /* Creates GUI displaying user's settings */
 
     // JPanels
-    JPanel panelSettings = new JPanel(new BorderLayout());
+    panelSettings = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
     JPanel panelBody = new JPanel();
 
@@ -181,13 +177,21 @@ public class GUI {
 
     // JToggle
     JToggleButton toggleNoti = makeToggle("เปิดการแจ้งเตือน (macOS เท่านั้น)", true);
+    toggleNoti.setSelected(getUser().isShowNotification());
+
+    String userFullName;
+      if (getUser().getUserFirstName().equals("")) {
+        userFullName = "(ยังไม่ได้ตั้งชื่อ)";
+      } else {
+        userFullName = getUser().getUserPrefix() + getUser().getUserFirstName() + " " + getUser().getUserLastName();
+      }
 
     // JLabels
     JLabel labelEditProfile = makeLabel("แก้ไขข้อมูลส่วนตัว");
     JLabel labelEditTime = makeLabel("ตั้งค่าเวลา");
     JLabel labelSignOut = makeLabel("ออกจากระบบ");
     JLabel labelAbout = makeLabel("เกี่ยวกับ");
-    JLabel labelUserName = makeTitleLabel(getUser().getUserFullName());
+    JLabel labelUserName = makeTitleLabel(userFullName);
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
@@ -195,10 +199,34 @@ public class GUI {
     setPadding(panelBody, 20, 0, 180);
     setPadding(labelUserName, 0, 0, 20, 0);
 
+    // Listeners
     makeLabelClickable(labelEditProfile, "แก้ไขข้อมูลส่วนตัว");
     makeLabelClickable(labelEditTime, "ตั้งค่าเวลา");
     makeLabelClickable(labelAbout, "เกี่ยวกับ");
-    makeLabelClickable(labelSignOut, "ยังไม่ได้เข้าสู่ระบบ");
+    labelSignOut.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        setUser(null);
+        backTo("ยังไม่ได้เข้าสู่ระบบ");
+      }
+    });
+    toggleNoti.addActionListener(e -> {
+      String successMessage = "";
+      if(toggleNoti.isSelected()){
+        getUser().setShowNotification(true);
+        successMessage = "เปิดการแจ้งเตือนเรียบร้อยแล้ว";
+      } else {
+        getUser().setShowNotification(false);
+        successMessage = "ปิดการแจ้งเตือนเรียบร้อยแล้ว";
+      }
+      try {
+        updateUserData();
+        fireSuccessDialog(successMessage);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+        fireDBErrorDialog();
+      }
+    });
 
     JPanel panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ผู้ใช้งานปัจจุบัน"));
@@ -241,7 +269,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.16"));
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.8.0"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -402,8 +430,6 @@ public class GUI {
     panelSignIn.add(space, gbc);
 
     panelWelcome.add(panelSignIn, "ยังไม่ได้เข้าสู่ระบบ");
-    panelWelcome.add(panelFirstInfo(), "เพิ่มข้อมูลส่วนตัว");
-    panelWelcome.add(panelFirstMedicine(), "เพิ่มยาตัวแรก");
 
     util.listeners();
 
@@ -462,6 +488,9 @@ public class GUI {
     setPadding(panelTitle, 20, 0, 20, 20);
     setPadding(panelBody, 0, 0, 1000, 28);
 
+    // Listener
+    btnSkipAddingInfo.addActionListener(e -> promptFirstMedicine());
+
     JPanel panelSub = newFlowLayout();
     panelSub.add(cbPrefix);
     panelSub.add(labelFName);
@@ -489,7 +518,35 @@ public class GUI {
     panelBody.add(panelSub);
 
     // Listener
-    // TODO : ActionPerformed for adding info
+    btnSave.addActionListener(e -> {
+      String fName = tfFName.getText();
+      String lName = tfLName.getText();
+      String age = tfAge.getText();
+      String weight = tfWeight.getText();
+      String height = tfHeight.getText();
+      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height.equals("")) {
+        fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
+      } else {
+        getUser().setUserPrefix(cbPrefix.getSelectedItem().toString());
+        getUser().setUserFirstName(tfFName.getText());
+        getUser().setUserLastName(tfLName.getText());
+        getUser().setUserGender(cbGender.getSelectedItem().toString());
+        getUser().setUserAge(Integer.parseInt(tfAge.getText()));
+        getUser().setUserWeight(Double.parseDouble(tfWeight.getText()));
+        getUser().setUserHeight(Double.parseDouble(tfHeight.getText()));
+
+        try {
+          UserDB.updateUserData();
+          fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
+          panelRight.remove(panelSettings);
+          panelSettings();
+          promptFirstMedicine();
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+          fireDBErrorDialog();
+        }
+      }
+    });
 
     panelFirstInfo.add(panelTitle, BorderLayout.NORTH);
     panelFirstInfo.add(panelBody, BorderLayout.CENTER);
@@ -665,92 +722,116 @@ public class GUI {
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
-    btnSave.addActionListener(e -> {
-      user.setUserPrefix(cbPrefix.getSelectedItem().toString());
-      user.setUserFirstName(tfFName.getText());
-      user.setUserLastName(tfLName.getText());
-      user.setUserGender(cbGender.getSelectedItem().toString());
-      user.setUserAge(Integer.parseInt(tfAge.getText()));
-      user.setUserWeight(Double.parseDouble(tfWeight.getText()));
-      user.setUserHeight(Double.parseDouble(tfHeight.getText()));
+    // Password Changing Frame
+    JFrame passwordEditFrame = new JFrame("เปลี่ยนรหัสผ่าน");
+    JPanel panel = new JPanel(new BorderLayout());
+    JPanel panelPasswordEdit = new JPanel(new GridLayout(4, 2));
 
+    JPasswordField oldPasswordField = makePasswordField(20);
+    JPasswordField newPasswordField = makePasswordField(20);
+    JPasswordField confirmNewPasswordField = makePasswordField(20);
+
+    JLabel oldPasswordLabel = makeLabel("รหัสผ่านปัจจุบัน");
+    JLabel newPasswordLabel = makeLabel("รหัสผ่านใหม่");
+    JLabel confirmNewPasswordLabel = makeLabel("ยืนยันรหัสผ่านใหม่");
+
+    JButton passwordConfirmButton = makeBlueButton("ยืนยัน");
+
+    setPadding(panel, 20);
+
+    panelPasswordEdit.add(oldPasswordLabel);
+    panelPasswordEdit.add(oldPasswordField);
+    panelPasswordEdit.add(newPasswordLabel);
+    panelPasswordEdit.add(newPasswordField);
+    panelPasswordEdit.add(confirmNewPasswordLabel);
+    panelPasswordEdit.add(confirmNewPasswordField);
+
+    panel.add(panelPasswordEdit, BorderLayout.CENTER);
+    panel.add(passwordConfirmButton, BorderLayout.SOUTH);
+
+    passwordEditFrame.add(panel);
+    passwordEditFrame.setMinimumSize(new Dimension(480, 240));
+    passwordEditFrame.setSize(new Dimension(480, 270));
+    passwordEditFrame.setVisible(false);
+    passwordEditFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    passwordEditFrame.setLocationRelativeTo(null);
+
+    // Password Changing
+    btnEditPwd.addActionListener(e -> {
+      passwordEditFrame.setVisible(true);
+    });
+
+    passwordConfirmButton.addActionListener(ev -> {
       try {
-        UserDB.updateUserData(user);
-        fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
-        backTo("การตั้งค่า");
-        panelRight.remove(panelMain);
-        panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
-      } catch (SQLException ex) {
-        ex.printStackTrace();
-        fireDBErrorDialog();
+        Login.doSignIn(user.getUserName(), oldPasswordField.getPassword());
+        if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
+          fireErrorDialog("รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน");
+        } else if (newPasswordField.getPassword().length < 6) {
+          fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
+        } else if (Arrays.equals(oldPasswordField.getPassword(), newPasswordField.getPassword())) {
+          fireErrorDialog("รหัสผ่านใหม่ไม่สามารถเป็นรหัสเดิมได้");
+        } else {
+          updateUserPassword(newPasswordField.getPassword());
+          oldPasswordField.setText("");
+          newPasswordField.setText("");
+          confirmNewPasswordField.setText("");
+          passwordEditFrame.setVisible(false);
+          fireSuccessDialog("รหัสผ่านถูกเปลี่ยนเรียบร้อย");
+        }
+      } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
+        fireErrorDialog("รหัสผ่านปัจจุบันไม่ถูกต้อง");
+      }
+    });
+
+    // Remove account
+    btnRemoveAccount.addActionListener(e -> {
+      int result = fireConfirmDialog("คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
+      if (result == JOptionPane.YES_OPTION) {
+        try {
+          deleteUser();
+          fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
+          backTo("ยังไม่ได้เข้าสู่ระบบ");
+        } catch (SQLException e1) {
+          e1.printStackTrace();
+          fireDBErrorDialog();
+        }
+      }
+    });
+
+    // Update user information
+    btnSave.addActionListener(e -> {
+      String fName = tfFName.getText();
+      String lName = tfLName.getText();
+      String age = tfAge.getText();
+      String weight = tfWeight.getText();
+      String height = tfHeight.getText();
+      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height.equals("")) {
+        fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน");
+      } else {
+        user.setUserPrefix(cbPrefix.getSelectedItem().toString());
+        user.setUserFirstName(fName);
+        user.setUserLastName(lName);
+        user.setUserGender(cbGender.getSelectedItem().toString());
+        user.setUserAge(Integer.parseInt(age));
+        user.setUserWeight(Double.parseDouble(weight));
+        user.setUserHeight(Double.parseDouble(height));
+
+        try {
+          UserDB.updateUserData();
+          fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
+          panelRight.remove(panelSettings);
+          panelSettings();
+          backTo("การตั้งค่า");
+          panelRight.remove(panelMain);
+          panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+          fireDBErrorDialog();
+        }
       }
     });
 
     panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
-
-    btnEditPwd.addActionListener(e -> {
-      // TODO: Update password changing GUI
-      JFrame passwordEditFrame = new JFrame();
-      passwordEditFrame.setLayout(new GridLayout(4, 2));
-
-      JPasswordField oldPasswordField = makePasswordField(20);
-      JPasswordField newPasswordField = makePasswordField(20);
-      JPasswordField confirmNewPasswordField = makePasswordField(20);
-
-      JLabel oldPasswordLabel = new JLabel("รหัสผ่านเก่า");
-      oldPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
-      JLabel newPasswordLabel = new JLabel("รหัสผ่านใหม่");
-      newPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
-      JLabel confirmNewPasswordLabel = new JLabel("ยืนยันรหัสผ่านใหม่");
-      confirmNewPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
-
-      JButton confirmButton = new JButton("ยืนยัน");
-      confirmButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
-      JButton cancelButton = new JButton("ยกเลิก");
-      cancelButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
-
-      passwordEditFrame.add(oldPasswordLabel);
-      passwordEditFrame.add(oldPasswordField);
-      passwordEditFrame.add(newPasswordLabel);
-      passwordEditFrame.add(newPasswordField);
-      passwordEditFrame.add(confirmNewPasswordLabel);
-      passwordEditFrame.add(confirmNewPasswordField);
-      passwordEditFrame.add(confirmButton);
-      passwordEditFrame.add(cancelButton);
-
-      passwordEditFrame.setSize(480, 240);
-      passwordEditFrame.setVisible(true);
-      passwordEditFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      passwordEditFrame.setLocationRelativeTo(null);
-
-      // TODO: Finish update password code
-      confirmButton.addActionListener(em -> {
-        try {
-          if (true) {
-            // TODO: Finish this
-            fireErrorDialog("รหัสผ่านเดิมไม่ถูกต้อง");
-          } else if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
-            fireErrorDialog("รหัสผ่านใหม่ไม่ตรงกัน");
-          } else if (true) {
-            // TODO: Finish this
-            fireErrorDialog("รหัสผ่านใหม่สั้นเกินไป");
-          } else {
-            UserDB.updateUserPassword(user, newPasswordField.getPassword());
-          }
-        } catch (SQLException | NoSuchAlgorithmException ex) {
-          ex.printStackTrace();
-        }
-      });
-
-      cancelButton.addActionListener(em -> {
-        oldPasswordField.setText("");
-        newPasswordField.setText("");
-        confirmNewPasswordField.setText("");
-        passwordEditFrame.setVisible(false);
-      });
-
-    });
-
   }
 
   private static void panelEditTime() {
@@ -778,7 +859,7 @@ public class GUI {
 
     // JLabels
     JLabel labelDescription = makeLabel(
-            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
+            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนให้ทานยาก่อนเวลาที่ท่่านได้กำหนดไว้ 10 นาที");
     JLabel labelMorning = makeBoldLabel("เช้า");
     JLabel labelAfternoon = makeBoldLabel("กลางวัน");
     JLabel labelEvening = makeBoldLabel("เย็น");
@@ -842,7 +923,9 @@ public class GUI {
         UserDB.updateUserTime();
         fireSuccessDialog("บันทึกเวลาสำเร็จ");
         backTo("การตั้งค่า");
+        panelRight.remove(panelOverview);
         panelRight.remove(panelMain);
+        panelOverview();
         panelRight.add(panelMain, "ตั้งค่าเวลา");
       } catch (SQLException ex) {
         ex.printStackTrace();
@@ -920,6 +1003,20 @@ public class GUI {
     panelMain.add(makeScrollPane(panelBody), BorderLayout.CENTER);
 
     panelRight.add(panelMain, "เกี่ยวกับ");
+  }
+
+  static void promptFirstMedicine() {
+    if (getUser().getUserMedicines().size() == 0) {
+      panelWelcome.add(panelFirstMedicine(), "เพิ่มยาตัวแรก");
+      CardLayout cl = (CardLayout) (panelWelcome.getLayout());
+      cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+    } else {
+      frameWelcome.setVisible(false);
+      frameMain.setVisible(true);
+      frameWelcome = null;
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, "ภาพรวม");
+    }
   }
 
   static JButton[] getButtons() {

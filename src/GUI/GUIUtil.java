@@ -1,11 +1,13 @@
 package GUI;
 
 import static GUI.GUI.*;
+import static GUI.components.MedicineUI.panelFirstMedicine;
 import static api.Login.doSignIn;
 import static api.Login.doSignUp;
+import static core.Core.getUser;
+import static core.Core.setUser;
 
 import api.LoginException;
-import core.Core;
 import core.User;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -21,18 +23,15 @@ import javax.swing.SwingWorker;
  * An utility class for GUI.java
  *
  * @author jMedicine
- * @version 0.7.14
+ * @version 0.7.17
  * @since 0.7.0
  */
 
 public class GUIUtil implements ActionListener, KeyListener {
 
-  private User user;
-
   public void listeners() {
     btnSignIn.addActionListener(this);
     btnSignUp.addActionListener(this);
-    btnSkipAddingInfo.addActionListener(this);
     tfUserName.addKeyListener(this);
     tfPassword.addKeyListener(this);
   }
@@ -53,8 +52,7 @@ public class GUIUtil implements ActionListener, KeyListener {
           String username = tfUserName.getText();
           char[] password = tfPassword.getPassword();
           try {
-            user = doSignIn(username, password);
-            Core.setUser(user);
+            setUser(doSignIn(username, password));
           } catch (LoginException ignored) {
             panelLoading.setVisible(false);
             panelErrorSignIn.setVisible(true);
@@ -66,9 +64,10 @@ public class GUIUtil implements ActionListener, KeyListener {
 
         @Override
         protected void done() {
-          if (user != null) {
+          if (getUser() != null) {
             main();
-            if (user.getUserFirstName().equals("")) {
+            if (getUser().getUserFirstName().equals("")) {
+              panelWelcome.add(panelFirstInfo(), "เพิ่มข้อมูลส่วนตัว");
               CardLayout cl = (CardLayout) (panelWelcome.getLayout());
               cl.show(panelWelcome, "เพิ่มข้อมูลส่วนตัว");
             } else {
@@ -125,20 +124,6 @@ public class GUIUtil implements ActionListener, KeyListener {
     }
     if (btn == btnSkipAddingInfo) {
       promptFirstMedicine();
-    }
-
-  }
-
-  private void promptFirstMedicine() {
-    if (user.getUserMedicines().size() == 0) {
-      CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-      cl.show(panelWelcome, "เพิ่มยาตัวแรก");
-    } else {
-      frameWelcome.setVisible(false);
-      frameMain.setVisible(true);
-      frameWelcome = null;
-      CardLayout cl = (CardLayout) (panelRight.getLayout());
-      cl.show(panelRight, "ภาพรวม");
     }
   }
 
