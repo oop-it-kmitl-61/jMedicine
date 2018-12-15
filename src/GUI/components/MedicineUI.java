@@ -48,13 +48,13 @@ import javax.swing.event.DocumentListener;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.7.16
+ * @version 0.8.0
  * @since 0.7.0
  */
 
 public class MedicineUI {
 
-  private static JPanel panelMedicines;
+  private static JPanel panelMedicines, panelAddMedicine;
   private static JButton btnSave;
   private static JButton btnEdit;
   private static JButton btnAddFirst;
@@ -102,8 +102,6 @@ public class MedicineUI {
         } else {
           activeMedicines.add(medCurrent);
         }
-
-
       }
 
       // Start making active medicine cards
@@ -129,11 +127,15 @@ public class MedicineUI {
 
     }
 
-    JScrollPane scrollPane = makeScrollPane(panelLoop);
-
-    // Add all panels into the main panel
     panelMedicines.add(panelTitle, BorderLayout.NORTH);
-    panelMedicines.add(scrollPane);
+
+    if (userMedicines.size() < 4) {
+      setPadding(panelLoop, 0, 0, 1000, 10);
+      panelMedicines.add(panelLoop);
+    } else {
+      setPadding(panelLoop, 0, 0, 20, 10);
+      panelMedicines.add(makeScrollPane(panelLoop));
+    }
 
     panelRight.add(panelMedicines, "ยาทั้งหมด");
     panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
@@ -305,7 +307,7 @@ public class MedicineUI {
     /* Creates outer GUI when user add a new medicine from all medicines page. */
 
     // JPanels
-    JPanel panelAddMedicine = new JPanel(new BorderLayout());
+    panelAddMedicine = new JPanel(new BorderLayout());
     JPanel panelBody = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
 
@@ -1306,6 +1308,8 @@ public class MedicineUI {
 
   private static void reload() {
     panelRight.remove(panelMedicines);
+    panelRight.remove(panelAddMedicine);
+    panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");
     panelAllMedicines();
   }
 }

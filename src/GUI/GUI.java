@@ -36,15 +36,13 @@ import java.util.Arrays;
 import java.util.Date;
 import javax.swing.*;
 import core.LocationHelper;
-import notification.NotificationFactory;
-
 
 /**
  * All GUIs will be centralized here. GUI that needed too much methods has been moved to
  * /components
  *
  * @author jMedicine
- * @version 0.7.18
+ * @version 0.8.0
  * @since 0.1.0
  */
 
@@ -63,7 +61,7 @@ public class GUI {
   public GUI(Dimension windowSize) {
     GUI.util = new GUIUtil();
     GUI.windowSize = windowSize;
-    GUI.minSize = new Dimension(800, 600);
+    GUI.minSize = new Dimension(800, 680);
     JOptionPane.setDefaultLocale(locale);
     GUIHelper.setup();
   }
@@ -185,7 +183,7 @@ public class GUI {
       if (getUser().getUserFirstName().equals("")) {
         userFullName = "(ยังไม่ได้ตั้งชื่อ)";
       } else {
-        userFullName = getUser().getUserPrefix() + " " + getUser().getUserFirstName() + " " + getUser().getUserLastName();
+        userFullName = getUser().getUserPrefix() + getUser().getUserFirstName() + " " + getUser().getUserLastName();
       }
 
     // JLabels
@@ -194,8 +192,6 @@ public class GUI {
     JLabel labelSignOut = makeLabel("ออกจากระบบ");
     JLabel labelAbout = makeLabel("เกี่ยวกับ");
     JLabel labelUserName = makeTitleLabel(userFullName);
-
-    JButton fireNoti = makeBlueButton("ทดสอบ Notification");
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
@@ -229,13 +225,6 @@ public class GUI {
       } catch (SQLException e1) {
         e1.printStackTrace();
         fireDBErrorDialog();
-      }
-    });
-    fireNoti.addActionListener(e -> {
-      try {
-        System.out.println("Noti Test");
-        NotificationFactory.showNotification("💊 It's your med time!");
-      } catch (UnsatisfiedLinkError ignored) {
       }
     });
 
@@ -280,11 +269,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.18"));
-    panelBody.add(panelSub);
-
-    panelSub = newFlowLayout();
-    panelSub.add(fireNoti);
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.8.0"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -874,7 +859,7 @@ public class GUI {
 
     // JLabels
     JLabel labelDescription = makeLabel(
-            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนการทานยาตามเวลาที่ท่่านได้กำหนดไว้");
+            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนให้ทานยาก่อนเวลาที่ท่่านได้กำหนดไว้ 10 นาที");
     JLabel labelMorning = makeBoldLabel("เช้า");
     JLabel labelAfternoon = makeBoldLabel("กลางวัน");
     JLabel labelEvening = makeBoldLabel("เย็น");

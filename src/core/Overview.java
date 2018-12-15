@@ -11,16 +11,20 @@ import static GUI.GUIHelper.newFlowLayout;
 import static GUI.GUIHelper.newPanelLoop;
 import static GUI.GUIHelper.secondaryBlue;
 import static GUI.GUIHelper.setPadding;
+import static GUI.components.AppointmentUI.getAppointmentIcon;
 import static core.Core.getUser;
 import static core.MedicineUtil.tableSpoonCalc;
 import static core.MedicineUtil.teaSpoonCalc;
 import static core.Utils.*;
 import static core.MedicineUtil.getMedIcon;
 
+import api.AppointmentDB;
 import api.MedicineDB;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -40,7 +44,7 @@ import notification.NotificationFactory;
  * All methods about rendering overview components is here
  *
  * @author jMedicine
- * @version 0.7.18
+ * @version 0.8.0
  * @since 0.7.12
  */
 
@@ -64,9 +68,37 @@ public class Overview {
 
   public JPanel renderOverview() {
     initTreeMap();
+    LocalDate today = LocalDate.now();
     LocalTime now = LocalTime.now();
 
     JPanel panelMain = newPanelLoop();
+
+    // Fetches all appointments
+    ArrayList<Appointment> userAppointments = null;
+    try {
+      userAppointments = AppointmentDB.getAllAppointment(getUser().getUserId());
+    } catch (SQLException | ParseException e) {
+      e.printStackTrace();
+    }
+
+    // Filters only upcoming appointments
+    for (Appointment app : userAppointments) {
+      LocalDate appDate = LocalDate.parse(app.getDate().toString());
+      if (today.equals(appDate) || today.plusDays(1).equals(appDate)) {
+        panelMain.add(getTimePanel("app",true));
+        JPanel panelSub = newFlowLayout();
+        panelSub.add(getAppPanel(app));
+        panelSub.setBackground(secondaryBlue);
+        setPadding(panelSub, 10, 20, 20);
+        panelMain.add(panelSub);
+        if (getUser().isShowNotification()) {
+          try {
+            NotificationFactory.showNotification("You have an upcoming appointment");
+          } catch (UnsatisfiedLinkError ignored) {
+          }
+        }
+      }
+    }
 
     // Fetches all medicines
     ArrayList<Medicine> userMedicines = null;
@@ -119,7 +151,7 @@ public class Overview {
       if (diff <= 10 && diff >= -60) {
         if (getUser().isShowNotification()) {
           try {
-            NotificationFactory.showNotification("💊 ได้เวลาทานยารอบ " + key + " แล้ว");
+            NotificationFactory.showNotification("It's your med time!");
           } catch (UnsatisfiedLinkError ignored) {
           }
         }
@@ -127,13 +159,13 @@ public class Overview {
         focus = true;
         panelMain.add(getTimePanel(key, true));
         for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
-          panelSub.add(getDetailsPanel(med, true));
+          panelSub.add(getMedPanel(med, true));
         }
         panelSub.setBackground(secondaryBlue);
       } else {
         panelMain.add(getTimePanel(key, false));
         for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
-          panelSub.add(getDetailsPanel(med, false));
+          panelSub.add(getMedPanel(med, false));
         }
       }
       if (focus) {
@@ -165,7 +197,11 @@ public class Overview {
 
     // Styling
     if (now) {
-      labelTime.setText("ได้เวลาทานยารอบเวลา " + time);
+      if (time.equals("app")) {
+        labelTime.setText("คุณมีนัดแพทย์ที่กำลังมาถึง");
+      } else {
+        labelTime.setText("ได้เวลาทานยารอบเวลา " + time);
+      }
       panelMain.setBackground(secondaryBlue);
       panelTime.setBackground(secondaryBlue);
       labelTime.setForeground(Color.WHITE);
@@ -180,7 +216,45 @@ public class Overview {
     return panelMain;
   }
 
-  private JPanel getDetailsPanel(Medicine medicine, boolean now) {
+  private JPanel getAppPanel(Appointment app) {
+    // JPanels
+    JPanel panelLoopInfo = new JPanel(new BorderLayout());
+    JPanel panelCard = new JPanel();
+    JPanel panelApp = newFlowLayout();
+    JPanel panelAppInfo = new JPanel();
+
+    // JLabels
+    JLabel labelPic = getAppointmentIcon();
+    JLabel labelAppName = makeBoldLabel(app.getDate() + " ตั้งแต่เวลา " + app.getTimeStart() + " น. - " + app.getTimeStop() + " น.");
+    JLabel labelAppSub = makeLabel(app.getDoctor() + " โรงพยาบาล" + app.getDoctor().getHospital());
+
+    // Styling
+    panelAppInfo.setLayout(new BoxLayout(panelAppInfo, BoxLayout.PAGE_AXIS));
+    panelCard.setLayout(new BoxLayout(panelCard, BoxLayout.PAGE_AXIS));
+    setPadding(labelPic, 6, 0, 0, 8);
+    setPadding(labelAppName, 7, 0, -12, 0);
+    setPadding(labelAppSub, 0, 0, 2, 0);
+    setPadding(panelLoopInfo, 0, 20, 4, 0);
+    setPadding(panelApp, 6, 36, 12, 0);
+      panelLoopInfo.setBackground(secondaryBlue);
+      panelCard.setBorder(BorderFactory.createCompoundBorder(
+          BorderFactory.createLineBorder(new Color(166, 166, 166)),
+          BorderFactory.createEmptyBorder(10, 10, 10, 10)
+      ));
+
+
+    panelAppInfo.add(labelAppName);
+    panelAppInfo.add(labelAppSub);
+
+    panelApp.add(labelPic);
+    panelApp.add(panelAppInfo);
+    panelCard.add(panelApp);
+
+    panelLoopInfo.add(panelCard);
+    return panelLoopInfo;
+  }
+
+  private JPanel getMedPanel(Medicine medicine, boolean now) {
 
     // JPanels
     JPanel panelLoopInfo = new JPanel(new BorderLayout());
