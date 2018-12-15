@@ -1,6 +1,7 @@
 package GUI;
 
 import static GUI.GUI.*;
+import static GUI.components.MedicineUI.panelFirstMedicine;
 import static api.Login.doSignIn;
 import static api.Login.doSignUp;
 import static core.Core.getUser;
@@ -31,7 +32,6 @@ public class GUIUtil implements ActionListener, KeyListener {
   public void listeners() {
     btnSignIn.addActionListener(this);
     btnSignUp.addActionListener(this);
-    btnSkipAddingInfo.addActionListener(this);
     tfUserName.addKeyListener(this);
     tfPassword.addKeyListener(this);
   }
@@ -67,6 +67,7 @@ public class GUIUtil implements ActionListener, KeyListener {
           if (getUser() != null) {
             main();
             if (getUser().getUserFirstName().equals("")) {
+              panelWelcome.add(panelFirstInfo(), "เพิ่มข้อมูลส่วนตัว");
               CardLayout cl = (CardLayout) (panelWelcome.getLayout());
               cl.show(panelWelcome, "เพิ่มข้อมูลส่วนตัว");
             } else {
@@ -123,20 +124,6 @@ public class GUIUtil implements ActionListener, KeyListener {
     }
     if (btn == btnSkipAddingInfo) {
       promptFirstMedicine();
-    }
-
-  }
-
-  void promptFirstMedicine() {
-    if (getUser().getUserMedicines().size() == 0) {
-      CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-      cl.show(panelWelcome, "เพิ่มยาตัวแรก");
-    } else {
-      frameWelcome.setVisible(false);
-      frameMain.setVisible(true);
-      frameWelcome = null;
-      CardLayout cl = (CardLayout) (panelRight.getLayout());
-      cl.show(panelRight, "ภาพรวม");
     }
   }
 

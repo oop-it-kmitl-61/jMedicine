@@ -232,7 +232,7 @@ public class GUI {
     fireNoti.addActionListener(e -> {
       try {
         System.out.println("Noti Test");
-        NotificationFactory.showNotification("💊 ได้เวลาทานยาแล้ว");
+        NotificationFactory.showNotification("💊 It's your med time!");
       } catch (UnsatisfiedLinkError ignored) {
       }
     });
@@ -443,8 +443,6 @@ public class GUI {
     panelSignIn.add(space, gbc);
 
     panelWelcome.add(panelSignIn, "ยังไม่ได้เข้าสู่ระบบ");
-    panelWelcome.add(panelFirstInfo(), "เพิ่มข้อมูลส่วนตัว");
-    panelWelcome.add(panelFirstMedicine(), "เพิ่มยาตัวแรก");
 
     util.listeners();
 
@@ -503,6 +501,9 @@ public class GUI {
     setPadding(panelTitle, 20, 0, 20, 20);
     setPadding(panelBody, 0, 0, 1000, 28);
 
+    // Listener
+    btnSkipAddingInfo.addActionListener(e -> promptFirstMedicine());
+
     JPanel panelSub = newFlowLayout();
     panelSub.add(cbPrefix);
     panelSub.add(labelFName);
@@ -552,16 +553,7 @@ public class GUI {
           fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
           panelRight.remove(panelSettings);
           panelSettings();
-          if (getUser().getUserMedicines().size() == 0) {
-            CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-            cl.show(panelWelcome, "เพิ่มยาตัวแรก");
-          } else {
-            frameWelcome.setVisible(false);
-            frameMain.setVisible(true);
-            frameWelcome = null;
-            CardLayout cl = (CardLayout) (panelRight.getLayout());
-            cl.show(panelRight, "ภาพรวม");
-          }
+          promptFirstMedicine();
         } catch (SQLException ex) {
           ex.printStackTrace();
           fireDBErrorDialog();
@@ -1017,6 +1009,20 @@ public class GUI {
     panelMain.add(makeScrollPane(panelBody), BorderLayout.CENTER);
 
     panelRight.add(panelMain, "เกี่ยวกับ");
+  }
+
+  static void promptFirstMedicine() {
+    if (getUser().getUserMedicines().size() == 0) {
+      panelWelcome.add(panelFirstMedicine(), "เพิ่มยาตัวแรก");
+      CardLayout cl = (CardLayout) (panelWelcome.getLayout());
+      cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+    } else {
+      frameWelcome.setVisible(false);
+      frameMain.setVisible(true);
+      frameWelcome = null;
+      CardLayout cl = (CardLayout) (panelRight.getLayout());
+      cl.show(panelRight, "ภาพรวม");
+    }
   }
 
   static JButton[] getButtons() {

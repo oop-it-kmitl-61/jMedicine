@@ -149,6 +149,22 @@ public class GUIHelper {
     }
   }
 
+  public static void fireInfoDialog(String message) {
+    JLabel labelMessage = makeLabel(message);
+    setPadding(labelMessage, 0, 10, 0, 0);
+    try {
+      beep("warning");
+      Image img = ImageIO.read(new File(imgWarningSrc));
+      Icon icon = new ImageIcon(img);
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE,
+              icon);
+    } catch (Exception ignored) {
+      JOptionPane
+          .showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
   public static int fireConfirmDialog(String message) {
     JLabel labelMessage = makeLabel(message);
     setPadding(labelMessage, 0, 10, 0, 0);
