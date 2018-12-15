@@ -4,8 +4,7 @@ import static GUI.GUIHelper.*;
 import static GUI.components.AppointmentUI.*;
 import static GUI.components.DoctorUI.*;
 import static GUI.components.MedicineUI.*;
-import static api.UserDB.deleteUser;
-import static api.UserDB.updateUserData;
+import static api.UserDB.*;
 import static core.Core.getUser;
 import static core.Core.setUser;
 import static core.UserUtil.getGenderIndex;
@@ -13,6 +12,8 @@ import static core.UserUtil.getGenders;
 import static core.UserUtil.getPrefixIndex;
 import static core.UserUtil.getPrefixes;
 
+import api.Login;
+import api.LoginException;
 import api.UserDB;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
@@ -30,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import javax.swing.*;
@@ -735,61 +737,68 @@ public class GUI {
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
-    // Listeners
+    // Password Changing Frame
+    JFrame passwordEditFrame = new JFrame("เปลี่ยนรหัสผ่าน");
+    JPanel panel = new JPanel(new BorderLayout());
+    JPanel panelPasswordEdit = new JPanel(new GridLayout(4, 2));
+
+    JPasswordField oldPasswordField = makePasswordField(20);
+    JPasswordField newPasswordField = makePasswordField(20);
+    JPasswordField confirmNewPasswordField = makePasswordField(20);
+
+    JLabel oldPasswordLabel = makeLabel("รหัสผ่านปัจจุบัน");
+    JLabel newPasswordLabel = makeLabel("รหัสผ่านใหม่");
+    JLabel confirmNewPasswordLabel = makeLabel("ยืนยันรหัสผ่านใหม่");
+
+    JButton passwordConfirmButton = makeBlueButton("ยืนยัน");
+
+    setPadding(panel, 20);
+
+    panelPasswordEdit.add(oldPasswordLabel);
+    panelPasswordEdit.add(oldPasswordField);
+    panelPasswordEdit.add(newPasswordLabel);
+    panelPasswordEdit.add(newPasswordField);
+    panelPasswordEdit.add(confirmNewPasswordLabel);
+    panelPasswordEdit.add(confirmNewPasswordField);
+
+    panel.add(panelPasswordEdit, BorderLayout.CENTER);
+    panel.add(passwordConfirmButton, BorderLayout.SOUTH);
+
+    passwordEditFrame.add(panel);
+    passwordEditFrame.setMinimumSize(new Dimension(480, 240));
+    passwordEditFrame.setSize(new Dimension(480, 270));
+    passwordEditFrame.setVisible(false);
+    passwordEditFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    passwordEditFrame.setLocationRelativeTo(null);
+
+    // Password Changing
     btnEditPwd.addActionListener(e -> {
-      JFrame passwordEditFrame = new JFrame("เปลี่ยนรหัสผ่าน");
-      JPanel panel = new JPanel(new BorderLayout());
-      JPanel panelPasswordEdit = new JPanel(new GridLayout(4, 2));
-
-      JPasswordField oldPasswordField = makePasswordField(20);
-      JPasswordField newPasswordField = makePasswordField(20);
-      JPasswordField confirmNewPasswordField = makePasswordField(20);
-
-      JLabel oldPasswordLabel = makeLabel("รหัสผ่านปัจจุบัน");
-      JLabel newPasswordLabel = makeLabel("รหัสผ่านใหม่");
-      JLabel confirmNewPasswordLabel = makeLabel("ยืนยันรหัสผ่านใหม่");
-
-      JButton confirmButton = makeBlueButton("ยืนยัน");
-
-      setPadding(panel, 20);
-
-      panelPasswordEdit.add(oldPasswordLabel);
-      panelPasswordEdit.add(oldPasswordField);
-      panelPasswordEdit.add(newPasswordLabel);
-      panelPasswordEdit.add(newPasswordField);
-      panelPasswordEdit.add(confirmNewPasswordLabel);
-      panelPasswordEdit.add(confirmNewPasswordField);
-
-      panel.add(panelPasswordEdit, BorderLayout.CENTER);
-      panel.add(confirmButton, BorderLayout.SOUTH);
-
-      passwordEditFrame.add(panel);
-      passwordEditFrame.setMinimumSize(new Dimension(480, 240));
-      passwordEditFrame.setSize(new Dimension(480, 270));
       passwordEditFrame.setVisible(true);
-      passwordEditFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      passwordEditFrame.setLocationRelativeTo(null);
-
-      // TODO: Finish update password code
-      confirmButton.addActionListener(em -> {
-        try {
-          if (true) {
-            // TODO: Finish this
-            fireErrorDialog("รหัสผ่านปัจจุบันไม่ถูกต้อง");
-          } else if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
-            fireErrorDialog("รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน");
-          } else if (true) {
-            // TODO: Finish this
-            fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
-          } else {
-            UserDB.updateUserPassword(newPasswordField.getPassword());
-          }
-        } catch (SQLException | NoSuchAlgorithmException ex) {
-          ex.printStackTrace();
-        }
-      });
-
     });
+
+    passwordConfirmButton.addActionListener(ev -> {
+      try {
+        Login.doSignIn(user.getUserName(), oldPasswordField.getPassword());
+        if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
+          fireErrorDialog("รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน");
+        } else if (newPasswordField.getPassword().length < 6) {
+          fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
+        } else if (Arrays.equals(oldPasswordField.getPassword(), newPasswordField.getPassword())) {
+          fireErrorDialog("รหัสผ่านใหม่ไม่สามารถเป็นรหัสเดิมได้");
+        } else {
+          updateUserPassword(newPasswordField.getPassword());
+          oldPasswordField.setText("");
+          newPasswordField.setText("");
+          confirmNewPasswordField.setText("");
+          passwordEditFrame.setVisible(false);
+          fireSuccessDialog("รหัสผ่านถูกเปลี่ยนเรียบร้อย");
+        }
+      } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
+        fireErrorDialog("รหัสผ่านปัจจุบันไม่ถูกต้อง");
+      }
+    });
+
+    // Remove account
     btnRemoveAccount.addActionListener(e -> {
       int result = fireConfirmDialog("คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
       if (result == JOptionPane.YES_OPTION) {
@@ -803,6 +812,8 @@ public class GUI {
         }
       }
     });
+
+    // Update user information
     btnSave.addActionListener(e -> {
       String fName = tfFName.getText();
       String lName = tfLName.getText();
@@ -836,8 +847,6 @@ public class GUI {
     });
 
     panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
-
-
   }
 
   private static void panelEditTime() {
