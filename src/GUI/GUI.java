@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Date;
 import javax.swing.*;
 import core.LocationHelper;
+import notification.NotificationFactory;
 
 
 /**
@@ -192,6 +193,8 @@ public class GUI {
     JLabel labelAbout = makeLabel("เกี่ยวกับ");
     JLabel labelUserName = makeTitleLabel(userFullName);
 
+    JButton fireNoti = makeBlueButton("ทดสอบ Notification");
+
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
     setPadding(labelSignOut, 0, 0, 20);
@@ -224,6 +227,13 @@ public class GUI {
       } catch (SQLException e1) {
         e1.printStackTrace();
         fireDBErrorDialog();
+      }
+    });
+    fireNoti.addActionListener(e -> {
+      try {
+        System.out.println("Noti Test");
+        NotificationFactory.showNotification("💊 ได้เวลาทานยาแล้ว");
+      } catch (UnsatisfiedLinkError ignored) {
       }
     });
 
@@ -269,6 +279,10 @@ public class GUI {
 
     panelSub = newFlowLayout();
     panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.18"));
+    panelBody.add(panelSub);
+
+    panelSub = newFlowLayout();
+    panelSub.add(fireNoti);
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
