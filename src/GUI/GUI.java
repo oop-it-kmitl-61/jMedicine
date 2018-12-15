@@ -4,8 +4,7 @@ import static GUI.GUIHelper.*;
 import static GUI.components.AppointmentUI.*;
 import static GUI.components.DoctorUI.*;
 import static GUI.components.MedicineUI.*;
-import static api.UserDB.deleteUser;
-import static api.UserDB.updateUserData;
+import static api.UserDB.*;
 import static core.Core.getUser;
 import static core.Core.setUser;
 import static core.UserUtil.getGenderIndex;
@@ -13,6 +12,8 @@ import static core.UserUtil.getGenders;
 import static core.UserUtil.getPrefixIndex;
 import static core.UserUtil.getPrefixes;
 
+import api.Login;
+import api.LoginException;
 import api.UserDB;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
@@ -30,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import javax.swing.*;
@@ -781,23 +783,29 @@ public class GUI {
       // TODO: Finish update password code
       confirmButton.addActionListener(em -> {
         try {
-          if (true) {
-            // TODO: Finish this
-            fireErrorDialog("รหัสผ่านปัจจุบันไม่ถูกต้อง");
-          } else if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
+          Login.doSignIn(user.getUserName(), oldPasswordField.getPassword());
+          if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
             fireErrorDialog("รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน");
-          } else if (true) {
-            // TODO: Finish this
+          } else if (newPasswordField.getPassword().length < 6) {
             fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
           } else {
-            UserDB.updateUserPassword(newPasswordField.getPassword());
+            try {
+              updateUserPassword(newPasswordField.getPassword());
+              oldPasswordField.setText("");
+              newPasswordField.setText("");
+              confirmNewPasswordField.setText("");
+              passwordEditFrame.setVisible(false);
+            } catch (NoSuchAlgorithmException | SQLException | LoginException ex) {
+              ex.printStackTrace();
+            }
           }
-        } catch (SQLException | NoSuchAlgorithmException ex) {
-          ex.printStackTrace();
+        } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
+          fireErrorDialog("รหัสผ่านปัจจุบันไม่ถูกต้อง");
         }
       });
-
     });
+
+    // Remove account
     btnRemoveAccount.addActionListener(e -> {
       int result = fireConfirmDialog("คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
       if (result == JOptionPane.YES_OPTION) {
@@ -811,6 +819,8 @@ public class GUI {
         }
       }
     });
+
+    // Update user information
     btnSave.addActionListener(e -> {
       String fName = tfFName.getText();
       String lName = tfLName.getText();
@@ -844,8 +854,6 @@ public class GUI {
     });
 
     panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
-
-
   }
 
   private static void panelEditTime() {
