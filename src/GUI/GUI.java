@@ -780,7 +780,7 @@ public class GUI {
       passwordEditFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
       passwordEditFrame.setLocationRelativeTo(null);
 
-      // TODO: Finish update password code
+      // Change password
       confirmButton.addActionListener(em -> {
         try {
           Login.doSignIn(user.getUserName(), oldPasswordField.getPassword());
@@ -788,6 +788,8 @@ public class GUI {
             fireErrorDialog("รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน");
           } else if (newPasswordField.getPassword().length < 6) {
             fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
+          } else if (Arrays.equals(oldPasswordField.getPassword(), newPasswordField.getPassword())) {
+            fireErrorDialog("รหัสผ่านใหม่ไม่สามารถเป็นรหัสเดิมได้");
           } else {
             try {
               updateUserPassword(newPasswordField.getPassword());
