@@ -689,38 +689,37 @@ public class GUI {
     panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
 
     btnEditPwd.addActionListener(e -> {
-      // TODO: Update password changing GUI
-      JFrame passwordEditFrame = new JFrame();
-      passwordEditFrame.setLayout(new GridLayout(4, 2));
+      JFrame passwordEditFrame = new JFrame("เปลี่ยนรหัสผ่าน");
+      JPanel panel = new JPanel(new BorderLayout());
+      JPanel panelPasswordEdit = new JPanel(new GridLayout(4, 2));
 
       JPasswordField oldPasswordField = makePasswordField(20);
       JPasswordField newPasswordField = makePasswordField(20);
       JPasswordField confirmNewPasswordField = makePasswordField(20);
 
-      JLabel oldPasswordLabel = new JLabel("รหัสผ่านเก่า");
-      oldPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
-      JLabel newPasswordLabel = new JLabel("รหัสผ่านใหม่");
-      newPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
-      JLabel confirmNewPasswordLabel = new JLabel("ยืนยันรหัสผ่านใหม่");
-      confirmNewPasswordLabel.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
+      JLabel oldPasswordLabel = makeLabel("รหัสผ่านปัจจุบัน");
+      JLabel newPasswordLabel = makeLabel("รหัสผ่านใหม่");
+      JLabel confirmNewPasswordLabel = makeLabel("ยืนยันรหัสผ่านใหม่");
 
-      JButton confirmButton = new JButton("ยืนยัน");
-      confirmButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
-      JButton cancelButton = new JButton("ยกเลิก");
-      cancelButton.setFont(new Font("TH Sarabun New", Font.PLAIN, 20));
+      JButton confirmButton = makeBlueButton("ยืนยัน");
 
-      passwordEditFrame.add(oldPasswordLabel);
-      passwordEditFrame.add(oldPasswordField);
-      passwordEditFrame.add(newPasswordLabel);
-      passwordEditFrame.add(newPasswordField);
-      passwordEditFrame.add(confirmNewPasswordLabel);
-      passwordEditFrame.add(confirmNewPasswordField);
-      passwordEditFrame.add(confirmButton);
-      passwordEditFrame.add(cancelButton);
+      setPadding(panel, 20);
 
-      passwordEditFrame.setSize(480, 240);
+      panelPasswordEdit.add(oldPasswordLabel);
+      panelPasswordEdit.add(oldPasswordField);
+      panelPasswordEdit.add(newPasswordLabel);
+      panelPasswordEdit.add(newPasswordField);
+      panelPasswordEdit.add(confirmNewPasswordLabel);
+      panelPasswordEdit.add(confirmNewPasswordField);
+
+      panel.add(panelPasswordEdit, BorderLayout.CENTER);
+      panel.add(confirmButton, BorderLayout.SOUTH);
+
+      passwordEditFrame.add(panel);
+      passwordEditFrame.setMinimumSize(new Dimension(480, 240));
+      passwordEditFrame.setSize(new Dimension(480, 270));
       passwordEditFrame.setVisible(true);
-      passwordEditFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      passwordEditFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
       passwordEditFrame.setLocationRelativeTo(null);
 
       // TODO: Finish update password code
@@ -728,25 +727,18 @@ public class GUI {
         try {
           if (true) {
             // TODO: Finish this
-            fireErrorDialog("รหัสผ่านเดิมไม่ถูกต้อง");
+            fireErrorDialog("รหัสผ่านปัจจุบันไม่ถูกต้อง");
           } else if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
-            fireErrorDialog("รหัสผ่านใหม่ไม่ตรงกัน");
+            fireErrorDialog("รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน");
           } else if (true) {
             // TODO: Finish this
-            fireErrorDialog("รหัสผ่านใหม่สั้นเกินไป");
+            fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
           } else {
             UserDB.updateUserPassword(user, newPasswordField.getPassword());
           }
         } catch (SQLException | NoSuchAlgorithmException ex) {
           ex.printStackTrace();
         }
-      });
-
-      cancelButton.addActionListener(em -> {
-        oldPasswordField.setText("");
-        newPasswordField.setText("");
-        confirmNewPasswordField.setText("");
-        passwordEditFrame.setVisible(false);
       });
 
     });
@@ -842,7 +834,9 @@ public class GUI {
         UserDB.updateUserTime();
         fireSuccessDialog("บันทึกเวลาสำเร็จ");
         backTo("การตั้งค่า");
+        panelRight.remove(panelOverview);
         panelRight.remove(panelMain);
+        panelOverview();
         panelRight.add(panelMain, "ตั้งค่าเวลา");
       } catch (SQLException ex) {
         ex.printStackTrace();

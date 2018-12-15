@@ -1,5 +1,7 @@
 package core;
 
+import static GUI.GUIHelper.formatHM;
+import static GUI.GUIHelper.formatTimestamp;
 import static GUI.GUIHelper.makeBoldLabel;
 import static GUI.GUIHelper.makeGreyToBlueButton;
 import static GUI.GUIHelper.makeGreyToRedButton;
@@ -17,8 +19,12 @@ import static core.MedicineUtil.getMedIcon;
 import api.MedicineDB;
 import java.awt.BorderLayout;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.TreeMap;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -71,35 +77,28 @@ public class Overview {
     }
 
     // Filters only active medicines
-    // TODO : Set "time" to what user defined
-    String time;
     for (Medicine medicine : userMedicines) {
-      if (medicine.getMedRemaining() > 0) {
+      if (medicine.getMedRemaining() > 0 && medicine.getMedEXP().after(new Date())) {
         if (medicine.getMedTime().contains("เช้า")) {
-          time = "08:30 น.";
-          appendMedicine(time, medicine);
+          appendMedicine(getUser().getUserTime()[0] + " น.", medicine);
         }
         if (medicine.getMedTime().contains("กลางวัน")) {
-          time = "12:30 น.";
-          appendMedicine(time, medicine);
+          appendMedicine(getUser().getUserTime()[1] + " น.", medicine);
         }
         if (medicine.getMedTime().contains("เย็น")) {
-          time = "18:30 น.";
-          appendMedicine(time, medicine);
+          appendMedicine(getUser().getUserTime()[2] + " น.", medicine);
         }
         if (medicine.getMedTime().contains("ก่อนนอน")) {
-          time = "22:30 น.";
-          appendMedicine(time, medicine);
+          appendMedicine(getUser().getUserTime()[3] + " น.", medicine);
         }
         if (medicine.getMedTime().contains("ทุก ๆ ")) {
           if (medicine.getLastTaken() == null) {
-            String startTime = timestampToTime(medicine.getDateStart());
-            time = startTime + " น.";
+            String startTime = timestampToTime(medicine.getDateStart()) + " น.";
+            appendMedicine(startTime, medicine);
           } else {
-            String startTime = timestampToTime(medicine.getLastTaken());
-            time = startTime + " น.";
+            String lastTaken = getNextInterval(medicine.getLastTaken(), Integer.valueOf(medicine.getMedDoseStr()));
+            appendMedicine(lastTaken, medicine);
           }
-          appendMedicine(time, medicine);
         }
       }
     }
@@ -205,5 +204,12 @@ public class Overview {
 
   public int getOverviewCount() {
     return overviewCount;
+  }
+
+  public static String getNextInterval(String timestamp, int nextHour) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm");
+    LocalDateTime date = LocalDateTime.parse(timestamp, formatter);
+    LocalDateTime next = date.plusHours(nextHour);
+    return next.getHour() + ":" + next.getMinute() + " น.";
   }
 }

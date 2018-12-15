@@ -274,17 +274,23 @@ public class GUIHelper {
   public static TimePicker makeTimeNowPicker() {
     TimePickerSettings timeSettings = new TimePickerSettings(locale);
     timeSettings.initialTime = LocalTime.of(8, 00);
+    timeSettings.setFormatForDisplayTime("HH:mm");
+    timeSettings.setFormatForMenuTimes("HH:mm");
     timeSettings.setSizeTextFieldMinimumWidth(70);
     TimePicker timePicker = new TimePicker(timeSettings);
+    timePicker.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     timePicker.setTimeToNow();
     return timePicker;
   }
 
   public static TimePicker makeTimePicker() {
     TimePickerSettings timeSettings = new TimePickerSettings(locale);
+    timeSettings.setFormatForDisplayTime("HH:mm");
+    timeSettings.setFormatForMenuTimes("HH:mm");
     timeSettings.setSizeTextFieldMinimumWidth(70);
     timeSettings.initialTime = LocalTime.of(8, 00);
     TimePicker timePicker = new TimePicker(timeSettings);
+    timePicker.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     return timePicker;
   }
 
