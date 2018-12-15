@@ -3,9 +3,10 @@ package GUI;
 import static GUI.GUI.*;
 import static api.Login.doSignIn;
 import static api.Login.doSignUp;
+import static core.Core.getUser;
+import static core.Core.setUser;
 
 import api.LoginException;
-import core.Core;
 import core.User;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -21,13 +22,11 @@ import javax.swing.SwingWorker;
  * An utility class for GUI.java
  *
  * @author jMedicine
- * @version 0.7.14
+ * @version 0.7.17
  * @since 0.7.0
  */
 
 public class GUIUtil implements ActionListener, KeyListener {
-
-  private User user;
 
   public void listeners() {
     btnSignIn.addActionListener(this);
@@ -53,8 +52,7 @@ public class GUIUtil implements ActionListener, KeyListener {
           String username = tfUserName.getText();
           char[] password = tfPassword.getPassword();
           try {
-            user = doSignIn(username, password);
-            Core.setUser(user);
+            setUser(doSignIn(username, password));
           } catch (LoginException ignored) {
             panelLoading.setVisible(false);
             panelErrorSignIn.setVisible(true);
@@ -66,9 +64,9 @@ public class GUIUtil implements ActionListener, KeyListener {
 
         @Override
         protected void done() {
-          if (user != null) {
+          if (getUser() != null) {
             main();
-            if (user.getUserFirstName().equals("")) {
+            if (getUser().getUserFirstName().equals("")) {
               CardLayout cl = (CardLayout) (panelWelcome.getLayout());
               cl.show(panelWelcome, "เพิ่มข้อมูลส่วนตัว");
             } else {
@@ -130,7 +128,7 @@ public class GUIUtil implements ActionListener, KeyListener {
   }
 
   void promptFirstMedicine() {
-    if (user.getUserMedicines().size() == 0) {
+    if (getUser().getUserMedicines().size() == 0) {
       CardLayout cl = (CardLayout) (panelWelcome.getLayout());
       cl.show(panelWelcome, "เพิ่มยาตัวแรก");
     } else {

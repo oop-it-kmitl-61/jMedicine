@@ -63,7 +63,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.13
+ * @version 0.7.17
  * @since 0.3.0
  */
 
@@ -71,6 +71,7 @@ public class GUIHelper {
 
   public static Locale locale = new Locale("th", "TH");
   public static Color mainBlue = new Color(20, 101, 155);
+  public static Color secondaryBlue = new Color(68, 157, 209);
 
   final static LocalDate today = LocalDate.now();
   public static DateFormat formatHM = new SimpleDateFormat("HH:mm");

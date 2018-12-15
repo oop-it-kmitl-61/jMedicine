@@ -6,6 +6,7 @@ import static GUI.components.DoctorUI.*;
 import static GUI.components.MedicineUI.*;
 import static api.UserDB.deleteUser;
 import static core.Core.getUser;
+import static core.Core.setUser;
 import static core.UserUtil.getGenderIndex;
 import static core.UserUtil.getGenders;
 import static core.UserUtil.getPrefixIndex;
@@ -39,7 +40,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.16
+ * @version 0.7.17
  * @since 0.1.0
  */
 
@@ -111,15 +112,15 @@ public class GUI {
     panelTitle.add(makeTitleLabel(today));
 
     // Styling
-    setPadding(panelTitle, 0, 0, -12, 2);
+    setPadding(panelTitle, 0, 0, 0, 2);
 
     // Add all panels into the main panel
     panelOverview.add(panelTitle, BorderLayout.NORTH);
     if (overview.getOverviewCount() < 3) {
-      setPadding(panelLoop, 0, 0, 1000, 0);
+      setPadding(panelLoop, 0, 0, 1000, 10);
       panelOverview.add(panelLoop);
     } else {
-      setPadding(panelLoop, 0, 0, 20, 0);
+      setPadding(panelLoop, 0, 0, 20, 10);
       panelOverview.add(makeScrollPane(panelLoop));
     }
 
@@ -195,10 +196,17 @@ public class GUI {
     setPadding(panelBody, 20, 0, 180);
     setPadding(labelUserName, 0, 0, 20, 0);
 
+    // Listeners
     makeLabelClickable(labelEditProfile, "แก้ไขข้อมูลส่วนตัว");
     makeLabelClickable(labelEditTime, "ตั้งค่าเวลา");
     makeLabelClickable(labelAbout, "เกี่ยวกับ");
-    makeLabelClickable(labelSignOut, "ยังไม่ได้เข้าสู่ระบบ");
+    labelSignOut.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        setUser(null);
+        backTo("ยังไม่ได้เข้าสู่ระบบ");
+      }
+    });
 
     JPanel panelSub = newFlowLayout();
     panelSub.add(makeBoldLabel("ผู้ใช้งานปัจจุบัน"));
@@ -241,7 +249,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.16"));
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.17"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
