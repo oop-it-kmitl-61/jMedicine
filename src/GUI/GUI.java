@@ -4,6 +4,7 @@ import static GUI.GUIHelper.*;
 import static GUI.components.AppointmentUI.*;
 import static GUI.components.DoctorUI.*;
 import static GUI.components.MedicineUI.*;
+import static api.UserDB.deleteUser;
 import static core.Core.getUser;
 import static core.UserUtil.getGenderIndex;
 import static core.UserUtil.getGenders;
@@ -17,27 +18,19 @@ import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.Overview;
 import core.User;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Font;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
-import javax.print.Doc;
 import javax.swing.*;
-
 import core.LocationHelper;
 
 
@@ -54,7 +47,7 @@ public class GUI {
 
   public static JFrame frameWelcome, frameMain;
   public static JPanel panelRight, panelOverview, panelWelcome;
-  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword;
+  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword, panelSettings;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp, btnSkipAddingInfo;
@@ -173,7 +166,7 @@ public class GUI {
     /* Creates GUI displaying user's settings */
 
     // JPanels
-    JPanel panelSettings = new JPanel(new BorderLayout());
+    panelSettings = new JPanel(new BorderLayout());
     JPanel panelTitle = new JPanel(new BorderLayout());
     JPanel panelBody = new JPanel();
 
@@ -182,12 +175,19 @@ public class GUI {
     // JToggle
     JToggleButton toggleNoti = makeToggle("เปิดการแจ้งเตือน (macOS เท่านั้น)", true);
 
+    String userFullName;
+      if (getUser().getUserFirstName().equals("")) {
+        userFullName = "(ยังไม่ได้ตั้งชื่อ)";
+      } else {
+        userFullName = getUser().getUserPrefix() + " " + getUser().getUserFirstName() + " " + getUser().getUserLastName();
+      }
+
     // JLabels
     JLabel labelEditProfile = makeLabel("แก้ไขข้อมูลส่วนตัว");
     JLabel labelEditTime = makeLabel("ตั้งค่าเวลา");
     JLabel labelSignOut = makeLabel("ออกจากระบบ");
     JLabel labelAbout = makeLabel("เกี่ยวกับ");
-    JLabel labelUserName = makeTitleLabel(getUser().getUserFullName());
+    JLabel labelUserName = makeTitleLabel(userFullName);
 
     // Styling
     panelBody.setLayout(new BoxLayout(panelBody, BoxLayout.PAGE_AXIS));
@@ -489,7 +489,44 @@ public class GUI {
     panelBody.add(panelSub);
 
     // Listener
-    // TODO : ActionPerformed for adding info
+    btnSave.addActionListener(e -> {
+      String fName = tfFName.getText();
+      String lName = tfLName.getText();
+      String age = tfAge.getText();
+      String weight = tfWeight.getText();
+      String height = tfHeight.getText();
+      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height.equals("")) {
+        fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
+      } else {
+        getUser().setUserPrefix(cbPrefix.getSelectedItem().toString());
+        getUser().setUserFirstName(tfFName.getText());
+        getUser().setUserLastName(tfLName.getText());
+        getUser().setUserGender(cbGender.getSelectedItem().toString());
+        getUser().setUserAge(Integer.parseInt(tfAge.getText()));
+        getUser().setUserWeight(Double.parseDouble(tfWeight.getText()));
+        getUser().setUserHeight(Double.parseDouble(tfHeight.getText()));
+
+        try {
+          UserDB.updateUserData();
+          fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
+          panelRight.remove(panelSettings);
+          panelSettings();
+          if (getUser().getUserMedicines().size() == 0) {
+            CardLayout cl = (CardLayout) (panelWelcome.getLayout());
+            cl.show(panelWelcome, "เพิ่มยาตัวแรก");
+          } else {
+            frameWelcome.setVisible(false);
+            frameMain.setVisible(true);
+            frameWelcome = null;
+            CardLayout cl = (CardLayout) (panelRight.getLayout());
+            cl.show(panelRight, "ภาพรวม");
+          }
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+          fireDBErrorDialog();
+        }
+      }
+    });
 
     panelFirstInfo.add(panelTitle, BorderLayout.NORTH);
     panelFirstInfo.add(panelBody, BorderLayout.CENTER);
@@ -665,29 +702,7 @@ public class GUI {
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
-    btnSave.addActionListener(e -> {
-      user.setUserPrefix(cbPrefix.getSelectedItem().toString());
-      user.setUserFirstName(tfFName.getText());
-      user.setUserLastName(tfLName.getText());
-      user.setUserGender(cbGender.getSelectedItem().toString());
-      user.setUserAge(Integer.parseInt(tfAge.getText()));
-      user.setUserWeight(Double.parseDouble(tfWeight.getText()));
-      user.setUserHeight(Double.parseDouble(tfHeight.getText()));
-
-      try {
-        UserDB.updateUserData(user);
-        fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
-        backTo("การตั้งค่า");
-        panelRight.remove(panelMain);
-        panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
-      } catch (SQLException ex) {
-        ex.printStackTrace();
-        fireDBErrorDialog();
-      }
-    });
-
-    panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
-
+    // Listeners
     btnEditPwd.addActionListener(e -> {
       JFrame passwordEditFrame = new JFrame("เปลี่ยนรหัสผ่าน");
       JPanel panel = new JPanel(new BorderLayout());
@@ -734,7 +749,7 @@ public class GUI {
             // TODO: Finish this
             fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
           } else {
-            UserDB.updateUserPassword(user, newPasswordField.getPassword());
+            UserDB.updateUserPassword(newPasswordField.getPassword());
           }
         } catch (SQLException | NoSuchAlgorithmException ex) {
           ex.printStackTrace();
@@ -742,6 +757,53 @@ public class GUI {
       });
 
     });
+    btnRemoveAccount.addActionListener(e -> {
+      int result = fireConfirmDialog("คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
+      if (result == JOptionPane.YES_OPTION) {
+        try {
+          deleteUser();
+          fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
+          backTo("ยังไม่ได้เข้าสู่ระบบ");
+        } catch (SQLException e1) {
+          e1.printStackTrace();
+          fireDBErrorDialog();
+        }
+      }
+    });
+    btnSave.addActionListener(e -> {
+      String fName = tfFName.getText();
+      String lName = tfLName.getText();
+      String age = tfAge.getText();
+      String weight = tfWeight.getText();
+      String height = tfHeight.getText();
+      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height.equals("")) {
+        fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน");
+      } else {
+        user.setUserPrefix(cbPrefix.getSelectedItem().toString());
+        user.setUserFirstName(fName);
+        user.setUserLastName(lName);
+        user.setUserGender(cbGender.getSelectedItem().toString());
+        user.setUserAge(Integer.parseInt(age));
+        user.setUserWeight(Double.parseDouble(weight));
+        user.setUserHeight(Double.parseDouble(height));
+
+        try {
+          UserDB.updateUserData();
+          fireSuccessDialog("บันทึกข้อมูลสำเร็จ");
+          panelRight.remove(panelSettings);
+          panelSettings();
+          backTo("การตั้งค่า");
+          panelRight.remove(panelMain);
+          panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+          fireDBErrorDialog();
+        }
+      }
+    });
+
+    panelRight.add(panelMain, "แก้ไขข้อมูลส่วนตัว");
+
 
   }
 

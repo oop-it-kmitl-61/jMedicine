@@ -347,6 +347,7 @@ public class MedicineUI {
     // Styling
     setPadding(panelFirstMed, 20, 20, 0);
     setPadding(panelBody, 0, 0, 20, 20);
+    setPadding(panelBtn, 0, 0, 0, -8);
     setPadding(panelTitle, 20, 0, 20, 20);
 
     // Listener

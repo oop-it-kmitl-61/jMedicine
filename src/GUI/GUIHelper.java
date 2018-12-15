@@ -383,9 +383,17 @@ public class GUIHelper {
 
   public static void backTo(String backTo) {
     /* Navigates user back to some page */
-    if (backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
+    if (backTo.equals("ลงทะเบียน") || backTo.equals("ยังไม่ได้เข้าสู่ระบบ")) {
+      if (frameWelcome == null) {
+        initWelcome();
+      }
+      frameWelcome.setVisible(true);
       CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-      cl.show(panelWelcome, "ยังไม่ได้เข้าสู่ระบบ");
+      cl.show(panelWelcome, backTo);
+      try {
+        frameMain.setVisible(false);
+      } catch (NullPointerException ignored) {
+      }
     } else {
       CardLayout cl = (CardLayout) (panelRight.getLayout());
       cl.show(panelRight, backTo);
@@ -396,21 +404,7 @@ public class GUIHelper {
     /* Works like <a> */
     label.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-        if (href.equals("ลงทะเบียน") || href.equals("ยังไม่ได้เข้าสู่ระบบ")) {
-          if (frameWelcome == null) {
-            initWelcome();
-          }
-          frameWelcome.setVisible(true);
-          CardLayout cl = (CardLayout) (panelWelcome.getLayout());
-          cl.show(panelWelcome, href);
-          try {
-            frameMain.setVisible(false);
-          } catch (NullPointerException ignored) {
-          }
-        } else {
-          CardLayout cl = (CardLayout) (panelRight.getLayout());
-          cl.show(panelRight, href);
-        }
+        backTo(href);
       }
     });
   }

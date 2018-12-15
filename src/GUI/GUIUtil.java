@@ -129,7 +129,7 @@ public class GUIUtil implements ActionListener, KeyListener {
 
   }
 
-  private void promptFirstMedicine() {
+  void promptFirstMedicine() {
     if (user.getUserMedicines().size() == 0) {
       CardLayout cl = (CardLayout) (panelWelcome.getLayout());
       cl.show(panelWelcome, "เพิ่มยาตัวแรก");

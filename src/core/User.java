@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class User {
 
-  private String userId, userName, userPrefix, userFirstName, userLastName, userFullName;
+  private String userId, userName, userPrefix, userFirstName, userLastName;
   private String userEmail, userGender;
   private int userAge;
   private double userWeight, userHeight;
@@ -39,15 +39,18 @@ public class User {
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();
     this.userAppointments = new ArrayList<>();
-    if (this.userFirstName.equals("")) {
-      this.userFullName = "(ยังไม่ได้ตั้งชื่อ)";
-    } else {
-      this.userFullName = userPrefix + userFirstName + " " + userLastName;
-    }
   }
 
   public User(String userName) {
     this.userName = userName;
+    this.userPrefix = "";
+    this.userFirstName = "";
+    this.userLastName = "";
+    this.userEmail = "";
+    this.userGender = "";
+    this.userAge = 0;
+    this.userWeight = 0;
+    this.userHeight = 0;
     this.userTime = new String[]{"08:30", "12:30", "18:30", "22:30"};
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();
@@ -92,14 +95,6 @@ public class User {
 
   public void setUserId(String userId) {
     this.userId = userId;
-  }
-
-  public String getUserFullName() {
-    return userFullName;
-  }
-
-  public void setUserFullName(String userFullName) {
-    this.userFullName = userFullName;
   }
 
   public String getUserGender() {
@@ -217,7 +212,9 @@ public class User {
   @Override
   public String toString() {
     return "User{" +
-        "userFullName='" + userFullName + '\'' +
+        "userPrefix='" + userPrefix + '\'' +
+        "userFirstName='" + userFirstName + '\'' +
+        "userLastName='" + userLastName + '\'' +
         ", userGender='" + userGender + '\'' +
         ", userAge='" + userAge + '\'' +
         ", userWeight='" + userWeight + '\'' +
