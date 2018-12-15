@@ -794,15 +794,12 @@ public class GUI {
         } else if (Arrays.equals(oldPasswordField.getPassword(), newPasswordField.getPassword())) {
           fireErrorDialog("รหัสผ่านใหม่ไม่สามารถเป็นรหัสเดิมได้");
         } else {
-          try {
-            updateUserPassword(newPasswordField.getPassword());
-            oldPasswordField.setText("");
-            newPasswordField.setText("");
-            confirmNewPasswordField.setText("");
-            passwordEditFrame.setVisible(false);
-          } catch (NoSuchAlgorithmException | SQLException | LoginException ex) {
-            ex.printStackTrace();
-          }
+          updateUserPassword(newPasswordField.getPassword());
+          oldPasswordField.setText("");
+          newPasswordField.setText("");
+          confirmNewPasswordField.setText("");
+          passwordEditFrame.setVisible(false);
+          fireSuccessDialog("รหัสผ่านถูกเปลี่ยนเรียบร้อย");
         }
       } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
         fireErrorDialog("รหัสผ่านปัจจุบันไม่ถูกต้อง");
