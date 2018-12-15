@@ -5,6 +5,7 @@ import static GUI.components.AppointmentUI.*;
 import static GUI.components.DoctorUI.*;
 import static GUI.components.MedicineUI.*;
 import static api.UserDB.deleteUser;
+import static api.UserDB.updateUserData;
 import static core.Core.getUser;
 import static core.Core.setUser;
 import static core.UserUtil.getGenderIndex;
@@ -40,7 +41,7 @@ import core.LocationHelper;
  * /components
  *
  * @author jMedicine
- * @version 0.7.17
+ * @version 0.7.18
  * @since 0.1.0
  */
 
@@ -175,6 +176,7 @@ public class GUI {
 
     // JToggle
     JToggleButton toggleNoti = makeToggle("เปิดการแจ้งเตือน (macOS เท่านั้น)", true);
+    toggleNoti.setSelected(getUser().isShowNotification());
 
     String userFullName;
       if (getUser().getUserFirstName().equals("")) {
@@ -205,6 +207,23 @@ public class GUI {
       public void mouseClicked(MouseEvent e) {
         setUser(null);
         backTo("ยังไม่ได้เข้าสู่ระบบ");
+      }
+    });
+    toggleNoti.addActionListener(e -> {
+      String successMessage = "";
+      if(toggleNoti.isSelected()){
+        getUser().setShowNotification(true);
+        successMessage = "เปิดการแจ้งเตือนเรียบร้อยแล้ว";
+      } else {
+        getUser().setShowNotification(false);
+        successMessage = "ปิดการแจ้งเตือนเรียบร้อยแล้ว";
+      }
+      try {
+        updateUserData();
+        fireSuccessDialog(successMessage);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+        fireDBErrorDialog();
       }
     });
 
@@ -249,7 +268,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.17"));
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.7.18"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel

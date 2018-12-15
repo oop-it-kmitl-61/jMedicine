@@ -34,12 +34,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import notification.NotificationFactory;
 
 /**
  * All methods about rendering overview components is here
  *
  * @author jMedicine
- * @version 0.7.17
+ * @version 0.7.18
  * @since 0.7.12
  */
 
@@ -109,7 +110,20 @@ public class Overview {
       JPanel panelSub = newFlowLayout();
       LocalTime currentTime = LocalTime.parse(key.split(" ")[0]);
       boolean focus = false;
-      if (now.getHour() == currentTime.getHour() || now.getHour() == currentTime.minusHours(1).getHour() || now.getHour() == currentTime.plusHours(1).getHour()) {
+
+      // Active period starts before the actual time for 10 minutes and ends after the actual time for 1 hour.
+      int curMinuteTime = currentTime.getHour() * 60 + currentTime.getMinute();
+      int checkTime = now.getHour() * 60 + now.getMinute();
+      int diff = curMinuteTime - checkTime;
+
+      if (diff <= 10 && diff >= -60) {
+        if (getUser().isShowNotification()) {
+          try {
+            NotificationFactory.showNotification("💊 ได้เวลาทานยารอบ " + key + " แล้ว");
+          } catch (UnsatisfiedLinkError ignored) {
+          }
+        }
+
         focus = true;
         panelMain.add(getTimePanel(key, true));
         for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {

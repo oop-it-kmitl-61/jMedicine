@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Stores all user's information.
  *
  * @author jMedicine
- * @version 0.7.14
+ * @version 0.7.18
  * @since 0.3.0
  */
 
@@ -20,11 +20,12 @@ public class User {
   private ArrayList<Medicine> userMedicines;
   private ArrayList<Doctor> userDoctors;
   private ArrayList<Appointment> userAppointments;
+  private boolean showNotification;
 
 
   public User(String userId, String userName, String userPrefix, String userFirstName,
       String userLastName, String userEmail, String userGender, int userAge,
-      double userWeight, double userHeight, String[] userTime) {
+      double userWeight, double userHeight, String[] userTime, boolean showNotification) {
     this.userId = userId;
     this.userName = userName;
     this.userPrefix = userPrefix;
@@ -39,6 +40,7 @@ public class User {
     this.userMedicines = new ArrayList<>();
     this.userDoctors = new ArrayList<>();
     this.userAppointments = new ArrayList<>();
+    this.showNotification = showNotification;
   }
 
   public User(String userName) {
@@ -207,6 +209,18 @@ public class User {
       return false;
     }
     return true;
+  }
+
+  public void setShowNotification(boolean show) {
+    this.showNotification = show;
+  }
+
+  public boolean isShowNotification() {
+    if (showNotification == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override

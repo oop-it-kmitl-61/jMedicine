@@ -5,12 +5,11 @@ package core;
  * executeSignIn() at GUIUtil.java
  *
  * @author jMedicine
- * @version 0.7.0
+ * @version 0.7.18
  * @since 0.7.0
  */
 
 public class Core {
-
   private static User currentUser;
 
   public static void setUser(User user) {
