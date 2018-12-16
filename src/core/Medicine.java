@@ -1,5 +1,6 @@
 package core;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -37,6 +38,7 @@ public class Medicine {
   private String dateStart;
   private ArrayList<String> taken;
   private ArrayList<String> skipped;
+  private Timestamp lastNotified;
 
   public Medicine(String medName, String medType, String medColor, String medDescription,
       ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
@@ -53,6 +55,7 @@ public class Medicine {
     this.medEXP = medEXP;
     this.dateAdded = new Date();
     this.dateStart = dateStart;
+    this.lastNotified = new Timestamp(0);
     switch (medType) {
       case "tablet":
         this.medUnit = "เม็ด";
@@ -71,7 +74,7 @@ public class Medicine {
 
   public Medicine(String id, String medName, String medType, String medColor, String medDescription,
       ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
-      Date medEXP, String dateStart) {
+      Date medEXP, String dateStart, Timestamp lastNotified) {
     this.id = id;
     this.medName = medName;
     this.medType = medType;
@@ -85,6 +88,7 @@ public class Medicine {
     this.medEXP = medEXP;
     this.dateAdded = new Date();
     this.dateStart = dateStart;
+    this.lastNotified = lastNotified;
     switch (medType) {
       case "tablet":
         this.medUnit = "เม็ด";
@@ -235,5 +239,13 @@ public class Medicine {
 
   public void setSkipped(ArrayList<String> skipped) {
     this.skipped = skipped;
+  }
+
+  public Timestamp getLastNotified() {
+    return lastNotified;
+  }
+
+  public void setLastNotified(Timestamp lastNotified) {
+    this.lastNotified = lastNotified;
   }
 }

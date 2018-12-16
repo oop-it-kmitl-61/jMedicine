@@ -1,7 +1,5 @@
 package api;
 
-import static GUI.GUIHelper.formatDMYHM;
-import static GUI.GUIHelper.formatHM;
 import static api.DoctorDB.getDoctorInfo;
 
 import core.Appointment;
@@ -51,9 +49,10 @@ public class AppointmentDB {
       Date date = result.getDate("date");
       String note = result.getString("note");
       Doctor doctor = getDoctorInfo(result.getString("doctor"));
+      boolean notified = result.getBoolean("notified");
 
       results.add(
-          new Appointment(result.getString("id"), date, timeStart, timeEnd, doctor, note)
+          new Appointment(result.getString("id"), date, timeStart, timeEnd, doctor, note, notified)
       );
     }
 
@@ -67,7 +66,7 @@ public class AppointmentDB {
     time.add(appointment.getTimeStop());
     String doctorId = appointment.getDoctor().getId();
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO appointments (\"user\", doctor, \"date\", \"time\", note) VALUES (?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO appointments (\"user\", doctor, \"date\", \"time\", note, \"notified\") VALUES (?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
@@ -75,6 +74,7 @@ public class AppointmentDB {
     pStatement.setDate(3, new java.sql.Date(appointment.getDate().getTime()));
     pStatement.setArray(4, connection.createArrayOf("text", time.toArray()));
     pStatement.setString(5, appointment.getNote());
+    pStatement.setBoolean(6, appointment.isNotified());
 
     ResultSet result = pStatement.executeQuery();
 
@@ -93,14 +93,15 @@ public class AppointmentDB {
     time.add(appointment.getTimeStop());
     String doctorId = appointment.getDoctor().getId();
 
-    String SQLCommand = "UPDATE appointments SET doctor = ?, \"time\" = ?, note = ?, date = ? WHERE id = ?";
+    String SQLCommand = "UPDATE appointments SET doctor = ?, \"time\" = ?, note = ?, date = ?, \"notified\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, doctorId, Types.OTHER);
     pStatement.setArray(2, connection.createArrayOf("text", time.toArray()));
     pStatement.setString(3, appointment.getNote());
     pStatement.setDate(4, new java.sql.Date(appointment.getDate().getTime()));
-    pStatement.setObject(5, appointment.getId(), Types.OTHER);
+    pStatement.setBoolean(5, appointment.isNotified());
+    pStatement.setObject(6, appointment.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 

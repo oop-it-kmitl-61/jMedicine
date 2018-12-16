@@ -10,15 +10,17 @@ public class Appointment {
   private String timeStop;
   private Doctor doctor;
   private String note;
+  private boolean notified;
 
   public Appointment(String id, Date date, String timeStart, String timeStop, Doctor doctor,
-      String note) {
+      String note, boolean notified) {
     this.id = id;
     this.date = date;
     this.timeStart = timeStart;
     this.timeStop = timeStop;
     this.doctor = doctor;
     this.note = note;
+    this.notified = notified;
   }
 
   public Appointment(Date date, String timeStart, String timeStop, Doctor doctor, String note) {
@@ -27,6 +29,7 @@ public class Appointment {
     this.timeStop = timeStop;
     this.doctor = doctor;
     this.note = note;
+    this.notified = false;
   }
 
   public String getId() {
@@ -75,5 +78,13 @@ public class Appointment {
 
   public void setNote(String note) {
     this.note = note;
+  }
+
+  public boolean isNotified() {
+    return notified;
+  }
+
+  public void setNotified(boolean notified) {
+    this.notified = notified;
   }
 }

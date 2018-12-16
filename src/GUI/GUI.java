@@ -32,17 +32,20 @@ import java.awt.event.MouseEvent;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
 import javax.swing.*;
 import core.LocationHelper;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * All GUIs will be centralized here. GUI that needed too much methods has been moved to
  * /components
  *
  * @author jMedicine
- * @version 0.8.0
+ * @version 0.8.1
  * @since 0.1.0
  */
 
@@ -108,23 +111,33 @@ public class GUI {
     // JPanels
     panelOverview = new JPanel(new BorderLayout());
     JPanel panelTitle = newFlowLayout();
-    JPanel panelLoop = overview.renderOverview();
 
     String today = GUIHelper.formatDMYFull.format(new Date());
-    panelTitle.add(makeTitleLabel(today));
+    LocalTime now = LocalTime.now();
+    JLabel title = makeTitleLabel(today + " " + now.getHour() + ":" + now.getMinute());
+    panelTitle.add(title);
 
     // Styling
     setPadding(panelTitle, 0, 0, 0, 2);
 
-    // Add all panels into the main panel
     panelOverview.add(panelTitle, BorderLayout.NORTH);
-    if (overview.getOverviewCount() < 3) {
-      setPadding(panelLoop, 0, 0, 1000, 10);
-      panelOverview.add(panelLoop);
-    } else {
-      setPadding(panelLoop, 0, 0, 20, 10);
-      panelOverview.add(makeScrollPane(panelLoop));
-    }
+
+    Timer timer = new Timer();
+    timer.scheduleAtFixedRate(new TimerTask() {
+      @Override
+      public void run() {
+        LocalTime lNow = LocalTime.now();
+        title.setText(GUIHelper.formatDMYFull.format(new Date()) + " " + lNow.getHour() + ":" + lNow.getMinute());
+        JPanel panelLoop = overview.renderOverview();
+        if (overview.getOverviewCount() < 3) {
+          setPadding(panelLoop, 0, 0, 1000, 10);
+          panelOverview.add(panelLoop);
+        } else {
+          setPadding(panelLoop, 0, 0, 20, 10);
+          panelOverview.add(makeScrollPane(panelLoop));
+        }
+      }
+    }, 0, 30*1000);
 
     panelRight.add(panelOverview, "ภาพรวม");
   }
@@ -269,7 +282,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.8.0"));
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.8.1"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel

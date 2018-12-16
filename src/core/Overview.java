@@ -1,16 +1,6 @@
 package core;
 
-import static GUI.GUIHelper.makeBoldLabel;
-import static GUI.GUIHelper.makeGreyToBlueButton;
-import static GUI.GUIHelper.makeGreyToRedButton;
-import static GUI.GUIHelper.makeLabel;
-import static GUI.GUIHelper.makeSmallerLabel;
-import static GUI.GUIHelper.makeSubTitleLabel;
-import static GUI.GUIHelper.newCardBorder;
-import static GUI.GUIHelper.newFlowLayout;
-import static GUI.GUIHelper.newPanelLoop;
-import static GUI.GUIHelper.secondaryBlue;
-import static GUI.GUIHelper.setPadding;
+import static GUI.GUIHelper.*;
 import static GUI.components.AppointmentUI.getAppointmentIcon;
 import static core.Core.getUser;
 import static core.MedicineUtil.tableSpoonCalc;
@@ -23,6 +13,7 @@ import api.MedicineDB;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +35,7 @@ import notification.NotificationFactory;
  * All methods about rendering overview components is here
  *
  * @author jMedicine
- * @version 0.8.0
+ * @version 0.8.1
  * @since 0.7.12
  */
 
@@ -80,21 +71,23 @@ public class Overview {
     } catch (SQLException | ParseException e) {
       e.printStackTrace();
     }
-
     // Filters only upcoming appointments
     for (Appointment app : userAppointments) {
       LocalDate appDate = LocalDate.parse(app.getDate().toString());
-      if (today.equals(appDate) || today.plusDays(1).equals(appDate)) {
+      LocalTime appTime = LocalTime.parse(app.getTimeStop());
+      if ((today.equals(appDate) && now.isBefore(appTime)) || today.plusDays(1).equals(appDate)) {
         panelMain.add(getTimePanel("app",true));
         JPanel panelSub = newFlowLayout();
         panelSub.add(getAppPanel(app));
         panelSub.setBackground(secondaryBlue);
         setPadding(panelSub, 10, 20, 20);
         panelMain.add(panelSub);
-        if (getUser().isShowNotification()) {
+        if (getUser().isShowNotification() && !app.isNotified()) {
           try {
-            NotificationFactory.showNotification("You have an upcoming appointment");
-          } catch (UnsatisfiedLinkError ignored) {
+              NotificationFactory.showNotification("You have an upcoming appointment.");
+              app.setNotified(true);
+              AppointmentDB.updateAppointment(app);
+          } catch (UnsatisfiedLinkError | SQLException ignored) {
           }
         }
       }
@@ -141,6 +134,15 @@ public class Overview {
       overviewCount++;
       JPanel panelSub = newFlowLayout();
       LocalTime currentTime = LocalTime.parse(key.split(" ")[0]);
+
+      Timestamp timestamp = new Timestamp(0);
+      try {
+        Date currentTimeDate = formatTimestamp.parse(today + " " + currentTime);
+        timestamp = new Timestamp(currentTimeDate.getTime());
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+
       boolean focus = false;
 
       // Active period starts before the actual time for 10 minutes and ends after the actual time for 1 hour.
@@ -149,17 +151,26 @@ public class Overview {
       int diff = curMinuteTime - checkTime;
 
       if (diff <= 10 && diff >= -60) {
-        if (getUser().isShowNotification()) {
+        focus = true;
+        panelMain.add(getTimePanel(key, true));
+        boolean sendNotification = false;
+        for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
+          if (!med.getLastNotified().equals(timestamp)) {
+            sendNotification = true;
+            med.setLastNotified(timestamp);
+            try {
+              MedicineDB.updateMedicine(med);
+            } catch (SQLException e) {
+              e.printStackTrace();
+            }
+          }
+          panelSub.add(getMedPanel(med, true));
+        }
+        if (getUser().isShowNotification() && sendNotification) {
           try {
             NotificationFactory.showNotification("It's your med time!");
           } catch (UnsatisfiedLinkError ignored) {
           }
-        }
-
-        focus = true;
-        panelMain.add(getTimePanel(key, true));
-        for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
-          panelSub.add(getMedPanel(med, true));
         }
         panelSub.setBackground(secondaryBlue);
       } else {

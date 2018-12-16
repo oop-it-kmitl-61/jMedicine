@@ -46,7 +46,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.8.0
+ * @version 0.8.1
  * @since 0.7.0
  */
 
@@ -147,6 +147,7 @@ public class AppointmentUI {
         panelRight.remove(panelAppointment);
         panelAllAppointments();
         backTo("นัดแพทย์");
+        reloadOverview();
       }
     });
 
@@ -290,6 +291,7 @@ public class AppointmentUI {
           backTo("นัดแพทย์");
           panelRight.remove(panelAddAppointment);
           panelRight.add(panelAddAppointment, "เพิ่มนัดใหม่");
+          reloadOverview();
         } catch (SQLException e1) {
           e1.printStackTrace();
           fireDBErrorDialog();
@@ -468,6 +470,7 @@ public class AppointmentUI {
           panelAllAppointments();
           backTo("นัดแพทย์");
           panelRight.remove(panelEditAppointment(appointment));
+          reloadOverview();
         } catch (SQLException e1) {
           e1.printStackTrace();
           fireDBErrorDialog();
