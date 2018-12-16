@@ -1,7 +1,22 @@
 package GUI;
 
-import static GUI.GUI.*;
-import static GUI.components.MedicineUI.panelFirstMedicine;
+import static GUI.GUI.btnSignIn;
+import static GUI.GUI.btnSignUp;
+import static GUI.GUI.btnSkipAddingInfo;
+import static GUI.GUI.isSignInPage;
+import static GUI.GUI.isSignUpPage;
+import static GUI.GUI.main;
+import static GUI.GUI.panelErrorSignIn;
+import static GUI.GUI.panelErrorSignUpPassword;
+import static GUI.GUI.panelErrorSignUpUsername;
+import static GUI.GUI.panelFirstInfo;
+import static GUI.GUI.panelLoading;
+import static GUI.GUI.panelNoInput;
+import static GUI.GUI.panelWelcome;
+import static GUI.GUI.promptFirstMedicine;
+import static GUI.GUI.tfPassword;
+import static GUI.GUI.tfPasswordConfirm;
+import static GUI.GUI.tfUserName;
 import static api.Login.doSignIn;
 import static api.Login.doSignUp;
 import static core.Core.getUser;
@@ -19,6 +34,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import javax.swing.SwingWorker;
 
+
 /**
  * An utility class for GUI.java
  *
@@ -28,6 +44,7 @@ import javax.swing.SwingWorker;
  */
 
 public class GUIUtil implements ActionListener, KeyListener {
+
 
   public void listeners() {
     btnSignIn.addActionListener(this);

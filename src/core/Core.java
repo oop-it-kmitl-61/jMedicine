@@ -10,6 +10,7 @@ package core;
  */
 
 public class Core {
+
   private static User currentUser;
 
   public static void setUser(User user) {

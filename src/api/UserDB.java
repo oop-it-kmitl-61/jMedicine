@@ -5,11 +5,9 @@ import static core.Utils.sha256;
 
 import core.Database;
 import core.User;
-
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 

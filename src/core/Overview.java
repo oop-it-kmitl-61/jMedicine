@@ -1,12 +1,26 @@
 package core;
 
-import static GUI.GUIHelper.*;
+import static GUI.GUIHelper.fireConfirmDialog;
+import static GUI.GUIHelper.fireDBErrorDialog;
+import static GUI.GUIHelper.formatTimestamp;
+import static GUI.GUIHelper.getSuccessIcon;
+import static GUI.GUIHelper.makeBoldLabel;
+import static GUI.GUIHelper.makeGreyToBlueButton;
+import static GUI.GUIHelper.makeGreyToRedButton;
+import static GUI.GUIHelper.makeLabel;
+import static GUI.GUIHelper.makeSmallerLabel;
+import static GUI.GUIHelper.makeSubTitleLabel;
+import static GUI.GUIHelper.newCardBorder;
+import static GUI.GUIHelper.newFlowLayout;
+import static GUI.GUIHelper.newPanelLoop;
+import static GUI.GUIHelper.secondaryBlue;
+import static GUI.GUIHelper.setPadding;
 import static GUI.components.AppointmentUI.getAppointmentIcon;
 import static core.Core.getUser;
+import static core.MedicineUtil.getMedIcon;
 import static core.MedicineUtil.tableSpoonCalc;
 import static core.MedicineUtil.teaSpoonCalc;
-import static core.Utils.*;
-import static core.MedicineUtil.getMedIcon;
+import static core.Utils.timestampToTime;
 
 import api.AppointmentDB;
 import api.MedicineDB;
@@ -18,12 +32,17 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TreeMap;
-import javax.swing.*;
-
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 import notification.NotificationFactory;
 
 /**
@@ -71,7 +90,7 @@ public class Overview {
       LocalDate appDate = LocalDate.parse(app.getDate().toString());
       LocalTime appTime = LocalTime.parse(app.getTimeStop());
       if ((today.equals(appDate) && now.isBefore(appTime)) || today.plusDays(1).equals(appDate)) {
-        panelMain.add(getTimePanel("app",true));
+        panelMain.add(getTimePanel("app", true));
         JPanel panelSub = newFlowLayout();
         panelSub.add(getAppPanel(app));
         panelSub.setBackground(secondaryBlue);
@@ -79,9 +98,9 @@ public class Overview {
         panelMain.add(panelSub);
         if (getUser().isShowNotification() && !app.isNotified()) {
           try {
-              NotificationFactory.showNotification("You have an upcoming appointment.");
-              app.setNotified(true);
-              AppointmentDB.updateAppointment(app);
+            NotificationFactory.showNotification("You have an upcoming appointment.");
+            app.setNotified(true);
+            AppointmentDB.updateAppointment(app);
           } catch (UnsatisfiedLinkError | SQLException ignored) {
           }
         }
@@ -116,7 +135,8 @@ public class Overview {
             String startTime = timestampToTime(medicine.getDateStart()) + " น.";
             appendMedicine(startTime, medicine);
           } else {
-            String lastTaken = getNextInterval(medicine.getLastTaken(), Integer.valueOf(medicine.getMedDoseStr().split(" ")[0]));
+            String lastTaken = getNextInterval(medicine.getLastTaken(),
+                Integer.valueOf(medicine.getMedDoseStr().split(" ")[0]));
             appendMedicine(lastTaken, medicine);
           }
         }
@@ -231,7 +251,9 @@ public class Overview {
 
     // JLabels
     JLabel labelPic = getAppointmentIcon();
-    JLabel labelAppName = makeBoldLabel(app.getDate() + " ตั้งแต่เวลา " + app.getTimeStart() + " น. - " + app.getTimeStop() + " น.");
+    JLabel labelAppName = makeBoldLabel(
+        app.getDate() + " ตั้งแต่เวลา " + app.getTimeStart() + " น. - " + app.getTimeStop()
+            + " น.");
     JLabel labelAppSub = makeLabel(app.getDoctor() + " โรงพยาบาล" + app.getDoctor().getHospital());
 
     // Styling
@@ -242,12 +264,11 @@ public class Overview {
     setPadding(labelAppSub, 0, 0, 2, 0);
     setPadding(panelLoopInfo, 0, 20, 4, 0);
     setPadding(panelApp, 6, 36, 12, 0);
-      panelLoopInfo.setBackground(secondaryBlue);
-      panelCard.setBorder(BorderFactory.createCompoundBorder(
-          BorderFactory.createLineBorder(new Color(166, 166, 166)),
-          BorderFactory.createEmptyBorder(10, 10, 10, 10)
-      ));
-
+    panelLoopInfo.setBackground(secondaryBlue);
+    panelCard.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(166, 166, 166)),
+        BorderFactory.createEmptyBorder(10, 10, 10, 10)
+    ));
 
     panelAppInfo.add(labelAppName);
     panelAppInfo.add(labelAppSub);
@@ -289,7 +310,6 @@ public class Overview {
 
     LocalDate today = LocalDate.now();
     LocalTime currentTime = LocalTime.now();
-
 
     int medDose = medicine.getMedDose();
     String medUnit = medicine.getMedUnit();
@@ -362,7 +382,8 @@ public class Overview {
       medicine.appendTaken(today + " " + currentTime);
       try {
         MedicineDB.updateMedicine(medicine);
-        labelSuccess.setText("ทานยาเรียบร้อยแล้ว ยาคงเหลือ " + medicine.getMedRemaining() + " " + medUnit);
+        labelSuccess
+            .setText("ทานยาเรียบร้อยแล้ว ยาคงเหลือ " + medicine.getMedRemaining() + " " + medUnit);
         panelBtn.setVisible(false);
         panelSuccess.setVisible(true);
       } catch (SQLException e1) {
@@ -371,7 +392,8 @@ public class Overview {
       }
     });
     btnSkip.addActionListener(skip -> {
-      int result = fireConfirmDialog("ต้องการข้ามการทานยา " + medicine.getMedName() + " ในเวลานี้ใช่หรือไม่");
+      int result = fireConfirmDialog(
+          "ต้องการข้ามการทานยา " + medicine.getMedName() + " ในเวลานี้ใช่หรือไม่");
       if (result == JOptionPane.YES_OPTION) {
         medicine.appendSkipped(today + " " + now);
         try {

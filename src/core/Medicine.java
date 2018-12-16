@@ -1,10 +1,10 @@
 package core;
 
+import static core.Utils.stringToTimestamp;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-
-import static core.Utils.stringToTimestamp;
 
 /**
  * Stores a medicine information. Use a constructor to new a medicine.
@@ -79,7 +79,8 @@ public class Medicine {
 
   public Medicine(String id, String medName, String medType, String medColor, String medDescription,
       ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
-      Date medEXP, String dateStart, Timestamp lastTaken, ArrayList<String> taken, ArrayList<String> skipped,Timestamp lastNotified) {
+      Date medEXP, String dateStart, Timestamp lastTaken, ArrayList<String> taken,
+      ArrayList<String> skipped, Timestamp lastNotified) {
     this.id = id;
     this.medName = medName;
     this.medType = medType;

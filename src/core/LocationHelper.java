@@ -27,8 +27,7 @@ public class LocationHelper {
       BufferedReader sc =
           new BufferedReader(new InputStreamReader(url_name.openStream()));
       systemipaddress = sc.readLine().trim();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       systemipaddress = "Cannot Execute Properly";
     }
 
@@ -52,7 +51,7 @@ public class LocationHelper {
     try {
       response = reader.city(ipAddress);
       Location location = response.getLocation();
-      result = new double[] {location.getLatitude(), location.getLongitude()};
+      result = new double[]{location.getLatitude(), location.getLongitude()};
     } catch (IOException e) {
       e.printStackTrace();
     } catch (GeoIp2Exception e) {

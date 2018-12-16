@@ -6,57 +6,57 @@ import com.sun.jna.Pointer;
 
 public interface NSUserNotificationCInterface extends Library {
 
-	Pointer NSUserNotificationAllocInit();
+  Pointer NSUserNotificationAllocInit();
 
-	void NSUserNotificationSetTitle(Pointer paramPointer1, Pointer paramPointer2);
+  void NSUserNotificationSetTitle(Pointer paramPointer1, Pointer paramPointer2);
 
-	Pointer NSUserNotificationGetTitle(Pointer paramPointer);
+  Pointer NSUserNotificationGetTitle(Pointer paramPointer);
 
-	void NSUserNotificationSetSubtitle(Pointer paramPointer1, Pointer paramPointer2);
+  void NSUserNotificationSetSubtitle(Pointer paramPointer1, Pointer paramPointer2);
 
-	Pointer NSUserNotificationGetSubtitle(Pointer paramPointer);
+  Pointer NSUserNotificationGetSubtitle(Pointer paramPointer);
 
-	void NSUserNotificationSetInformativeText(Pointer paramPointer1, Pointer paramPointer2);
+  void NSUserNotificationSetInformativeText(Pointer paramPointer1, Pointer paramPointer2);
 
-	Pointer NSUserNotificationGetInformativeText(Pointer paramPointer);
+  Pointer NSUserNotificationGetInformativeText(Pointer paramPointer);
 
-	void NSUserNotificationSetHasActionButton(Pointer paramPointer, byte paramByte);
+  void NSUserNotificationSetHasActionButton(Pointer paramPointer, byte paramByte);
 
-	byte NSUserNotificationHasActionButton(Pointer paramPointer);
+  byte NSUserNotificationHasActionButton(Pointer paramPointer);
 
-	void NSUserNotificationSetActionButtonTitle(Pointer paramPointer1, Pointer paramPointer2);
+  void NSUserNotificationSetActionButtonTitle(Pointer paramPointer1, Pointer paramPointer2);
 
-	Pointer NSUserNotificationGetActionButtonTitle(Pointer paramPointer);
+  Pointer NSUserNotificationGetActionButtonTitle(Pointer paramPointer);
 
-	void NSUserNotificationSetOtherButtonTitle(Pointer paramPointer1, Pointer paramPointer2);
+  void NSUserNotificationSetOtherButtonTitle(Pointer paramPointer1, Pointer paramPointer2);
 
-	Pointer NSUserNotificationGetOtherButtonTitle(Pointer paramPointer);
+  Pointer NSUserNotificationGetOtherButtonTitle(Pointer paramPointer);
 
-	void NSUserNotificationSetDeliveryDate(Pointer paramPointer1, Pointer paramPointer2);
+  void NSUserNotificationSetDeliveryDate(Pointer paramPointer1, Pointer paramPointer2);
 
-	Pointer NSUserNotificationGetDeliveryDate(Pointer paramPointer);
+  Pointer NSUserNotificationGetDeliveryDate(Pointer paramPointer);
 
-	Pointer NSUserNotificationGetActualDeliveryDate(Pointer paramPointer);
+  Pointer NSUserNotificationGetActualDeliveryDate(Pointer paramPointer);
 
-	void NSUserNotificationSetDeliveryRepeatInterval(Pointer paramPointer, int paramInt);
+  void NSUserNotificationSetDeliveryRepeatInterval(Pointer paramPointer, int paramInt);
 
-	int NSUserNotificationGetDeliveryRepeatInterval(Pointer paramPointer);
+  int NSUserNotificationGetDeliveryRepeatInterval(Pointer paramPointer);
 
-	void NSUserNotificationSetDeliveryTimeZone(Pointer paramPointer1, Pointer paramPointer2);
+  void NSUserNotificationSetDeliveryTimeZone(Pointer paramPointer1, Pointer paramPointer2);
 
-	Pointer NSUserNotificationGetDeliveryTimeZone(Pointer paramPointer);
+  Pointer NSUserNotificationGetDeliveryTimeZone(Pointer paramPointer);
 
-	byte NSUserNotificationIsPresented(Pointer paramPointer);
+  byte NSUserNotificationIsPresented(Pointer paramPointer);
 
-	byte NSUserNotificationIsRemote(Pointer paramPointer);
+  byte NSUserNotificationIsRemote(Pointer paramPointer);
 
-	Pointer NSUserNotificationGetSoundName(Pointer paramPointer);
+  Pointer NSUserNotificationGetSoundName(Pointer paramPointer);
 
-	void NSUserNotificationSetSoundName(Pointer paramPointer1, Pointer paramPointer2);
+  void NSUserNotificationSetSoundName(Pointer paramPointer1, Pointer paramPointer2);
 
-	void NSUserNotificationSetDefaultSoundName(Pointer paramPointer);
+  void NSUserNotificationSetDefaultSoundName(Pointer paramPointer);
 
-	byte NSUserNotificationGetActivationType(Pointer paramPointer);
+  byte NSUserNotificationGetActivationType(Pointer paramPointer);
 
-	void NSUserNotificationRelease(Pointer paramPointer);
+  void NSUserNotificationRelease(Pointer paramPointer);
 }

@@ -1,9 +1,56 @@
 package GUI.components;
 
-import static GUI.GUI.*;
-import static GUI.GUIHelper.*;
-import static core.MedicineUtil.*;
-import static core.Core.*;
+import static GUI.GUI.frameMain;
+import static GUI.GUI.frameWelcome;
+import static GUI.GUI.panelRight;
+import static GUI.GUI.reloadOverview;
+import static GUI.GUIHelper.backTo;
+import static GUI.GUIHelper.editSwitcher;
+import static GUI.GUIHelper.fireConfirmDialog;
+import static GUI.GUIHelper.fireDBErrorDialog;
+import static GUI.GUIHelper.fireErrorDialog;
+import static GUI.GUIHelper.fireInfoDialog;
+import static GUI.GUIHelper.fireSuccessDialog;
+import static GUI.GUIHelper.formatDatePicker;
+import static GUI.GUIHelper.formatHM;
+import static GUI.GUIHelper.formatYMD;
+import static GUI.GUIHelper.getInfoPic;
+import static GUI.GUIHelper.getRemoveFailedMessage;
+import static GUI.GUIHelper.getRemoveSuccessfulMessage;
+import static GUI.GUIHelper.imgPath;
+import static GUI.GUIHelper.mainBlue;
+import static GUI.GUIHelper.makeBackButton;
+import static GUI.GUIHelper.makeBlueButton;
+import static GUI.GUIHelper.makeBoldLabel;
+import static GUI.GUIHelper.makeCheckBox;
+import static GUI.GUIHelper.makeComboBox;
+import static GUI.GUIHelper.makeDatePicker;
+import static GUI.GUIHelper.makeLabel;
+import static GUI.GUIHelper.makeNewButton;
+import static GUI.GUIHelper.makeNumberField;
+import static GUI.GUIHelper.makeRadioButton;
+import static GUI.GUIHelper.makeRedButton;
+import static GUI.GUIHelper.makeRemoveButton;
+import static GUI.GUIHelper.makeScrollPane;
+import static GUI.GUIHelper.makeSmallerLabel;
+import static GUI.GUIHelper.makeTextField;
+import static GUI.GUIHelper.makeTimeNowPicker;
+import static GUI.GUIHelper.makeTitleLabel;
+import static GUI.GUIHelper.makeTodayPicker;
+import static GUI.GUIHelper.newFlowLayout;
+import static GUI.GUIHelper.newPanelLoop;
+import static GUI.GUIHelper.setPadding;
+import static core.Core.getUser;
+import static core.MedicineUtil.getLiquidColor;
+import static core.MedicineUtil.getLiquidColorIndex;
+import static core.MedicineUtil.getMedDoseStr;
+import static core.MedicineUtil.getMedIcon;
+import static core.MedicineUtil.getMedTime;
+import static core.MedicineUtil.getMedType;
+import static core.MedicineUtil.getTabletColor;
+import static core.MedicineUtil.getTabletColorIndex;
+import static core.MedicineUtil.tableSpoonCalc;
+import static core.MedicineUtil.teaSpoonCalc;
 import static core.Utils.timestampToString;
 
 import GUI.GUIHelper;
@@ -18,7 +65,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.ZoneId;
@@ -1057,16 +1103,20 @@ public class MedicineUI {
       int age = getUser().getUserAge();
       double weight = getUser().getUserWeight();
 
-      String[] availableMedicines = {"Amoxicillin Syrup", "Bromhexine Syrup", "Cloxacillin Syrup", "CPM Syrup", "Paracetamol Syrup"};
-      String[] availableIntensities = {"125 mg / 5 ml", "4 mg / 5 ml", "125 mg / 5 ml", "2 mg / 5 ml", "120 mg / 5 ml", "125 mg / 5 ml", "2 mg / 5 ml"};
-      String[] medicineDescriptions = {"ยาแก้อักเสบ ฆ่าเชื้อ", "ยาแก้ไอ ละลายเสมหะ", "ยาฆ่าเชื้อ", "ยาแก้แพ้", "ยาแก้ปวด"};
-      double[] medicineDoses = {20*weight/3, 0.7*weight/3, 50*weight/4, 0.35*weight/6, 10*weight/6};
+      String[] availableMedicines = {"Amoxicillin Syrup", "Bromhexine Syrup", "Cloxacillin Syrup",
+          "CPM Syrup", "Paracetamol Syrup"};
+      String[] availableIntensities = {"125 mg / 5 ml", "4 mg / 5 ml", "125 mg / 5 ml",
+          "2 mg / 5 ml", "120 mg / 5 ml", "125 mg / 5 ml", "2 mg / 5 ml"};
+      String[] medicineDescriptions = {"ยาแก้อักเสบ ฆ่าเชื้อ", "ยาแก้ไอ ละลายเสมหะ", "ยาฆ่าเชื้อ",
+          "ยาแก้แพ้", "ยาแก้ปวด"};
+      double[] medicineDoses = {20 * weight / 3, 0.7 * weight / 3, 50 * weight / 4,
+          0.35 * weight / 6, 10 * weight / 6};
       ArrayList<String[]> medicineTimes = new ArrayList();
-      medicineTimes.add(new String[] {"ทุก ๆ "});
-      medicineTimes.add(new String[] {"เช้า", "กลางวัน", "เย็น"});
-      medicineTimes.add(new String[] {"เช้า", "กลางวัน", "เย็น", "ก่อนนอน"});
-      medicineTimes.add(new String[] {"ทุก ๆ "});
-      medicineTimes.add(new String[] {"ทุก ๆ "});
+      medicineTimes.add(new String[]{"ทุก ๆ "});
+      medicineTimes.add(new String[]{"เช้า", "กลางวัน", "เย็น"});
+      medicineTimes.add(new String[]{"เช้า", "กลางวัน", "เย็น", "ก่อนนอน"});
+      medicineTimes.add(new String[]{"ทุก ๆ "});
+      medicineTimes.add(new String[]{"ทุก ๆ "});
       String[] medicineDoseStrs = {"8", "หลังอาหาร", "หลังอาหาร", "4", "4"};
 
       JLabel labelIntensity = makeLabel(availableIntensities[0]);
@@ -1133,11 +1183,13 @@ public class MedicineUI {
       panelContainer.add(panel);
 
       panel = newFlowLayout();
-      panel.add(makeLabel("เมื่อกดปุ่มคำนวณยา ระบบจะกรอกปริมาณยาและเวลาที่ต้องรับประทานให้โดยอัตโนมัติ"));
+      panel.add(
+          makeLabel("เมื่อกดปุ่มคำนวณยา ระบบจะกรอกปริมาณยาและเวลาที่ต้องรับประทานให้โดยอัตโนมัติ"));
       panelContainer.add(panel);
 
       panel = newFlowLayout();
-      panel.add(makeLabel("อย่างไรก็ตาม ท่านต้องกรอกข้อมูลเพิ่มเติมอื่น ๆ ให้ครบถ้วนในช่องที่มีเครื่องหมาย *"));
+      panel.add(makeLabel(
+          "อย่างไรก็ตาม ท่านต้องกรอกข้อมูลเพิ่มเติมอื่น ๆ ให้ครบถ้วนในช่องที่มีเครื่องหมาย *"));
       panelContainer.add(panel);
 
       panelMain.add(panelContainer, BorderLayout.CENTER);

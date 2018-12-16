@@ -1,11 +1,15 @@
 package api;
 
-import static core.Utils.*;
+import static core.Utils.stringToTimestamp;
 
 import core.Database;
 import core.Medicine;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -46,12 +50,12 @@ public class MedicineDB {
 
       ArrayList<String> time;
       time = Arrays.stream((Object[]) result.getArray("time").getArray())
-              .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
 
       ArrayList<String> taken;
       if (result.getArray("taken") != null) {
         taken = Arrays.stream((Object[]) result.getArray("taken").getArray())
-                .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+            .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
       } else {
         taken = new ArrayList<>();
       }
@@ -59,7 +63,7 @@ public class MedicineDB {
       ArrayList<String> skipped;
       if (result.getArray("skipped") != null) {
         skipped = Arrays.stream((Object[]) result.getArray("skipped").getArray())
-                .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+            .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
       } else {
         skipped = new ArrayList<>();
       }
@@ -68,7 +72,9 @@ public class MedicineDB {
           new Medicine(result.getString("id"), result.getString("name"), result.getString("type"),
               result.getString("color"), result.getString("description"), time,
               result.getString("doseStr"), result.getInt("dose"), result.getInt("total"),
-              result.getDate("expire"), result.getString("startDate"), result.getTimestamp("lastTaken"), taken, skipped, result.getTimestamp("lastnotified")));
+              result.getDate("expire"), result.getString("startDate"),
+              result.getTimestamp("lastTaken"), taken, skipped,
+              result.getTimestamp("lastnotified")));
     }
 
     pStatement.close();

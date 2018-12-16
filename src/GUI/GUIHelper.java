@@ -1,6 +1,10 @@
 package GUI;
 
-import static GUI.GUI.*;
+import static GUI.GUI.frameMain;
+import static GUI.GUI.frameWelcome;
+import static GUI.GUI.initWelcome;
+import static GUI.GUI.panelRight;
+import static GUI.GUI.panelWelcome;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;

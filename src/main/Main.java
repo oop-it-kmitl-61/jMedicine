@@ -1,11 +1,7 @@
 package main;
 
 import GUI.GUI;
-
-import java.awt.*;
-import crack.JxBrowserHackUtil;
-import crack.JxVersion;
-
+import java.awt.Dimension;
 
 public class Main {
 

@@ -1,10 +1,42 @@
 package GUI;
 
-import static GUI.GUIHelper.*;
-import static GUI.components.AppointmentUI.*;
-import static GUI.components.DoctorUI.*;
-import static GUI.components.MedicineUI.*;
-import static api.UserDB.*;
+import static GUI.GUIHelper.backTo;
+import static GUI.GUIHelper.fireConfirmDialog;
+import static GUI.GUIHelper.fireDBErrorDialog;
+import static GUI.GUIHelper.fireErrorDialog;
+import static GUI.GUIHelper.fireSuccessDialog;
+import static GUI.GUIHelper.getErrorPanel;
+import static GUI.GUIHelper.getLoadingPanel;
+import static GUI.GUIHelper.locale;
+import static GUI.GUIHelper.mainBlue;
+import static GUI.GUIHelper.makeBackButton;
+import static GUI.GUIHelper.makeBlueButton;
+import static GUI.GUIHelper.makeBoldLabel;
+import static GUI.GUIHelper.makeComboBox;
+import static GUI.GUIHelper.makeLabel;
+import static GUI.GUIHelper.makeLabelCenter;
+import static GUI.GUIHelper.makeLabelClickable;
+import static GUI.GUIHelper.makeLeftNavigationButton;
+import static GUI.GUIHelper.makeNumberField;
+import static GUI.GUIHelper.makePasswordField;
+import static GUI.GUIHelper.makeRedButton;
+import static GUI.GUIHelper.makeScrollPane;
+import static GUI.GUIHelper.makeSmallerLabel;
+import static GUI.GUIHelper.makeTextField;
+import static GUI.GUIHelper.makeTimePicker;
+import static GUI.GUIHelper.makeTitleLabel;
+import static GUI.GUIHelper.makeToggle;
+import static GUI.GUIHelper.newFlowLayout;
+import static GUI.GUIHelper.paintButton;
+import static GUI.GUIHelper.paintCurrentTabButton;
+import static GUI.GUIHelper.setPadding;
+import static GUI.components.AppointmentUI.panelAllAppointments;
+import static GUI.components.DoctorUI.panelAllDoctors;
+import static GUI.components.MedicineUI.panelAllMedicines;
+import static GUI.components.MedicineUI.panelFirstMedicine;
+import static api.UserDB.deleteUser;
+import static api.UserDB.updateUserData;
+import static api.UserDB.updateUserPassword;
 import static core.Core.getUser;
 import static core.Core.setUser;
 import static core.UserUtil.getGenderIndex;
@@ -18,11 +50,11 @@ import api.UserDB;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.PermissionStatus;
+import com.teamdev.jxbrowser.chromium.bb;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
+import core.LocationHelper;
 import core.Overview;
 import core.User;
-import crack.JxBrowserHackUtil;
-import crack.JxVersion;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -31,16 +63,30 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
-import javax.swing.*;
-import core.LocationHelper;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 /**
  * All GUIs will be centralized here. GUI that needed too much methods has been moved to
@@ -53,6 +99,24 @@ import java.util.TimerTask;
 
 public class GUI {
 
+  static {
+    try {
+      Field e = bb.class.getDeclaredField("e");
+      e.setAccessible(true);
+      Field f = bb.class.getDeclaredField("f");
+      f.setAccessible(true);
+      Field modifersField = Field.class.getDeclaredField("modifiers");
+      modifersField.setAccessible(true);
+      modifersField.setInt(e, e.getModifiers() & ~Modifier.FINAL);
+      modifersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
+      e.set(null, new BigInteger("1"));
+      f.set(null, new BigInteger("1"));
+      modifersField.setAccessible(false);
+    } catch (Exception e1) {
+      e1.printStackTrace();
+    }
+  }
+
   public static JFrame frameWelcome, frameMain;
   public static JPanel panelRight, panelOverview, panelWelcome;
   static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword, panelSettings;
@@ -62,6 +126,7 @@ public class GUI {
   static boolean isSignInPage, isSignUpPage;
   private static Dimension windowSize, minSize;
   private static GUIUtil util;
+
 
   public GUI(Dimension windowSize) {
     GUI.util = new GUIUtil();
@@ -129,7 +194,8 @@ public class GUI {
       @Override
       public void run() {
         LocalTime lNow = LocalTime.now();
-        title.setText(GUIHelper.formatDMYFull.format(new Date()) + " " + lNow.getHour() + ":" + lNow.getMinute());
+        title.setText(GUIHelper.formatDMYFull.format(new Date()) + " " + lNow.getHour() + ":" + lNow
+            .getMinute());
         JPanel panelLoop = overview.renderOverview();
         if (overview.getOverviewCount() < 3) {
           setPadding(panelLoop, 0, 0, 1000, 10);
@@ -139,7 +205,7 @@ public class GUI {
           panelOverview.add(makeScrollPane(panelLoop));
         }
       }
-    }, 0, 30*1000);
+    }, 0, 30 * 1000);
 
     panelRight.add(panelOverview, "ภาพรวม");
   }
@@ -164,8 +230,6 @@ public class GUI {
     // containing latitude and longitude.
     double[] location = LocationHelper.getLocation();
 
-    JxBrowserHackUtil.hack(JxVersion.V6_22);
-
     // Init web browser
     Browser browser = new Browser();
     BrowserView view = new BrowserView(browser);
@@ -173,8 +237,8 @@ public class GUI {
     browser.setPermissionHandler(request -> PermissionStatus.GRANTED);
     // Load URL that query the hospital around the current position
     browser.loadURL(
-            "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
-                    + ",12z");
+        "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
+            + ",12z");
 
     // Add all sub panels into the main panel
     panelNearBy.add(panelTitle, BorderLayout.NORTH);
@@ -197,11 +261,12 @@ public class GUI {
     toggleNoti.setSelected(getUser().isShowNotification());
 
     String userFullName;
-      if (getUser().getUserFirstName().equals("")) {
-        userFullName = "(ยังไม่ได้ตั้งชื่อ)";
-      } else {
-        userFullName = getUser().getUserPrefix() + getUser().getUserFirstName() + " " + getUser().getUserLastName();
-      }
+    if (getUser().getUserFirstName().equals("")) {
+      userFullName = "(ยังไม่ได้ตั้งชื่อ)";
+    } else {
+      userFullName = getUser().getUserPrefix() + getUser().getUserFirstName() + " " + getUser()
+          .getUserLastName();
+    }
 
     // JLabels
     JLabel labelEditProfile = makeLabel("แก้ไขข้อมูลส่วนตัว");
@@ -229,7 +294,7 @@ public class GUI {
     });
     toggleNoti.addActionListener(e -> {
       String successMessage = "";
-      if(toggleNoti.isSelected()){
+      if (toggleNoti.isSelected()) {
         getUser().setShowNotification(true);
         successMessage = "เปิดการแจ้งเตือนเรียบร้อยแล้ว";
       } else {
@@ -541,8 +606,10 @@ public class GUI {
       String age = tfAge.getText();
       String weight = tfWeight.getText();
       String height = tfHeight.getText();
-      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height.equals("")) {
-        fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
+      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height
+          .equals("")) {
+        fireErrorDialog(
+            "คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
       } else {
         getUser().setUserPrefix(cbPrefix.getSelectedItem().toString());
         getUser().setUserFirstName(tfFName.getText());
@@ -575,12 +642,12 @@ public class GUI {
   private static void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
     buttons = new JButton[]{
-            makeLeftNavigationButton("ภาพรวม"),
-            makeLeftNavigationButton("ยาทั้งหมด"),
-            makeLeftNavigationButton("นัดแพทย์"),
-            makeLeftNavigationButton("แพทย์"),
-            makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
-            makeLeftNavigationButton("การตั้งค่า"),
+        makeLeftNavigationButton("ภาพรวม"),
+        makeLeftNavigationButton("ยาทั้งหมด"),
+        makeLeftNavigationButton("นัดแพทย์"),
+        makeLeftNavigationButton("แพทย์"),
+        makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
+        makeLeftNavigationButton("การตั้งค่า"),
     };
 
     int buttonY = 0;
@@ -802,7 +869,8 @@ public class GUI {
 
     // Remove account
     btnRemoveAccount.addActionListener(e -> {
-      int result = fireConfirmDialog("คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
+      int result = fireConfirmDialog(
+          "คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
       if (result == JOptionPane.YES_OPTION) {
         try {
           deleteUser();
@@ -822,7 +890,8 @@ public class GUI {
       String age = tfAge.getText();
       String weight = tfWeight.getText();
       String height = tfHeight.getText();
-      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height.equals("")) {
+      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height
+          .equals("")) {
         fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน");
       } else {
         user.setUserPrefix(cbPrefix.getSelectedItem().toString());
@@ -876,7 +945,7 @@ public class GUI {
 
     // JLabels
     JLabel labelDescription = makeLabel(
-            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนให้ทานยาก่อนเวลาที่ท่่านได้กำหนดไว้ 10 นาที");
+        "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนให้ทานยาก่อนเวลาที่ท่่านได้กำหนดไว้ 10 นาที");
     JLabel labelMorning = makeBoldLabel("เช้า");
     JLabel labelAfternoon = makeBoldLabel("กลางวัน");
     JLabel labelEvening = makeBoldLabel("เย็น");
@@ -934,8 +1003,8 @@ public class GUI {
     // Save Configured Time
     btnSave.addActionListener(e -> {
       getUser().setUserTime(
-              new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
-                      tpBed.getText()});
+          new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
+              tpBed.getText()});
       try {
         UserDB.updateUserTime();
         fireSuccessDialog("บันทึกเวลาสำเร็จ");
@@ -1009,10 +1078,10 @@ public class GUI {
     panelSub = new JPanel(new GridLayout(4, 1));
     panelSub.add(makeBoldLabel("ไอคอน success, error และ bin"));
     panelSub.add(makeLabel(
-            "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
+        "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
     panelSub.add(makeBoldLabel("ไอคอน warning และ spray"));
     panelSub.add(makeLabel(
-            "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
+        "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
     setPadding(panelSub, 10, 0, 20, 4);
     panelBody.add(panelSub);
 

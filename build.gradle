@@ -17,6 +17,10 @@ sourceSets {
         java {
             srcDir 'src'
         }
+        resources {
+            srcDir 'src'
+            include 'META-INF/'
+        }
     }
 
     test {
@@ -56,7 +60,6 @@ compileJava {
 dependencies {
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
     compile "com.teamdev.jxbrowser:jxbrowser-cross-platform:${jxBrowserVersion}"
-    compile files("$rootDir/lib/license.jar")
     compile files("$rootDir/lib/material-ui-swing.jar")
     compile files("$rootDir/lib/LGoodDatePicker-10.4.1.jar")
     compile 'net.java.dev.jna:jna:5.1.0'

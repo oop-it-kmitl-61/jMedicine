@@ -12,11 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class Login {
 
@@ -49,7 +45,8 @@ public class Login {
       User user = new User(result.getString("id"), result.getString("username"),
           result.getString("title"), result.getString("firstname"), result.getString("lastname"),
           result.getString("email"), result.getString("gender"), result.getInt("age"),
-          result.getDouble("weight"), result.getDouble("height"), userTime, result.getBoolean("notification"));
+          result.getDouble("weight"), result.getDouble("height"), userTime,
+          result.getBoolean("notification"));
 
       user.setUserMedicines(getAllMedicine(user.getUserId()));
       user.setUserDoctors(getAllDoctor(user.getUserId()));

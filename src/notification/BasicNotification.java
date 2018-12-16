@@ -4,19 +4,19 @@ import java.util.concurrent.TimeUnit;
 
 public interface BasicNotification<T> {
 
-	void setTitle(String title);
+  void setTitle(String title);
 
-	String getTitle();
+  String getTitle();
 
-	void setMessage(String message);
+  void setMessage(String message);
 
-	String getMessage();
+  String getMessage();
 
-	void setSubtitle(String subtitle);
+  void setSubtitle(String subtitle);
 
-	void setSoundName(String name);
+  void setSoundName(String name);
 
-	void show(long duration, TimeUnit unit);
+  void show(long duration, TimeUnit unit);
 
-	T getRoot();
+  T getRoot();
 }
