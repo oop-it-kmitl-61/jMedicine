@@ -21,6 +21,8 @@ import com.teamdev.jxbrowser.chromium.PermissionStatus;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.Overview;
 import core.User;
+import crack.JxBrowserHackUtil;
+import crack.JxVersion;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -161,6 +163,8 @@ public class GUI {
     // Fetch current location into an array of double,
     // containing latitude and longitude.
     double[] location = LocationHelper.getLocation();
+
+    JxBrowserHackUtil.hack(JxVersion.V6_22);
 
     // Init web browser
     Browser browser = new Browser();

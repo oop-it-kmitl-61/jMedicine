@@ -3,6 +3,9 @@ package main;
 import GUI.GUI;
 
 import java.awt.*;
+import crack.JxBrowserHackUtil;
+import crack.JxVersion;
+
 
 public class Main {
 
