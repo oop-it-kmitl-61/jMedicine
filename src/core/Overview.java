@@ -22,20 +22,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TreeMap;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+
 import notification.NotificationFactory;
 
 /**
  * All methods about rendering overview components is here
  *
  * @author jMedicine
- * @version 0.8.1
+ * @version 0.8.2
  * @since 0.7.12
  */
 
@@ -121,7 +116,7 @@ public class Overview {
             String startTime = timestampToTime(medicine.getDateStart()) + " น.";
             appendMedicine(startTime, medicine);
           } else {
-            String lastTaken = getNextInterval(medicine.getLastTaken(), Integer.valueOf(medicine.getMedDoseStr()));
+            String lastTaken = getNextInterval(medicine.getLastTaken(), Integer.valueOf(medicine.getMedDoseStr().split(" ")[0]));
             appendMedicine(lastTaken, medicine);
           }
         }
@@ -273,6 +268,7 @@ public class Overview {
     JPanel panelMed = newFlowLayout();
     JPanel panelMedInfo = new JPanel();
     JPanel panelBtn = newFlowLayout();
+    JPanel panelSuccess = newFlowLayout();
 
     String doseStr;
     if (medicine.getMedDoseStr().equals("")) {
@@ -282,9 +278,18 @@ public class Overview {
     }
 
     // JLabels
-    JLabel labelPic = getMedIcon(medicine);
+    JLabel labelMedPic = getMedIcon(medicine);
     JLabel labelMedName = makeBoldLabel(medicine.getMedName());
     JLabel labelAmount;
+    JLabel labelSuccessPic = getSuccessIcon();
+    JLabel labelSuccess = makeLabel(" ");
+
+    panelSuccess.add(labelSuccessPic);
+    panelSuccess.add(labelSuccess);
+
+    LocalDate today = LocalDate.now();
+    LocalTime currentTime = LocalTime.now();
+
 
     int medDose = medicine.getMedDose();
     String medUnit = medicine.getMedUnit();
@@ -332,12 +337,14 @@ public class Overview {
     // Styling
     panelMedInfo.setLayout(new BoxLayout(panelMedInfo, BoxLayout.PAGE_AXIS));
     panelCard.setLayout(new BoxLayout(panelCard, BoxLayout.PAGE_AXIS));
-    setPadding(labelPic, 6, 0, 0, 8);
+    panelSuccess.setVisible(false);
+    setPadding(labelMedPic, 6, 0, 0, 8);
     setPadding(labelMedName, 7, 0, -12, 0);
     setPadding(labelAmount, 0, 0, 2, 0);
     setPadding(panelLoopInfo, 0, 20, 4, 0);
     setPadding(panelMed, 6, 36, 12, 0);
     setPadding(panelBtn, 0, 0, -6, -3);
+    setPadding(labelSuccessPic, 0, -5, 0);
     if (now) {
       panelLoopInfo.setBackground(secondaryBlue);
       panelCard.setBorder(BorderFactory.createCompoundBorder(
@@ -349,10 +356,38 @@ public class Overview {
       panelCard.setBorder(newCardBorder());
     }
 
+    // Listeners
+    btnAte.addActionListener(e -> {
+      medicine.setMedRemaining(medicine.getMedRemaining() - medDose);
+      medicine.appendTaken(today + " " + currentTime);
+      try {
+        MedicineDB.updateMedicine(medicine);
+        labelSuccess.setText("ทานยาเรียบร้อยแล้ว ยาคงเหลือ " + medicine.getMedRemaining() + " " + medUnit);
+        panelBtn.setVisible(false);
+        panelSuccess.setVisible(true);
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+        fireDBErrorDialog();
+      }
+    });
+    btnSkip.addActionListener(skip -> {
+      int result = fireConfirmDialog("ต้องการข้ามการทานยา " + medicine.getMedName() + " ในเวลานี้ใช่หรือไม่");
+      if (result == JOptionPane.YES_OPTION) {
+        medicine.appendSkipped(today + " " + now);
+        try {
+          MedicineDB.updateMedicine(medicine);
+          panelLoopInfo.setVisible(false);
+        } catch (SQLException e1) {
+          e1.printStackTrace();
+          fireDBErrorDialog();
+        }
+      }
+    });
+
     panelMedInfo.add(labelMedName);
     panelMedInfo.add(labelAmount);
 
-    panelMed.add(labelPic);
+    panelMed.add(labelMedPic);
     panelMed.add(panelMedInfo);
     panelCard.add(panelMed);
 
@@ -360,6 +395,7 @@ public class Overview {
     panelBtn.add(btnSkip);
     panelCard.add(new JSeparator(SwingConstants.HORIZONTAL));
     panelCard.add(panelBtn);
+    panelCard.add(panelSuccess);
 
     panelLoopInfo.add(panelCard);
     return panelLoopInfo;
@@ -369,10 +405,9 @@ public class Overview {
     return overviewCount;
   }
 
-  private static String getNextInterval(String timestamp, int nextHour) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm");
-    LocalDateTime date = LocalDateTime.parse(timestamp, formatter);
+  private static String getNextInterval(Timestamp timestamp, int nextHour) {
+    LocalDateTime date = timestamp.toLocalDateTime();
     LocalDateTime next = date.plusHours(nextHour);
-    return next.getHour() + ":" + next.getMinute() + " น.";
+    return String.format("%02d:%02d น.", next.getHour(), next.getMinute());
   }
 }

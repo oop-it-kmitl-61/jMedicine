@@ -63,7 +63,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.7.17
+ * @version 0.8.2
  * @since 0.3.0
  */
 
@@ -183,6 +183,17 @@ public class GUIHelper {
           .showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION);
     }
     return dialogResult;
+  }
+
+  public static JLabel getSuccessIcon() {
+    JLabel labelPic = makeLabel(" ");
+    try {
+      Image img = ImageIO.read(new File(imgSuccessSrc));
+      Icon icon = new ImageIcon(img);
+      labelPic.setIcon(icon);
+    } catch (Exception ignored) {
+    }
+    return labelPic;
   }
 
   public static void beep(String type) {

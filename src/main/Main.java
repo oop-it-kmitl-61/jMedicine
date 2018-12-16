@@ -1,8 +1,8 @@
 package main;
 
 import GUI.GUI;
-import java.awt.Dimension;
-import notification.NotificationFactory;
+
+import java.awt.*;
 
 public class Main {
 

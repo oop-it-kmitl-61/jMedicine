@@ -40,43 +40,40 @@ public class MedicineDB {
         throw new MedicineException("Time is null");
       }
 
-      ArrayList<String> time;
-      time = Arrays.stream((Object[]) result.getArray("time").getArray())
-          .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
-
       if (result.getArray("doseStr") == null) {
         throw new MedicineException("Dose is null");
+      }
+
+      ArrayList<String> time;
+      time = Arrays.stream((Object[]) result.getArray("time").getArray())
+              .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+
+      ArrayList<String> taken;
+      if (result.getArray("taken") != null) {
+        taken = Arrays.stream((Object[]) result.getArray("taken").getArray())
+                .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+      } else {
+        taken = new ArrayList<>();
+      }
+
+      ArrayList<String> skipped;
+      if (result.getArray("skipped") != null) {
+        skipped = Arrays.stream((Object[]) result.getArray("skipped").getArray())
+                .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
+      } else {
+        skipped = new ArrayList<>();
       }
 
       results.add(
           new Medicine(result.getString("id"), result.getString("name"), result.getString("type"),
               result.getString("color"), result.getString("description"), time,
               result.getString("doseStr"), result.getInt("dose"), result.getInt("total"),
-              result.getDate("expire"), result.getString("startDate"), result.getTimestamp("lastnotified")));
+              result.getDate("expire"), result.getString("startDate"), result.getTimestamp("lastTaken"), taken, skipped, result.getTimestamp("lastnotified")));
     }
 
     pStatement.close();
 
     return results;
-  }
-
-
-  public static Medicine getMedicineInfo(String id) throws SQLException {
-    String SQLCommand = "SELECT * FROM medicine WHERE \"id\" = ?";
-
-    PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
-    pStatement.setObject(1, id, Types.OTHER);
-
-    ResultSet result = pStatement.executeQuery();
-
-    result.next();
-    ArrayList<String> time = Arrays.stream((Object[]) result.getArray("time").getArray())
-        .map(Object::toString).collect(Collectors.toCollection(ArrayList::new));
-
-    return new Medicine(result.getString("id"), result.getString("name"), result.getString("type"),
-        result.getString("color"), result.getString("description"), time,
-        result.getString("doseStr"), result.getInt("dose"), result.getInt("total"),
-        result.getDate("expire"), result.getString("startDate"), result.getTimestamp("lastNotified"));
   }
 
   public static Medicine addMedicine(Medicine medicine, String userId) throws SQLException {
@@ -114,7 +111,7 @@ public class MedicineDB {
 
 
   public static Medicine updateMedicine(Medicine medicine) throws SQLException {
-    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ?, \"time\" = ?, \"startDate\" = ?, \"lastnotified\" = ? WHERE id = ?";
+    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ?, \"time\" = ?, \"startDate\" = ?, \"lastTaken\" = ?, \"taken\" = ?, \"skipped\" = ?, \"lastnotified\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, medicine.getMedName());
@@ -127,8 +124,11 @@ public class MedicineDB {
     pStatement.setDate(8, new Date(medicine.getMedEXP().getTime()));
     pStatement.setArray(9, connection.createArrayOf("text", medicine.getMedTime().toArray()));
     pStatement.setTimestamp(10, new java.sql.Timestamp(stringToTimestamp(medicine.getDateStart())));
-    pStatement.setTimestamp(11, medicine.getLastNotified());
-    pStatement.setObject(12, medicine.getId(), Types.OTHER);
+    pStatement.setTimestamp(11, medicine.getLastTaken());
+    pStatement.setArray(12, connection.createArrayOf("text", medicine.getTaken().toArray()));
+    pStatement.setArray(13, connection.createArrayOf("text", medicine.getSkipped().toArray()));
+    pStatement.setTimestamp(14, medicine.getLastNotified());
+    pStatement.setObject(15, medicine.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 

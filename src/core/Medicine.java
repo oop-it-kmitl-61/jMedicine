@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static core.Utils.stringToTimestamp;
+
 /**
  * Stores a medicine information. Use a constructor to new a medicine.
  *
@@ -34,8 +36,8 @@ public class Medicine {
   private Date medEXP;
   private Date dateAdded;
   private String medUnit;
-  private String lastTaken;
   private String dateStart;
+  private Timestamp lastTaken;
   private ArrayList<String> taken;
   private ArrayList<String> skipped;
   private Timestamp lastNotified;
@@ -55,6 +57,9 @@ public class Medicine {
     this.medEXP = medEXP;
     this.dateAdded = new Date();
     this.dateStart = dateStart;
+    this.lastTaken = new Timestamp(stringToTimestamp(dateStart));
+    this.taken = new ArrayList<>();
+    this.skipped = new ArrayList<>();
     this.lastNotified = new Timestamp(0);
     switch (medType) {
       case "tablet":
@@ -74,7 +79,7 @@ public class Medicine {
 
   public Medicine(String id, String medName, String medType, String medColor, String medDescription,
       ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
-      Date medEXP, String dateStart, Timestamp lastNotified) {
+      Date medEXP, String dateStart, Timestamp lastTaken, ArrayList<String> taken, ArrayList<String> skipped,Timestamp lastNotified) {
     this.id = id;
     this.medName = medName;
     this.medType = medType;
@@ -88,6 +93,9 @@ public class Medicine {
     this.medEXP = medEXP;
     this.dateAdded = new Date();
     this.dateStart = dateStart;
+    this.lastTaken = lastTaken;
+    this.taken = taken;
+    this.skipped = skipped;
     this.lastNotified = lastNotified;
     switch (medType) {
       case "tablet":
@@ -209,11 +217,11 @@ public class Medicine {
     this.medUnit = medUnit;
   }
 
-  public String getLastTaken() {
+  public Timestamp getLastTaken() {
     return lastTaken;
   }
 
-  public void setLastTaken(String lastTaken) {
+  public void setLastTaken(Timestamp lastTaken) {
     this.lastTaken = lastTaken;
   }
 
@@ -233,12 +241,20 @@ public class Medicine {
     this.taken = taken;
   }
 
+  public void appendTaken(String taken) {
+    this.taken.add(taken);
+  }
+
   public ArrayList<String> getSkipped() {
     return skipped;
   }
 
   public void setSkipped(ArrayList<String> skipped) {
     this.skipped = skipped;
+  }
+
+  public void appendSkipped(String skipped) {
+    this.skipped.add(skipped);
   }
 
   public Timestamp getLastNotified() {
