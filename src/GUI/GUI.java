@@ -93,7 +93,7 @@ import javax.swing.WindowConstants;
  * /components
  *
  * @author jMedicine
- * @version 0.8.2
+ * @version 0.9.0
  * @since 0.1.0
  */
 
@@ -181,7 +181,9 @@ public class GUI {
 
     String today = GUIHelper.formatDMYFull.format(new Date());
     LocalTime now = LocalTime.now();
-    JLabel title = makeTitleLabel(today + " " + now.getHour() + ":" + now.getMinute());
+
+    String formattedToday = String.format("%s %02d:%02d น.", today, now.getHour(), now.getMinute());
+    JLabel title = makeTitleLabel(formattedToday);
     panelTitle.add(title);
 
     // Styling
@@ -193,9 +195,11 @@ public class GUI {
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
-        LocalTime lNow = LocalTime.now();
-        title.setText(GUIHelper.formatDMYFull.format(new Date()) + " " + lNow.getHour() + ":" + lNow
-            .getMinute());
+        String reValidatedToday = GUIHelper.formatDMYFull.format(new Date());
+        LocalTime reValidatedNow = LocalTime.now();
+        String formatted = String.format("%s %02d:%02d น.", reValidatedToday, reValidatedNow.getHour(), reValidatedNow.getMinute());
+        title.setText(formatted);
+
         JPanel panelLoop = overview.renderOverview();
         if (overview.getOverviewCount() < 3) {
           setPadding(panelLoop, 0, 0, 1000, 10);
@@ -204,8 +208,12 @@ public class GUI {
           setPadding(panelLoop, 0, 0, 20, 10);
           panelOverview.add(makeScrollPane(panelLoop));
         }
+        panelLoop.revalidate();
+        panelLoop.repaint();
+        panelOverview.revalidate();
+        panelOverview.repaint();
       }
-    }, 0, 30 * 1000);
+    }, 0, 15 * 1000);
 
     panelRight.add(panelOverview, "ภาพรวม");
   }
@@ -351,7 +359,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.8.2"));
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.9.0"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel

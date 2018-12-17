@@ -78,7 +78,7 @@ public class Medicine {
   }
 
   public Medicine(String id, String medName, String medType, String medColor, String medDescription,
-      ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal,
+      ArrayList<String> medTime, String medDoseStr, int medDose, int medTotal, int medRemaining,
       Date medEXP, String dateStart, Timestamp lastTaken, ArrayList<String> taken,
       ArrayList<String> skipped, Timestamp lastNotified) {
     this.id = id;
@@ -90,7 +90,7 @@ public class Medicine {
     this.medDoseStr = medDoseStr;
     this.medDose = medDose;
     this.medTotal = medTotal;
-    this.medRemaining = medTotal;
+    this.medRemaining = medRemaining;
     this.medEXP = medEXP;
     this.dateAdded = new Date();
     this.dateStart = dateStart;

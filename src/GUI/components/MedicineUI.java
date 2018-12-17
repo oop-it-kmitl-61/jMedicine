@@ -719,7 +719,7 @@ public class MedicineUI {
             fireSuccessDialog("แก้ไขยา " + medicine.getMedName() + " เรียบร้อยแล้ว");
             panelRight.remove(panelViewMedicine(medicine));
             panelRight.add(panelViewMedicine(medicine));
-            reload();
+            reloadMedicines();
             backTo("ยาทั้งหมด");
             panelRight.remove(panelEditMedicine(medicine));
             reloadOverview();
@@ -1358,7 +1358,7 @@ public class MedicineUI {
     return panelLoopInfo;
   }
 
-  private static void reload() {
+  public static void reloadMedicines() {
     panelRight.remove(panelMedicines);
     panelRight.remove(panelAddMedicine);
     panelRight.add(panelAddMedicine(), "เพิ่มยาใหม่");

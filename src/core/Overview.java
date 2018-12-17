@@ -3,6 +3,7 @@ package core;
 import static GUI.GUIHelper.fireConfirmDialog;
 import static GUI.GUIHelper.fireDBErrorDialog;
 import static GUI.GUIHelper.formatTimestamp;
+import static GUI.GUIHelper.formatYMD;
 import static GUI.GUIHelper.getSuccessIcon;
 import static GUI.GUIHelper.makeBoldLabel;
 import static GUI.GUIHelper.makeGreyToBlueButton;
@@ -16,10 +17,12 @@ import static GUI.GUIHelper.newPanelLoop;
 import static GUI.GUIHelper.secondaryBlue;
 import static GUI.GUIHelper.setPadding;
 import static GUI.components.AppointmentUI.getAppointmentIcon;
+import static GUI.components.MedicineUI.reloadMedicines;
 import static core.Core.getUser;
 import static core.MedicineUtil.getMedIcon;
 import static core.MedicineUtil.tableSpoonCalc;
 import static core.MedicineUtil.teaSpoonCalc;
+import static core.Utils.stringToTimestamp;
 import static core.Utils.timestampToTime;
 
 import api.AppointmentDB;
@@ -34,6 +37,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -49,7 +54,7 @@ import notification.NotificationFactory;
  * All methods about rendering overview components is here
  *
  * @author jMedicine
- * @version 0.8.2
+ * @version 0.9.0
  * @since 0.7.12
  */
 
@@ -73,6 +78,7 @@ public class Overview {
 
   public JPanel renderOverview() {
     initTreeMap();
+
     LocalDate today = LocalDate.now();
     LocalTime now = LocalTime.now();
 
@@ -115,30 +121,130 @@ public class Overview {
       e.printStackTrace();
     }
 
-    // Filters only active medicines
+    // User's time range
+    int morningStart = Integer.valueOf(getUser().getUserTime()[0].split(":")[0]);
+    int afternoonStart = Integer.valueOf(getUser().getUserTime()[1].split(":")[0]);
+    int eveningStart = Integer.valueOf(getUser().getUserTime()[2].split(":")[0]);
+    int bed = Integer.valueOf(getUser().getUserTime()[3].split(":")[0]);
+
+    // Filters only active medicines && not skipped
     for (Medicine medicine : userMedicines) {
+      LocalDateTime currentLastTaken = medicine.getLastTaken().toLocalDateTime();
       if (medicine.getMedRemaining() > 0 && medicine.getMedEXP().after(new Date())) {
         if (medicine.getMedTime().contains("เช้า")) {
-          appendMedicine(getUser().getUserTime()[0] + " น.", medicine);
-        }
-        if (medicine.getMedTime().contains("กลางวัน")) {
-          appendMedicine(getUser().getUserTime()[1] + " น.", medicine);
-        }
-        if (medicine.getMedTime().contains("เย็น")) {
-          appendMedicine(getUser().getUserTime()[2] + " น.", medicine);
-        }
-        if (medicine.getMedTime().contains("ก่อนนอน")) {
-          appendMedicine(getUser().getUserTime()[3] + " น.", medicine);
-        }
-        if (medicine.getMedTime().contains("ทุก ๆ ")) {
-          if (medicine.getLastTaken() == null) {
-            String startTime = timestampToTime(medicine.getDateStart()) + " น.";
-            appendMedicine(startTime, medicine);
-          } else {
-            String lastTaken = getNextInterval(medicine.getLastTaken(),
-                Integer.valueOf(medicine.getMedDoseStr().split(" ")[0]));
-            appendMedicine(lastTaken, medicine);
+          boolean willBeAdded = true;
+          if (medicine.getSkipped().size() > 0) {
+            // Check skipped
+            for (String skipped : medicine.getSkipped()) {
+              LocalDate skippedDate = LocalDate.parse(skipped.split(" ")[0]);
+              int skippedHour = Integer.valueOf(skipped.split(" ")[1].split(":")[0]);
+              if (today.equals(skippedDate) && (skippedHour >= morningStart
+                  && skippedHour < afternoonStart)) {
+                willBeAdded = false;
+              }
+            }
+          } else if (medicine.getTaken().size() > 0) {
+            // Check taken
+            for (String taken : medicine.getTaken()) {
+              LocalDate takenDate = LocalDate.parse(taken.split(" ")[0]);
+              int takenHour = Integer.valueOf(taken.split(" ")[1].split(":")[0]);
+              if (today.equals(takenDate) && (takenHour >= morningStart
+                  && takenHour < afternoonStart)) {
+                willBeAdded = false;
+              }
+            }
           }
+          if (willBeAdded) {
+            appendMedicine(getUser().getUserTime()[0] + " น.", medicine);
+          }
+        }
+
+        if (medicine.getMedTime().contains("กลางวัน")) {
+          boolean willBeAdded = true;
+          if (medicine.getSkipped().size() > 0) {
+            // Check skipped
+            for (String skipped : medicine.getSkipped()) {
+              LocalDate skippedDate = LocalDate.parse(skipped.split(" ")[0]);
+              int skippedHour = Integer.valueOf(skipped.split(" ")[1].split(":")[0]);
+              if (today.equals(skippedDate) && (skippedHour >= afternoonStart
+                  && skippedHour < eveningStart)) {
+                willBeAdded = false;
+              }
+            }
+          } else if (medicine.getTaken().size() > 0) {
+            // Check taken
+            for (String taken : medicine.getTaken()) {
+              LocalDate takenDate = LocalDate.parse(taken.split(" ")[0]);
+              int takenHour = Integer.valueOf(taken.split(" ")[1].split(":")[0]);
+              if (today.equals(takenDate) && (takenHour >= afternoonStart
+                  && takenHour < eveningStart)) {
+                willBeAdded = false;
+              }
+            }
+          }
+          if (willBeAdded) {
+            appendMedicine(getUser().getUserTime()[1] + " น.", medicine);
+          }
+        }
+
+        if (medicine.getMedTime().contains("เย็น")) {
+          boolean willBeAdded = true;
+          if (medicine.getSkipped().size() > 0) {
+            // Check skipped
+            for (String skipped : medicine.getSkipped()) {
+              LocalDate skippedDate = LocalDate.parse(skipped.split(" ")[0]);
+              int skippedHour = Integer.valueOf(skipped.split(" ")[1].split(":")[0]);
+              if (today.equals(skippedDate) && (skippedHour >= eveningStart
+                  && skippedHour < bed)) {
+                willBeAdded = false;
+              }
+            }
+          } else if (medicine.getTaken().size() > 0) {
+            // Check taken
+            for (String taken : medicine.getTaken()) {
+              LocalDate takenDate = LocalDate.parse(taken.split(" ")[0]);
+              int takenHour = Integer.valueOf(taken.split(" ")[1].split(":")[0]);
+              if (today.equals(takenDate) && (takenHour >= eveningStart
+                  && takenHour < bed)) {
+                willBeAdded = false;
+              }
+            }
+          }
+          if (willBeAdded) {
+            appendMedicine(getUser().getUserTime()[2] + " น.", medicine);
+          }
+        }
+
+        if (medicine.getMedTime().contains("ก่อนนอน")) {
+          boolean willBeAdded = true;
+          if (medicine.getSkipped().size() > 0) {
+            // Check skipped
+            for (String skipped : medicine.getSkipped()) {
+              LocalDate skippedDate = LocalDate.parse(skipped.split(" ")[0]);
+              int skippedHour = Integer.valueOf(skipped.split(" ")[1].split(":")[0]);
+              if (today.equals(skippedDate) && (skippedHour >= bed)) {
+                willBeAdded = false;
+              }
+            }
+          } else if (medicine.getTaken().size() > 0) {
+            // Check taken
+            for (String taken : medicine.getTaken()) {
+              LocalDate takenDate = LocalDate.parse(taken.split(" ")[0]);
+              int takenHour = Integer.valueOf(taken.split(" ")[1].split(":")[0]);
+              if (today.equals(takenDate) && (takenHour >= bed)) {
+                willBeAdded = false;
+              }
+            }
+          }
+          if (willBeAdded) {
+            appendMedicine(getUser().getUserTime()[3] + " น.", medicine);
+          }
+        }
+
+        if (medicine.getMedTime().contains("ทุก ๆ ")) {
+          String lastTaken = getNextInterval(medicine.getLastTaken(),
+              Integer.valueOf(medicine.getMedDoseStr().split(" ")[0]));
+          appendMedicine(lastTaken, medicine);
         }
       }
     }
@@ -147,6 +253,7 @@ public class Overview {
 
     for (String key : overviewItem.keySet()) {
       overviewCount++;
+
       JPanel panelSub = newFlowLayout();
       LocalTime currentTime = LocalTime.parse(key.split(" ")[0]);
 
@@ -179,7 +286,7 @@ public class Overview {
               e.printStackTrace();
             }
           }
-          panelSub.add(getMedPanel(med, true));
+          panelSub.add(getMedPanel(med, key.split(" ")[0], true));
         }
         if (getUser().isShowNotification() && sendNotification) {
           try {
@@ -191,7 +298,7 @@ public class Overview {
       } else {
         panelMain.add(getTimePanel(key, false));
         for (Medicine med : (ArrayList<Medicine>) overviewItem.get(key)) {
-          panelSub.add(getMedPanel(med, false));
+          panelSub.add(getMedPanel(med, key.split(" ")[0], false));
         }
       }
       if (focus) {
@@ -205,7 +312,7 @@ public class Overview {
     if (overviewCount == 0) {
       JPanel panelSub = newFlowLayout();
       JLabel labelNothing = makeLabel("คุณยังไม่มียาที่ต้องรับประทานในขณะนี้");
-      setPadding(labelNothing, 10, 0, 0, 4);
+      setPadding(labelNothing, 10, 0, 0, 0);
       panelSub.add(labelNothing);
       panelMain.add(panelSub);
     }
@@ -236,7 +343,6 @@ public class Overview {
       labelTime.setText(time);
       setPadding(panelMain, 10, 0, -8);
     }
-
     panelTime.add(labelTime);
     panelMain.add(panelTime);
     return panelMain;
@@ -281,7 +387,7 @@ public class Overview {
     return panelLoopInfo;
   }
 
-  private JPanel getMedPanel(Medicine medicine, boolean now) {
+  private JPanel getMedPanel(Medicine medicine, String time, boolean now) {
 
     // JPanels
     JPanel panelLoopInfo = new JPanel(new BorderLayout());
@@ -297,6 +403,9 @@ public class Overview {
     } else {
       doseStr = medicine.getMedDoseStr();
     }
+
+    String medHour = time.split(":")[0];
+    String medMinute = time.split(":")[1];
 
     // JLabels
     JLabel labelMedPic = getMedIcon(medicine);
@@ -364,7 +473,7 @@ public class Overview {
     setPadding(panelLoopInfo, 0, 20, 4, 0);
     setPadding(panelMed, 6, 36, 12, 0);
     setPadding(panelBtn, 0, 0, -6, -3);
-    setPadding(labelSuccessPic, 0, -5, 0);
+    setPadding(labelSuccessPic, -4, -12, -4, -4);
     if (now) {
       panelLoopInfo.setBackground(secondaryBlue);
       panelCard.setBorder(BorderFactory.createCompoundBorder(
@@ -378,14 +487,25 @@ public class Overview {
 
     // Listeners
     btnAte.addActionListener(e -> {
+      String medTime = medHour + ":" + medMinute;
       medicine.setMedRemaining(medicine.getMedRemaining() - medDose);
-      medicine.appendTaken(today + " " + currentTime);
+      medicine.appendTaken(today + " " + medTime);
       try {
         MedicineDB.updateMedicine(medicine);
         labelSuccess
             .setText("ทานยาเรียบร้อยแล้ว ยาคงเหลือ " + medicine.getMedRemaining() + " " + medUnit);
         panelBtn.setVisible(false);
         panelSuccess.setVisible(true);
+        reloadMedicines();
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+          @Override
+          public void run() {
+            panelLoopInfo.setVisible(false);
+          }
+        }, 3*1000);
+
       } catch (SQLException e1) {
         e1.printStackTrace();
         fireDBErrorDialog();
@@ -395,10 +515,15 @@ public class Overview {
       int result = fireConfirmDialog(
           "ต้องการข้ามการทานยา " + medicine.getMedName() + " ในเวลานี้ใช่หรือไม่");
       if (result == JOptionPane.YES_OPTION) {
-        medicine.appendSkipped(today + " " + now);
+        String medTime = medHour + ":" + medMinute;
+        medicine.appendSkipped(today + " " + medTime);
+        if (medicine.getMedTime().get(0).equals("ทุก ๆ ")) {
+          medicine.setLastTaken(new Timestamp(stringToTimestamp(today + " " + medTime)));
+        }
         try {
           MedicineDB.updateMedicine(medicine);
           panelLoopInfo.setVisible(false);
+          reloadMedicines();
         } catch (SQLException e1) {
           e1.printStackTrace();
           fireDBErrorDialog();

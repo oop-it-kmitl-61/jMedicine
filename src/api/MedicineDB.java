@@ -71,7 +71,7 @@ public class MedicineDB {
       results.add(
           new Medicine(result.getString("id"), result.getString("name"), result.getString("type"),
               result.getString("color"), result.getString("description"), time,
-              result.getString("doseStr"), result.getInt("dose"), result.getInt("total"),
+              result.getString("doseStr"), result.getInt("dose"), result.getInt("total"), result.getInt("remaining"),
               result.getDate("expire"), result.getString("startDate"),
               result.getTimestamp("lastTaken"), taken, skipped,
               result.getTimestamp("lastnotified")));
@@ -84,7 +84,7 @@ public class MedicineDB {
 
   public static Medicine addMedicine(Medicine medicine, String userId) throws SQLException {
 
-    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (\"user\", name, type, color, description, dose, total,\"time\", \"doseStr\", expire, \"startDate\", \"lastNotified\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
+    String SQLCommand = "WITH ROW AS ( INSERT INTO medicine (\"user\", name, type, color, description, dose, total,\"time\", \"doseStr\", expire, \"startDate\", \"lastNotified\", \"remaining\") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id ) SELECT id FROM ROW";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setObject(1, userId, Types.OTHER);
@@ -103,6 +103,7 @@ public class MedicineDB {
     }
     pStatement.setTimestamp(11, new java.sql.Timestamp(stringToTimestamp(medicine.getDateStart())));
     pStatement.setTimestamp(12, medicine.getLastNotified());
+    pStatement.setInt(13, medicine.getMedRemaining());
 
     ResultSet result = pStatement.executeQuery();
 
@@ -117,7 +118,7 @@ public class MedicineDB {
 
 
   public static Medicine updateMedicine(Medicine medicine) throws SQLException {
-    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ?, \"time\" = ?, \"startDate\" = ?, \"lastTaken\" = ?, \"taken\" = ?, \"skipped\" = ?, \"lastnotified\" = ? WHERE id = ?";
+    String SQLCommand = "UPDATE medicine SET name = ?, type = ?, color = ?, description = ?, dose = ?, total = ?, \"doseStr\" = ?, expire = ?, \"time\" = ?, \"startDate\" = ?, \"lastTaken\" = ?, \"taken\" = ?, \"skipped\" = ?, \"lastnotified\" = ?, \"remaining\" = ? WHERE id = ?";
 
     PreparedStatement pStatement = connection.prepareStatement(SQLCommand);
     pStatement.setString(1, medicine.getMedName());
@@ -134,7 +135,8 @@ public class MedicineDB {
     pStatement.setArray(12, connection.createArrayOf("text", medicine.getTaken().toArray()));
     pStatement.setArray(13, connection.createArrayOf("text", medicine.getSkipped().toArray()));
     pStatement.setTimestamp(14, medicine.getLastNotified());
-    pStatement.setObject(15, medicine.getId(), Types.OTHER);
+    pStatement.setInt(15, medicine.getMedRemaining());
+    pStatement.setObject(16, medicine.getId(), Types.OTHER);
 
     pStatement.executeUpdate();
 
