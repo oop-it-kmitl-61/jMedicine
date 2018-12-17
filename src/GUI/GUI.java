@@ -93,7 +93,7 @@ import javax.swing.WindowConstants;
  * /components
  *
  * @author jMedicine
- * @version 0.9.1
+ * @version 0.9.2
  * @since 0.1.0
  */
 
@@ -359,7 +359,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.9.1"));
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.9.2"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel

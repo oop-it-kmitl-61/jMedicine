@@ -94,7 +94,7 @@ import javax.swing.event.DocumentListener;
  * All UIs and handler methods about a medicine will be written here.
  *
  * @author jMedicine
- * @version 0.8.0
+ * @version 0.9.2
  * @since 0.7.0
  */
 
@@ -175,7 +175,7 @@ public class MedicineUI {
 
     panelMedicines.add(panelTitle, BorderLayout.NORTH);
 
-    if (userMedicines.size() < 4) {
+    if (userMedicines.size() < 5) {
       setPadding(panelLoop, 0, 0, 1000, 4);
       panelMedicines.add(panelLoop);
     } else {
