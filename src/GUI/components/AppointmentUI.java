@@ -71,7 +71,7 @@ import javax.swing.JTextField;
  * All UIs and handler methods about an appointment will be written here.
  *
  * @author jMedicine
- * @version 0.8.1
+ * @version 0.9.1
  * @since 0.7.0
  */
 
@@ -296,6 +296,8 @@ public class AppointmentUI {
       } else if (newDoctor && (tfDrFName.getText().equals("") || tfDrLName.getText().equals("")
           || tfDrHpt.getText().equals(""))) {
         fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+      } else if (timePickerStart.getTime().isAfter(timePickerEnd.getTime()) || timePickerEnd.getTime().isBefore(timePickerStart.getTime())) {
+        fireErrorDialog("กรุณาเลือกช่วงของเวลาให้ถูกต้อง");
       } else {
         Date date = Date
             .from(datePicker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -472,6 +474,8 @@ public class AppointmentUI {
       } else if (newDoctor && (tfDrFName.getText().equals("") || tfDrLName.getText().equals("")
           || tfDrHpt.getText().equals(""))) {
         fireErrorDialog("กรุณากรอกข้อมูลให้ครบตามช่องที่มีเครื่องหมาย *");
+      } else if (timePickerStart.getTime().isAfter(timePickerEnd.getTime()) || timePickerEnd.getTime().isBefore(timePickerStart.getTime())) {
+        fireErrorDialog("กรุณาเลือกช่วงของเวลาให้ถูกต้อง");
       } else {
         Instant var = datePicker.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
         Date date = Date.from(var);
