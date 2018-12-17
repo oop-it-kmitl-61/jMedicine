@@ -176,10 +176,10 @@ public class MedicineUI {
     panelMedicines.add(panelTitle, BorderLayout.NORTH);
 
     if (userMedicines.size() < 4) {
-      setPadding(panelLoop, 0, 0, 1000, 10);
+      setPadding(panelLoop, 0, 0, 1000, 4);
       panelMedicines.add(panelLoop);
     } else {
-      setPadding(panelLoop, 0, 0, 20, 10);
+      setPadding(panelLoop, 0, 0, 20, 4);
       panelMedicines.add(makeScrollPane(panelLoop));
     }
 
