@@ -1,22 +1,6 @@
 package GUI;
 
-import static GUI.GUI.btnSignIn;
-import static GUI.GUI.btnSignUp;
-import static GUI.GUI.btnSkipAddingInfo;
-import static GUI.GUI.isSignInPage;
-import static GUI.GUI.isSignUpPage;
-import static GUI.GUI.main;
-import static GUI.GUI.panelErrorSignIn;
-import static GUI.GUI.panelErrorSignUpPassword;
-import static GUI.GUI.panelErrorSignUpUsername;
-import static GUI.GUI.panelFirstInfo;
-import static GUI.GUI.panelLoading;
-import static GUI.GUI.panelNoInput;
-import static GUI.GUI.panelWelcome;
-import static GUI.GUI.promptFirstMedicine;
-import static GUI.GUI.tfPassword;
-import static GUI.GUI.tfPasswordConfirm;
-import static GUI.GUI.tfUserName;
+import static GUI.GUI.*;
 import static GUI.GUIHelper.fireDBErrorDialog;
 import static api.Login.doSignIn;
 import static api.Login.doSignUp;
@@ -105,14 +89,34 @@ public class GUIUtil implements ActionListener, KeyListener {
     if (tfUserName.getText().equals("")) {
       panelNoInput.setVisible(true);
       panelErrorSignUpUsername.setVisible(false);
+      panelErrorSignUpUsernameLength.setVisible(false);
       panelErrorSignUpPassword.setVisible(false);
+      panelErrorSignUpPasswordLength.setVisible(false);
+    } else if (tfUserName.getText().length() < 4) {
+      panelNoInput.setVisible(false);
+      panelErrorSignUpUsername.setVisible(false);
+      panelErrorSignUpUsernameLength.setVisible(true);
+      panelErrorSignUpPassword.setVisible(false);
+      panelErrorSignUpPasswordLength.setVisible(false);
     } else if (!Arrays.equals(tfPassword.getPassword(), tfPasswordConfirm.getPassword())) {
       panelNoInput.setVisible(false);
       panelErrorSignUpUsername.setVisible(false);
+      panelErrorSignUpUsernameLength.setVisible(false);
       panelErrorSignUpPassword.setVisible(true);
+      panelErrorSignUpPasswordLength.setVisible(false);
+    } else if (tfPassword.getPassword().length < 6) {
+      panelNoInput.setVisible(false);
+      panelErrorSignUpUsername.setVisible(false);
+      panelErrorSignUpUsernameLength.setVisible(false);
+      panelErrorSignUpPassword.setVisible(false);
+      panelErrorSignUpPasswordLength.setVisible(true);
     } else {
       panelLoading.setVisible(true);
-      panelErrorSignUpUsername.setVisible(false );
+      panelNoInput.setVisible(false);
+      panelErrorSignUpUsername.setVisible(false);
+      panelErrorSignUpUsernameLength.setVisible(false);
+      panelErrorSignUpPassword.setVisible(false);
+      panelErrorSignUpPasswordLength.setVisible(false);
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
