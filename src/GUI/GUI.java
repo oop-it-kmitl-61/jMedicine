@@ -820,7 +820,7 @@ public class GUI {
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
-    // Password Changing Frame
+    // Sub-Frame: Password Changing
     JFrame framePasswordEdit = new JFrame("เปลี่ยนรหัสผ่าน");
     JPanel panelPasswordEditSub = new JPanel(new BorderLayout());
     JPanel panelPasswordEdit = new JPanel(new GridLayout(4, 2));
@@ -850,7 +850,7 @@ public class GUI {
     framePasswordEdit.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     framePasswordEdit.setLocationRelativeTo(null);
 
-    // Delete Account Password Confirmation Frame
+    // Sub-Frame: Delete Account Password Confirmation
     JFrame frameDeleteAccount = new JFrame("ลบบัญชี");
     JPanel panelDeleteAccountSub = new JPanel(new BorderLayout());
     JPanel panelDeleteAccount = new JPanel(new GridLayout(3, 1));
@@ -872,7 +872,7 @@ public class GUI {
     frameDeleteAccount.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frameDeleteAccount.setLocationRelativeTo(null);
 
-    // Password Changing
+    // Action Listener: Password Changing
     btnEditPwd.addActionListener(e -> {
       framePasswordEdit.setVisible(true);
     });
@@ -899,7 +899,7 @@ public class GUI {
       }
     });
 
-    // Delete account
+    // ActionListener: Delete account
     btnDeleteAccount.addActionListener(e -> {
       frameDeleteAccount.setVisible(true);
     });
@@ -925,7 +925,7 @@ public class GUI {
       }
     });
 
-    // Update user information
+    // ActionListener: Update User Information
     btnSave.addActionListener(e -> {
       String fName = tfFName.getText();
       String lName = tfLName.getText();
