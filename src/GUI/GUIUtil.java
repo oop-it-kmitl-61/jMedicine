@@ -88,14 +88,12 @@ public class GUIUtil implements ActionListener, KeyListener {
     panelErrorSignIn.setVisible(false);
     if (tfUserName.getText().equals("")) {
       showErrorPanel(0);
-    } else if (tfUserName.getText().length() < 4 || tfUserName.getText().length() > 32) {
+    } else if (tfUserName.getText().length() < 4 || tfUserName.getText().length() > 32 || !isValidUsername(tfUserName.getText())) {
       showErrorPanel(2);
-    } else if (!isValidUsername(tfUserName.getText())) {
+    } else if (!Arrays.equals(tfPassword.getPassword(), tfPasswordConfirm.getPassword())) {
       showErrorPanel(3);
-    }else if (!Arrays.equals(tfPassword.getPassword(), tfPasswordConfirm.getPassword())) {
-      showErrorPanel(4);
     } else if (tfPassword.getPassword().length < 6) {
-      showErrorPanel(5);
+      showErrorPanel(4);
     } else {
       panelLoading.setVisible(true);
       showErrorPanel(-1);
@@ -122,10 +120,9 @@ public class GUIUtil implements ActionListener, KeyListener {
   public static void showErrorPanel(int panelNumber) {
     panelNoInput.setVisible(panelNumber == 0);
     panelErrorSignUpUsername.setVisible(panelNumber == 1);
-    panelErrorSignUpUsernameLength.setVisible(panelNumber == 2);
-    panelErrorSignUpUsernameValid.setVisible(panelNumber == 3);
-    panelErrorSignUpPassword.setVisible(panelNumber == 4);
-    panelErrorSignUpPasswordLength.setVisible(panelNumber == 5);
+    panelErrorSignUpUsernameValid.setVisible(panelNumber == 2);
+    panelErrorSignUpPassword.setVisible(panelNumber == 3);
+    panelErrorSignUpPasswordLength.setVisible(panelNumber == 4);
   }
 
   private boolean isValidUsername(String username) {
