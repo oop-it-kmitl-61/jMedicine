@@ -34,6 +34,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Field;
@@ -272,6 +274,8 @@ public class GUI {
       public void mouseClicked(MouseEvent e) {
         setUser(null);
         backTo("ยังไม่ได้เข้าสู่ระบบ");
+        isSignInPage = true;
+        isSignUpPage = false;
       }
     });
     toggleNoti.addActionListener(e -> {
@@ -921,8 +925,11 @@ public class GUI {
         if (result == JOptionPane.YES_OPTION) {
           try {
             deleteUser();
+            setUser(null);
             fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
             backTo("ยังไม่ได้เข้าสู่ระบบ");
+            isSignInPage = true;
+            isSignUpPage = false;
           } catch (SQLException e1) {
             e1.printStackTrace();
             fireDBErrorDialog();
@@ -930,6 +937,35 @@ public class GUI {
         }
       } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
         fireErrorDialog("รหัสผ่านไม่ถูกต้อง");
+      }
+    });
+
+    fieldPassword.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+          try {
+            Login.doSignIn(getUser().getUserName(), fieldPassword.getPassword());
+            frameDeleteAccount.setVisible(false);
+            int result = fireConfirmDialog(
+                "คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
+            if (result == JOptionPane.YES_OPTION) {
+              try {
+                deleteUser();
+                setUser(null);
+                fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
+                backTo("ยังไม่ได้เข้าสู่ระบบ");
+                isSignInPage = true;
+                isSignUpPage = false;
+              } catch (SQLException e1) {
+                e1.printStackTrace();
+                fireDBErrorDialog();
+              }
+            }
+          } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
+            fireErrorDialog("รหัสผ่านไม่ถูกต้อง");
+          }
+        }
       }
     });
 
