@@ -10,6 +10,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
+
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -57,6 +58,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
+
 import mdlaf.MaterialLookAndFeel;
 import mdlaf.animation.MaterialUIMovement;
 import mdlaf.shadows.DropShadowBorder;
@@ -67,7 +69,7 @@ import mdlaf.utils.MaterialColors;
  * make this class ourselves to help customizing the application design.
  *
  * @author jMedicine
- * @version 0.8.2
+ * @version 1.0.0
  * @since 0.3.0
  */
 
@@ -77,7 +79,7 @@ public class GUIHelper {
   public static Color mainBlue = new Color(20, 101, 155);
   public static Color secondaryBlue = new Color(68, 157, 209);
 
-  final static LocalDate today = LocalDate.now();
+  private final static LocalDate today = LocalDate.now();
   public static DateFormat formatHM = new SimpleDateFormat("HH:mm");
   public static DateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
   public static DateFormat formatDMY = new SimpleDateFormat("dd/MM/yyyy");
@@ -87,18 +89,13 @@ public class GUIHelper {
   public static DateFormat formatTimestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 
   public static String imgPath = "src/GUI/img";
-  static String imgSuccessSrc = imgPath + "/system/success.png";
-  static String imgWarningSrc = imgPath + "/system/warning.png";
+  private static String imgSuccessSrc = imgPath + "/system/success.png";
+  private static String imgWarningSrc = imgPath + "/system/warning.png";
 
   static void setup() {
     try {
-      GraphicsEnvironment ge =
-          GraphicsEnvironment.getLocalGraphicsEnvironment();
-      ge.registerFont(
-          Font.createFont(
-              Font.TRUETYPE_FONT, new File("src/GUI/font/THSarabunNew.ttf")
-          )
-      );
+      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/GUI/font/THSarabunNew.ttf")));
       UIManager.setLookAndFeel(new MaterialLookAndFeel());
     } catch (UnsupportedLookAndFeelException | IOException | FontFormatException ex) {
       ex.printStackTrace();
@@ -110,14 +107,10 @@ public class GUIHelper {
     setPadding(labelMessage, 0, 10, 0, 0);
     try {
       beep("warning");
-      Image img = ImageIO.read(new File(imgPath + "/system/error.png"));
-      Icon icon = new ImageIcon(img);
-      JOptionPane
-          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE,
-              icon);
-    } catch (Exception ignored) {
-      JOptionPane
-          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
+      Icon icon = new ImageIcon(ImageIO.read(new File(imgPath + "/system/error.png")));
+      JOptionPane.showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE, icon);
+    } catch (IOException ex) {
+      JOptionPane.showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
     }
   }
 
@@ -126,14 +119,10 @@ public class GUIHelper {
     setPadding(labelMessage, 0, 10, 0, 0);
     try {
       beep("warning");
-      Image img = ImageIO.read(new File(imgPath + "/system/error.png"));
-      Icon icon = new ImageIcon(img);
-      JOptionPane
-          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE,
-              icon);
-    } catch (Exception ignored) {
-      JOptionPane
-          .showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
+      Icon icon = new ImageIcon(ImageIO.read(new File(imgPath + "/system/error.png")));
+      JOptionPane.showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE, icon);
+    } catch (IOException ex) {
+      JOptionPane.showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
     }
   }
 
@@ -142,14 +131,10 @@ public class GUIHelper {
     setPadding(labelMessage, 0, 10, 0, 0);
     try {
       beep("success");
-      Image img = ImageIO.read(new File(imgSuccessSrc));
-      Icon icon = new ImageIcon(img);
-      JOptionPane
-          .showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE,
-              icon);
-    } catch (Exception ignored) {
-      JOptionPane
-          .showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE);
+      Icon icon = new ImageIcon(ImageIO.read(new File(imgSuccessSrc)));
+      JOptionPane.showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE, icon);
+    } catch (IOException ex) {
+      JOptionPane.showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE);
     }
   }
 
@@ -158,14 +143,10 @@ public class GUIHelper {
     setPadding(labelMessage, 0, 10, 0, 0);
     try {
       beep("warning");
-      Image img = ImageIO.read(new File(imgWarningSrc));
-      Icon icon = new ImageIcon(img);
-      JOptionPane
-          .showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE,
-              icon);
-    } catch (Exception ignored) {
-      JOptionPane
-          .showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE);
+      Icon icon = new ImageIcon(ImageIO.read(new File(imgWarningSrc)));
+      JOptionPane.showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE, icon);
+    } catch (IOException ex) {
+      JOptionPane.showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE);
     }
   }
 
@@ -177,14 +158,10 @@ public class GUIHelper {
 
     try {
       beep("warning");
-      Image img = ImageIO.read(new File(GUIHelper.imgWarningSrc));
-      Icon icon = new ImageIcon(img);
-      dialogResult = JOptionPane
-          .showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION,
-              JOptionPane.WARNING_MESSAGE, icon);
-    } catch (Exception ignored) {
-      dialogResult = JOptionPane
-          .showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION);
+      Icon icon = new ImageIcon(ImageIO.read(new File(GUIHelper.imgWarningSrc)));
+      dialogResult = JOptionPane.showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, icon);
+    } catch (IOException ex) {
+      dialogResult = JOptionPane.showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION);
     }
     return dialogResult;
   }
@@ -192,10 +169,9 @@ public class GUIHelper {
   public static JLabel getSuccessIcon() {
     JLabel labelPic = makeLabel(" ");
     try {
-      Image img = ImageIO.read(new File(imgSuccessSrc));
-      Icon icon = new ImageIcon(img);
-      labelPic.setIcon(icon);
-    } catch (Exception ignored) {
+      labelPic.setIcon(new ImageIcon(ImageIO.read(new File(imgSuccessSrc))));
+    } catch (IOException ex) {
+      ex.printStackTrace();
     }
     return labelPic;
   }
@@ -208,7 +184,8 @@ public class GUIHelper {
       Clip clip = AudioSystem.getClip();
       clip.open(audioIn);
       clip.start();
-    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ignored) {
+    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+      ex.printStackTrace();
     }
   }
 
@@ -223,38 +200,27 @@ public class GUIHelper {
   public static JLabel getInfoPic() {
     String src = imgPath + "/system/info.png";
     JLabel labelPic = new JLabel();
-    try {
-      ImageIcon img = new ImageIcon(src);
-      labelPic.setIcon(img);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+    labelPic.setIcon(new ImageIcon(src));
     setPadding(labelPic, 0, 0, 6);
     return labelPic;
   }
 
   public static JPanel getLoadingPanel(boolean withBG) {
     String src = imgPath + "/system/loading";
-    if (withBG) {
-      src += "-bg";
-    } else {
-      src += "-no-bg";
+    if (!withBG) {
+      src += "-no";
     }
-    src += ".gif";
+    src += "-bg.gif";
 
     JPanel panelLoading = new JPanel();
     JLabel labelPic = new JLabel();
     JLabel labelLoading = makeLabel("กำลังโหลด");
     setPadding(labelLoading, 4, 0, 0, 0);
-    try {
-      ImageIcon img = new ImageIcon(src);
-      labelPic.setIcon(img);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+    labelPic.setIcon(new ImageIcon(src));
 
     panelLoading.add(labelPic);
     panelLoading.add(labelLoading);
+
     return panelLoading;
   }
 
@@ -264,14 +230,12 @@ public class GUIHelper {
     JLabel labelPic = new JLabel();
     JLabel labelError = makeLabel(errorMessage);
     setPadding(labelError, 8, 0, 0, 0);
-    try {
-      ImageIcon img = new ImageIcon(src);
-      labelPic.setIcon(img);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+
+    labelPic.setIcon(new ImageIcon(src));
+
     panelError.add(labelPic);
     panelError.add(labelError);
+
     return panelError;
   }
 
@@ -282,8 +246,7 @@ public class GUIHelper {
   }
 
   public static Border newCardBorder() {
-    return new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true,
-        true);
+    return new DropShadowBorder(UIManager.getColor("Control"), 1, 5, .3f, 16, true, true, true, true);
   }
 
   public static JPanel newFlowLayout() {
@@ -312,6 +275,7 @@ public class GUIHelper {
     TimePicker timePicker = new TimePicker(timeSettings);
     timePicker.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
     timePicker.setTimeToNow();
+
     return timePicker;
   }
 
@@ -323,6 +287,7 @@ public class GUIHelper {
     timeSettings.initialTime = LocalTime.of(8, 00);
     TimePicker timePicker = new TimePicker(timeSettings);
     timePicker.setFont(new Font("TH Sarabun New", Font.PLAIN, 24));
+
     return timePicker;
   }
 
@@ -330,6 +295,7 @@ public class GUIHelper {
     JScrollPane scrollPane = new JScrollPane(panel);
     scrollPane.getVerticalScrollBar().setUnitIncrement(16);
     setPadding(scrollPane, 0, 0, 10);
+
     return scrollPane;
   }
 
@@ -339,13 +305,13 @@ public class GUIHelper {
     textField.addKeyListener(new KeyAdapter() {
       public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
-        if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE) && (c
-            != KeyEvent.VK_PERIOD)) {
+        if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE) && (c != KeyEvent.VK_PERIOD)) {
           fireErrorDialog("คุณไม่สามารถกรอกตัวอักษรลงในช่องที่ต้องการตัวเลขได้");
           e.consume();
         }
       }
     });
+
     return textField;
   }
 
@@ -424,7 +390,8 @@ public class GUIHelper {
       cl.show(panelWelcome, backTo);
       try {
         frameMain.setVisible(false);
-      } catch (NullPointerException ignored) {
+      } catch (NullPointerException ex) {
+        ex.printStackTrace();
       }
     } else {
       CardLayout cl = (CardLayout) (panelRight.getLayout());
@@ -449,9 +416,9 @@ public class GUIHelper {
 
     JButton btnNew = new JButton(btnName);
     try {
-      Image img = ImageIO.read(new File(imgPath + "/system/add.png"));
-      btnNew.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) {
+      btnNew.setIcon(new ImageIcon(ImageIO.read(new File(imgPath + "/system/add.png"))));
+    } catch (IOException ex) {
+      ex.printStackTrace();
     }
     btnNew.setAlignmentX(Component.LEFT_ALIGNMENT);
     btnNew.setHorizontalAlignment(SwingConstants.LEFT);
@@ -474,31 +441,36 @@ public class GUIHelper {
     JButton button = new JButton(buttonText);
     button.setFont(new Font("TH Sarabun New", Font.BOLD, 42));
     button.setHorizontalAlignment(SwingConstants.LEFT);
+
     try {
-      Image img = ImageIO.read(new File(imgPath + "/system/back.png"));
-      button.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) {
+      button.setIcon(new ImageIcon(ImageIO.read(new File(imgPath + "/system/back.png"))));
+    } catch (IOException ex) {
+      ex.printStackTrace();
     }
+
     button.setOpaque(false);
     button.setContentAreaFilled(false);
     button.setBorderPainted(false);
     button.addActionListener(e -> {
       backTo(backTo);
     });
+
     return button;
   }
 
   public static JButton makeRemoveButton() {
     JButton button = new JButton();
+
     try {
-      Image img = ImageIO.read(new File(imgPath + "/system/remove.png"));
-      button.setIcon(new ImageIcon(img));
-    } catch (Exception ex) {
-      System.out.println(ex);
+      button.setIcon(new ImageIcon(ImageIO.read(new File(imgPath + "/system/remove.png"))));
+    } catch (IOException ex) {
+      ex.printStackTrace();
     }
+
     button.setBackground(MaterialColors.RED_900);
     button.setMaximumSize(new Dimension(400, 60));
     MaterialUIMovement.add(button, MaterialColors.RED_700);
+
     return button;
   }
 
@@ -521,6 +493,7 @@ public class GUIHelper {
         button.setForeground(Color.BLACK);
       }
     });
+
     return button;
   }
 
@@ -543,6 +516,7 @@ public class GUIHelper {
         button.setForeground(Color.BLACK);
       }
     });
+
     return button;
   }
 
@@ -561,6 +535,7 @@ public class GUIHelper {
     button.setForeground(Color.WHITE);
     button.setMaximumSize(new Dimension(400, 60));
     MaterialUIMovement.add(button, hoverColor);
+
     return button;
   }
 
@@ -646,12 +621,12 @@ public class GUIHelper {
 
   public static void setPadding(JLabel object, int topAndBottom, int leftAndRight) {
     object.setBorder(
-        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+            BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   public static void setPadding(JLabel object, int allSidesAmount) {
     object.setBorder(BorderFactory
-        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+            .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   public static void setPadding(JTextField object, int top, int right, int bottom, int left) {
@@ -664,12 +639,12 @@ public class GUIHelper {
 
   public static void setPadding(JTextField object, int topAndBottom, int leftAndRight) {
     object.setBorder(
-        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+            BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   public static void setPadding(JTextField object, int allSidesAmount) {
     object.setBorder(BorderFactory
-        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+            .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   public static void setPadding(JPasswordField object, int top, int right, int bottom, int left) {
@@ -682,12 +657,12 @@ public class GUIHelper {
 
   public static void setPadding(JPasswordField object, int topAndBottom, int leftAndRight) {
     object.setBorder(
-        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+            BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   public static void setPadding(JPasswordField object, int allSidesAmount) {
     object.setBorder(BorderFactory
-        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+            .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   public static void setPadding(JButton object, int top, int right, int bottom, int left) {
@@ -700,12 +675,12 @@ public class GUIHelper {
 
   public static void setPadding(JButton object, int topAndBottom, int leftAndRight) {
     object.setBorder(
-        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+            BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   public static void setPadding(JButton object, int allSidesAmount) {
     object.setBorder(BorderFactory
-        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+            .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   public static void setPadding(JPanel object, int top, int right, int bottom, int left) {
@@ -718,12 +693,12 @@ public class GUIHelper {
 
   public static void setPadding(JPanel object, int topAndBottom, int leftAndRight) {
     object.setBorder(
-        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+            BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   public static void setPadding(JPanel object, int allSidesAmount) {
     object.setBorder(BorderFactory
-        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+            .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 
   public static void setPadding(JScrollPane object, int top, int right, int bottom, int left) {
@@ -736,11 +711,11 @@ public class GUIHelper {
 
   public static void setPadding(JScrollPane object, int topAndBottom, int leftAndRight) {
     object.setBorder(
-        BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
+            BorderFactory.createEmptyBorder(topAndBottom, leftAndRight, topAndBottom, leftAndRight));
   }
 
   public static void setPadding(JScrollPane object, int allSidesAmount) {
     object.setBorder(BorderFactory
-        .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
+            .createEmptyBorder(allSidesAmount, allSidesAmount, allSidesAmount, allSidesAmount));
   }
 }

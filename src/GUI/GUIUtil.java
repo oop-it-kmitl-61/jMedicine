@@ -27,7 +27,7 @@ import org.postgresql.util.PSQLException;
  * An utility class for GUI.java
  *
  * @author jMedicine
- * @version 0.9.3
+ * @version 1.0.0
  * @since 0.7.0
  */
 
@@ -108,7 +108,6 @@ public class GUIUtil implements ActionListener, KeyListener {
             showErrorPanel(1);
             panelLoading.setVisible(false);
           } catch (NoSuchAlgorithmException | SQLException ex) {
-            ex.printStackTrace();
             fireDBErrorDialog();
           }
           return null;
@@ -127,21 +126,14 @@ public class GUIUtil implements ActionListener, KeyListener {
   }
 
   private boolean isValidUsername(String username) {
-    String validCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    boolean isFound;
-
     for (int i = 0; i < username.length(); i++) {
-      isFound = false;
-      for (int j = 0; j < validCharacters.length(); j++) {
-        if (username.charAt(i) == validCharacters.charAt(j)) {
-          isFound = true;
-          break;
-        }
-      }
-      if (!isFound) {
+      if (!((username.charAt(i) >= 'A' && username.charAt(i) <= 'Z') ||
+              (username.charAt(i) >= 'a' && username.charAt(i) <= 'z') ||
+              (username.charAt(i) >= '0' && username.charAt(i) <= '9'))) {
         return false;
       }
     }
+
     return true;
   }
 
@@ -167,8 +159,7 @@ public class GUIUtil implements ActionListener, KeyListener {
         executeSignIn();
       }
     }
-    if (isSignUpPage && (e.getSource().equals(tfUserName) || e.getSource().equals(tfPassword)
-            || e.getSource().equals(tfPasswordConfirm))) {
+    if (isSignUpPage && (e.getSource().equals(tfUserName) || e.getSource().equals(tfPassword) || e.getSource().equals(tfPasswordConfirm))) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         executeSignUp();
       }
