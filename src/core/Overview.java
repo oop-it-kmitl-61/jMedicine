@@ -108,8 +108,7 @@ public class Overview {
             NotificationFactory.showNotification("You have an upcoming appointment.");
             app.setNotified(true);
             AppointmentDB.updateAppointment(app);
-          } catch (UnsatisfiedLinkError | SQLException ex) {
-            ex.printStackTrace();
+          } catch (UnsatisfiedLinkError | SQLException ignored) {
           }
         }
       }
@@ -291,8 +290,7 @@ public class Overview {
         if (getUser().isShowNotification() && sendNotification) {
           try {
             NotificationFactory.showNotification("It's your med time!");
-          } catch (UnsatisfiedLinkError ex) {
-            ex.printStackTrace();
+          } catch (UnsatisfiedLinkError ignored) {
           }
         }
         panelSub.setBackground(secondaryBlue);
