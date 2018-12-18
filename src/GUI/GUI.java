@@ -280,6 +280,7 @@ public class GUI {
     });
     toggleNoti.addActionListener(e -> {
       String successMessage = "";
+
       if (toggleNoti.isSelected()) {
         getUser().setShowNotification(true);
         successMessage = "เปิดการแจ้งเตือนเรียบร้อยแล้ว";
@@ -287,11 +288,12 @@ public class GUI {
         getUser().setShowNotification(false);
         successMessage = "ปิดการแจ้งเตือนเรียบร้อยแล้ว";
       }
+
       try {
         updateUserData();
         fireSuccessDialog(successMessage);
-      } catch (SQLException e1) {
-        e1.printStackTrace();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
         fireDBErrorDialog();
       }
     });
@@ -367,7 +369,7 @@ public class GUI {
     panelErrorSignUpUsername = getErrorPanel("ชื่อผู้ใช้งานนี้เคยสมัครไปแล้ว");
     panelErrorSignUpUsernameValid = getErrorPanel("ชื่อผู้ใช้งานไม่เป็นไปตามเงื่อนไข");
     panelErrorSignUpPassword = getErrorPanel("รหัสผ่านทั้งสองช่องไม่ตรงกัน");
-    panelErrorSignUpPasswordLength = getErrorPanel("รหัสผ่านต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
+    panelErrorSignUpPasswordLength = getErrorPanel("รหัสผ่านไม่เป็นไปตามเงื่อนไข");
     panelWelcome = new JPanel(new CardLayout());
     panelSignIn = new JPanel(new GridBagLayout());
 
@@ -418,7 +420,7 @@ public class GUI {
 
     isSignInPage = true;
 
-    // Listeners
+    // MouseListener: Register Label
     labelRegister.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -449,6 +451,8 @@ public class GUI {
         setPadding(labelSignIn, 20, 0, 0, 60);
       }
     });
+
+    // MouseListener: Sign-In Label
     labelSignIn.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -542,7 +546,6 @@ public class GUI {
     space = new JLabel();
     gbc.weighty = 300;
     panelSignIn.add(space, gbc);
-
     panelWelcome.add(panelSignIn, "ยังไม่ได้เข้าสู่ระบบ");
 
     util.listeners();
@@ -638,10 +641,8 @@ public class GUI {
       String age = tfAge.getText();
       String weight = tfWeight.getText();
       String height = tfHeight.getText();
-      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height
-              .equals("")) {
-        fireErrorDialog(
-                "คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
+      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height.equals("")) {
+        fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
       } else {
         getUser().setUserPrefix(cbPrefix.getSelectedItem().toString());
         getUser().setUserFirstName(tfFName.getText());
