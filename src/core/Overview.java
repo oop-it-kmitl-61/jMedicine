@@ -89,8 +89,7 @@ public class Overview {
     ArrayList<Appointment> userAppointments = null;
     try {
       userAppointments = AppointmentDB.getAllAppointment(getUser().getUserId());
-    } catch (SQLException | ParseException e) {
-      e.printStackTrace();
+    } catch (SQLException | ParseException ignored) {
     }
     // Filters only upcoming appointments
     for (Appointment app : userAppointments) {

@@ -341,7 +341,7 @@ public class GUIHelper {
         char c = e.getKeyChar();
         if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE) && (c
             != KeyEvent.VK_PERIOD)) {
-          fireErrorDialog("คุณไม่สามารถกรอกตัวอักษร ลงในช่องที่ต้องการตัวเลขได้");
+          fireErrorDialog("คุณไม่สามารถกรอกตัวอักษรลงในช่องที่ต้องการตัวเลขได้");
           e.consume();
         }
       }
