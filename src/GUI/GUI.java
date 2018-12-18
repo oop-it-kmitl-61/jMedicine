@@ -57,6 +57,7 @@ import core.Overview;
 import core.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -402,7 +403,9 @@ public class GUI {
     JLabel labelRegister = makeLabel("ยังไม่มีบัญชี? ลงทะเบียนที่นี่");
     JLabel labelSignIn = makeLabel("มีบัญชีอยู่แล้ว? เข้าสู่ระบบที่นี่");
     JLabel labelUsername = makeBoldLabel("Username");
+    JLabel labelUsernameHint = makeSmallerLabel("ต้องเป็นภาษาอังกฤษและมีความยาวตั้งแต่ 4 ตัวอักษรขึ้นไป");
     JLabel labelPassword = makeBoldLabel("Password");
+    JLabel labelPasswordHint = makeSmallerLabel("ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
     JLabel labelPasswordConfirm = makeBoldLabel("กรอก Password อีกครั้ง");
 
     // JTextFields
@@ -428,11 +431,15 @@ public class GUI {
     panelErrorSignUpPassword.setVisible(false);
     panelErrorSignUpPasswordLength.setVisible(false);
     labelPasswordConfirm.setVisible(false);
+    labelUsernameHint.setVisible(false);
+    labelPasswordHint.setVisible(false);
     tfPasswordConfirm.setVisible(false);
     btnSignUp.setVisible(false);
     labelSignIn.setVisible(false);
     makeLabelCenter(labelWelcome);
     makeLabelCenter(labelWelcomeSub);
+    labelUsernameHint.setForeground(Color.GRAY);
+    labelPasswordHint.setForeground(Color.GRAY);
 
     isSignInPage = true;
 
@@ -457,6 +464,14 @@ public class GUI {
         panelErrorSignUpPassword.setVisible(false);
         panelErrorSignUpPasswordLength.setVisible(false);
         panelErrorSignIn.setVisible(false);
+        labelUsernameHint.setVisible(true);
+        labelPasswordHint.setVisible(true);
+        setPadding(labelUsername, 0, 0, -16, 0);
+        setPadding(labelUsernameHint, 0, 0, -8, 0);
+        setPadding(labelPassword, 20, 0, -16, 0);
+        setPadding(labelPasswordHint, 0, 0, -8, 0);
+        setPadding(labelPasswordConfirm, 20, 0, -10, 0);
+        setPadding(labelSignIn, 20, 0, 0, 80);
       }
     });
     labelSignIn.addMouseListener(new MouseAdapter() {
@@ -479,6 +494,12 @@ public class GUI {
         panelErrorSignUpPassword.setVisible(false);
         panelErrorSignUpPasswordLength.setVisible(false);
         panelErrorSignIn.setVisible(false);
+        labelUsernameHint.setVisible(false);
+        labelPasswordHint.setVisible(false);
+        setPadding(labelUsername, 0, 0, -16, 0);
+        setPadding(labelPassword, 0, 0, -10, 0);
+        setPadding(labelPasswordConfirm, 0, 0, -10, 0);
+        setPadding(labelSignIn, 20, 60);
       }
     });
 
@@ -491,7 +512,7 @@ public class GUI {
     panelSignIn.add(space, gbc);
     gbc.weightx = 0.0;
     gbc.weighty = 2;
-    gbc.gridwidth = 11;
+    gbc.gridwidth = 30;
     gbc.ipady = 8;
     gbc.gridx = 0;
     gbc.gridy = 1;
@@ -506,9 +527,13 @@ public class GUI {
     gbc.gridy++;
     panelSignIn.add(labelUsername, gbc);
     gbc.gridy++;
+    panelSignIn.add(labelUsernameHint, gbc);
+    gbc.gridy++;
     panelSignIn.add(tfUserName, gbc);
     gbc.gridy++;
     panelSignIn.add(labelPassword, gbc);
+    gbc.gridy++;
+    panelSignIn.add(labelPasswordHint, gbc);
     gbc.gridy++;
     panelSignIn.add(tfPassword, gbc);
     gbc.gridy++;
@@ -531,7 +556,7 @@ public class GUI {
     panelSignIn.add(panelErrorSignUpPassword, gbc);
     gbc.gridy++;
     panelSignIn.add(panelErrorSignUpPasswordLength, gbc);
-    gbc.gridy++;
+    gbc.gridy += 80;
     panelSignIn.add(btnSignUp, gbc);
     gbc.gridy++;
     panelSignIn.add(btnSignIn, gbc);
