@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:10
+    restart: always
+    environment:
+      POSTGRES_DB: jmedicine
+      POSTGRES_USER: jmedicine
+      POSTGRES_PASSWORD: Jmedicine#2018
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
