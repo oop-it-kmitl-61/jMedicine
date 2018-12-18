@@ -106,7 +106,7 @@ public class GUIHelper {
   }
 
   public static void fireDBErrorDialog() {
-    JLabel labelMessage = makeLabel("เกิดความผิดพลาดกับฐานข้อมูล โปรดลองอีกครั้ง");
+    JLabel labelMessage = makeLabel("เกิดความผิดพลาดกับฐานข้อมูล หากข้อความนี้ยังคงปรากฎ โปรดรีสตาร์ทโปรแกรมแล้วลองอีกครั้ง");
     setPadding(labelMessage, 0, 10, 0, 0);
     try {
       beep("warning");

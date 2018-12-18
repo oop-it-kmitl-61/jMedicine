@@ -17,6 +17,7 @@ import static GUI.GUI.promptFirstMedicine;
 import static GUI.GUI.tfPassword;
 import static GUI.GUI.tfPasswordConfirm;
 import static GUI.GUI.tfUserName;
+import static GUI.GUIHelper.fireDBErrorDialog;
 import static api.Login.doSignIn;
 import static api.Login.doSignUp;
 import static core.Core.getUser;
@@ -33,6 +34,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import javax.swing.SwingWorker;
+import org.postgresql.util.PSQLException;
 
 
 /**
@@ -75,6 +77,7 @@ public class GUIUtil implements ActionListener, KeyListener {
             panelErrorSignIn.setVisible(true);
           } catch (NoSuchAlgorithmException | SQLException ex) {
             ex.printStackTrace();
+            fireDBErrorDialog();
           }
           return null;
         }
@@ -119,6 +122,9 @@ public class GUIUtil implements ActionListener, KeyListener {
           } catch (LoginException ex) {
             panelErrorSignUpUsername.setVisible(true);
             panelLoading.setVisible(false);
+          } catch (NoSuchAlgorithmException | SQLException ex) {
+            ex.printStackTrace();
+            fireDBErrorDialog();
           }
           return null;
         }
