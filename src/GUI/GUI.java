@@ -93,7 +93,7 @@ import javax.swing.WindowConstants;
  * /components
  *
  * @author jMedicine
- * @version 0.9.2
+ * @version 0.9.3
  * @since 0.1.0
  */
 
@@ -133,6 +133,8 @@ public class GUI {
     GUI.windowSize = windowSize;
     GUI.minSize = new Dimension(800, 680);
     JOptionPane.setDefaultLocale(locale);
+    isSignInPage = true;
+    isSignUpPage = false;
     GUIHelper.setup();
   }
 
@@ -359,7 +361,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.9.2"));
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.9.3"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -444,6 +446,11 @@ public class GUI {
         labelSignIn.setVisible(true);
         labelWelcomeSub.setVisible(false);
         labelWelcome.setText("ลงทะเบียน");
+        panelLoading.setVisible(false);
+        panelNoInput.setVisible(false);
+        panelErrorSignUpUsername.setVisible(false);
+        panelErrorSignUpPassword.setVisible(false);
+        panelErrorSignIn.setVisible(false);
       }
     });
     labelSignIn.addMouseListener(new MouseAdapter() {
@@ -459,6 +466,11 @@ public class GUI {
         labelSignIn.setVisible(false);
         labelWelcomeSub.setVisible(true);
         labelWelcome.setText("ยินดีต้อนรับ");
+        panelLoading.setVisible(false);
+        panelNoInput.setVisible(false);
+        panelErrorSignUpUsername.setVisible(false);
+        panelErrorSignUpPassword.setVisible(false);
+        panelErrorSignIn.setVisible(false);
       }
     });
 
@@ -728,10 +740,6 @@ public class GUI {
     tfHeight.setText(String.valueOf(user.getUserHeight()));
     tfAge.setText(String.valueOf(user.getUserAge()));
 
-    // JPasswordFields
-    JPasswordField tfPassword = makePasswordField(20);
-    JPasswordField tfPasswordConfirm = makePasswordField(20);
-
     // JComboBoxes
     JComboBox cbPrefix = makeComboBox(getPrefixes());
     JComboBox cbGender = makeComboBox(getGenders());
@@ -742,10 +750,8 @@ public class GUI {
     // JLabels
     JLabel labelHeading1 = makeBoldLabel("ข้อมูลการเข้าใช้งาน");
     JLabel labelHeading2 = makeBoldLabel("ข้อมูลส่วนตัว");
-    JLabel labelUserName = makeLabel("Username");
     JLabel labelFName = makeLabel("ชื่อ");
     JLabel labelLName = makeLabel("นามสกุล");
-    JLabel labelEmail = makeLabel("อีเมล");
     JLabel labelAge = makeLabel("อายุ");
     JLabel labelAgeUnit = makeLabel("ปี");
     JLabel labelGender = makeLabel("เพศ");

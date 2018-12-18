@@ -39,7 +39,7 @@ import javax.swing.SwingWorker;
  * An utility class for GUI.java
  *
  * @author jMedicine
- * @version 0.7.17
+ * @version 0.9.3
  * @since 0.7.0
  */
 
@@ -109,20 +109,18 @@ public class GUIUtil implements ActionListener, KeyListener {
       panelErrorSignUpPassword.setVisible(true);
     } else {
       panelLoading.setVisible(true);
+      panelErrorSignUpUsername.setVisible(false );
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
           try {
             doSignUp(new User(tfUserName.getText()), tfPassword.getPassword());
+            executeSignIn();
           } catch (LoginException ex) {
             panelErrorSignUpUsername.setVisible(true);
+            panelLoading.setVisible(false);
           }
           return null;
-        }
-
-        @Override
-        protected void done() {
-          executeSignIn();
         }
       };
       swingWorker.execute();
@@ -151,13 +149,13 @@ public class GUIUtil implements ActionListener, KeyListener {
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if (isSignInPage && (e.getSource() == tfUserName || e.getSource() == tfPassword)) {
+    if (isSignInPage && (e.getSource().equals(tfUserName) || e.getSource().equals(tfPassword))) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         executeSignIn();
       }
     }
-    if (isSignUpPage && (e.getSource() == tfUserName || e.getSource() == tfPassword
-        || e.getSource() == tfPasswordConfirm)) {
+    if (isSignUpPage && (e.getSource().equals(tfUserName) || e.getSource().equals(tfPassword)
+        || e.getSource().equals(tfPasswordConfirm))) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         executeSignUp();
       }
