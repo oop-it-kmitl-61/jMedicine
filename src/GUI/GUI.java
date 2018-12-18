@@ -91,7 +91,7 @@ public class GUI {
 
   public static JFrame frameWelcome, frameMain;
   public static JPanel panelRight, panelOverview, panelWelcome;
-  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpUsernameLength, panelErrorSignUpPassword, panelErrorSignUpPasswordLength, panelSettings;
+  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpUsernameLength, panelErrorSignUpUsernameValid, panelErrorSignUpPassword, panelErrorSignUpPasswordLength, panelSettings;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp, btnSkipAddingInfo;
@@ -361,7 +361,8 @@ public class GUI {
     panelNoInput = getErrorPanel("กรุณากรอกข้อมูลลงในช่องว่าง");
     panelErrorSignIn = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
     panelErrorSignUpUsername = getErrorPanel("ชื่อผู้ใช้งานนี้เคยสมัครไปแล้ว");
-    panelErrorSignUpUsernameLength = getErrorPanel("ชื่อผู้ใช้งานต้องมีความยาวตั้งแต่ 4 ตัวอักษรขึ้นไป");
+    panelErrorSignUpUsernameLength = getErrorPanel("ชื่อผู้ใช้งานต้องมีความยาว 4-32 ตัวอักษรเท่านั้น");
+    panelErrorSignUpUsernameValid = getErrorPanel("ชื่อผู้ใช้งานต้องประกอบไปด้วยตัวอักษรภาษาอังกฤษหรือตัวเลขเท่านั้น");
     panelErrorSignUpPassword = getErrorPanel("รหัสผ่านทั้งสองช่องไม่ตรงกัน");
     panelErrorSignUpPasswordLength = getErrorPanel("รหัสผ่านต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
     panelWelcome = new JPanel(new CardLayout());
@@ -374,7 +375,7 @@ public class GUI {
     JLabel labelRegister = makeLabel("ยังไม่มีบัญชี? ลงทะเบียนที่นี่");
     JLabel labelSignIn = makeLabel("มีบัญชีอยู่แล้ว? เข้าสู่ระบบที่นี่");
     JLabel labelUsername = makeBoldLabel("Username");
-    JLabel labelUsernameHint = makeSmallerLabel("ต้องเป็นภาษาอังกฤษและมีความยาวตั้งแต่ 4 ตัวอักษรขึ้นไป");
+    JLabel labelUsernameHint = makeSmallerLabel("ต้องประกอบไปด้วยตัวอักษรภาษาอังกฤษหรือตัวเลขเท่านั้นและมีความยาว 4-32 ตัวอักษร");
     JLabel labelPassword = makeBoldLabel("Password");
     JLabel labelPasswordHint = makeSmallerLabel("ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
     JLabel labelPasswordConfirm = makeBoldLabel("กรอก Password อีกครั้ง");
@@ -399,6 +400,7 @@ public class GUI {
     panelErrorSignIn.setVisible(false);
     panelErrorSignUpUsername.setVisible(false);
     panelErrorSignUpUsernameLength.setVisible(false);
+    panelErrorSignUpUsernameValid.setVisible(false);
     panelErrorSignUpPassword.setVisible(false);
     panelErrorSignUpPasswordLength.setVisible(false);
     labelPasswordConfirm.setVisible(false);
@@ -432,6 +434,7 @@ public class GUI {
         panelNoInput.setVisible(false);
         panelErrorSignUpUsername.setVisible(false);
         panelErrorSignUpUsernameLength.setVisible(false);
+        panelErrorSignUpUsernameValid.setVisible(false);
         panelErrorSignUpPassword.setVisible(false);
         panelErrorSignUpPasswordLength.setVisible(false);
         panelErrorSignIn.setVisible(false);
@@ -462,6 +465,7 @@ public class GUI {
         panelNoInput.setVisible(false);
         panelErrorSignUpUsername.setVisible(false);
         panelErrorSignUpUsernameLength.setVisible(false);
+        panelErrorSignUpUsernameValid.setVisible(false);
         panelErrorSignUpPassword.setVisible(false);
         panelErrorSignUpPasswordLength.setVisible(false);
         panelErrorSignIn.setVisible(false);
@@ -523,6 +527,8 @@ public class GUI {
     panelSignIn.add(panelErrorSignUpUsername, gbc);
     gbc.gridy++;
     panelSignIn.add(panelErrorSignUpUsernameLength, gbc);
+    gbc.gridy++;
+    panelSignIn.add(panelErrorSignUpUsernameValid, gbc);
     gbc.gridy++;
     panelSignIn.add(panelErrorSignUpPassword, gbc);
     gbc.gridy++;

@@ -87,36 +87,18 @@ public class GUIUtil implements ActionListener, KeyListener {
   void executeSignUp() {
     panelErrorSignIn.setVisible(false);
     if (tfUserName.getText().equals("")) {
-      panelNoInput.setVisible(true);
-      panelErrorSignUpUsername.setVisible(false);
-      panelErrorSignUpUsernameLength.setVisible(false);
-      panelErrorSignUpPassword.setVisible(false);
-      panelErrorSignUpPasswordLength.setVisible(false);
-    } else if (tfUserName.getText().length() < 4) {
-      panelNoInput.setVisible(false);
-      panelErrorSignUpUsername.setVisible(false);
-      panelErrorSignUpUsernameLength.setVisible(true);
-      panelErrorSignUpPassword.setVisible(false);
-      panelErrorSignUpPasswordLength.setVisible(false);
-    } else if (!Arrays.equals(tfPassword.getPassword(), tfPasswordConfirm.getPassword())) {
-      panelNoInput.setVisible(false);
-      panelErrorSignUpUsername.setVisible(false);
-      panelErrorSignUpUsernameLength.setVisible(false);
-      panelErrorSignUpPassword.setVisible(true);
-      panelErrorSignUpPasswordLength.setVisible(false);
+      showErrorPanel(0);
+    } else if (tfUserName.getText().length() < 4 || tfUserName.getText().length() > 32) {
+      showErrorPanel(2);
+    } else if (!isValidUsername(tfUserName.getText())) {
+      showErrorPanel(3);
+    }else if (!Arrays.equals(tfPassword.getPassword(), tfPasswordConfirm.getPassword())) {
+      showErrorPanel(4);
     } else if (tfPassword.getPassword().length < 6) {
-      panelNoInput.setVisible(false);
-      panelErrorSignUpUsername.setVisible(false);
-      panelErrorSignUpUsernameLength.setVisible(false);
-      panelErrorSignUpPassword.setVisible(false);
-      panelErrorSignUpPasswordLength.setVisible(true);
+      showErrorPanel(5);
     } else {
       panelLoading.setVisible(true);
-      panelNoInput.setVisible(false);
-      panelErrorSignUpUsername.setVisible(false);
-      panelErrorSignUpUsernameLength.setVisible(false);
-      panelErrorSignUpPassword.setVisible(false);
-      panelErrorSignUpPasswordLength.setVisible(false);
+      showErrorPanel(-1);
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
@@ -124,7 +106,7 @@ public class GUIUtil implements ActionListener, KeyListener {
             doSignUp(new User(tfUserName.getText()), tfPassword.getPassword());
             executeSignIn();
           } catch (LoginException ex) {
-            panelErrorSignUpUsername.setVisible(true);
+            showErrorPanel(1);
             panelLoading.setVisible(false);
           } catch (NoSuchAlgorithmException | SQLException ex) {
             ex.printStackTrace();
@@ -135,6 +117,34 @@ public class GUIUtil implements ActionListener, KeyListener {
       };
       swingWorker.execute();
     }
+  }
+
+  public static void showErrorPanel(int panelNumber) {
+    panelNoInput.setVisible(panelNumber == 0);
+    panelErrorSignUpUsername.setVisible(panelNumber == 1);
+    panelErrorSignUpUsernameLength.setVisible(panelNumber == 2);
+    panelErrorSignUpUsernameValid.setVisible(panelNumber == 3);
+    panelErrorSignUpPassword.setVisible(panelNumber == 4);
+    panelErrorSignUpPasswordLength.setVisible(panelNumber == 5);
+  }
+
+  private boolean isValidUsername(String username) {
+    String validCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    boolean isFound;
+
+    for (int i = 0; i < username.length(); i++) {
+      isFound = false;
+      for (int j = 0; j < validCharacters.length(); j++) {
+        if (username.charAt(i) == validCharacters.charAt(j)) {
+          isFound = true;
+          break;
+        }
+      }
+      if (!isFound) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
