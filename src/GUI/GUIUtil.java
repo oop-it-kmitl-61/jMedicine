@@ -9,6 +9,7 @@ import static core.Core.setUser;
 
 import api.LoginException;
 import core.User;
+
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import javax.swing.SwingWorker;
+
 import org.postgresql.util.PSQLException;
 
 
@@ -31,7 +33,6 @@ import org.postgresql.util.PSQLException;
 
 public class GUIUtil implements ActionListener, KeyListener {
 
-
   public void listeners() {
     btnSignIn.addActionListener(this);
     btnSignUp.addActionListener(this);
@@ -39,7 +40,7 @@ public class GUIUtil implements ActionListener, KeyListener {
     tfPassword.addKeyListener(this);
   }
 
-  void executeSignIn() {
+  private void executeSignIn() {
     panelErrorSignUpUsername.setVisible(false);
     panelErrorSignUpPassword.setVisible(false);
     if (tfUserName.getText().equals("") || tfPassword.getPassword().equals("")) {
@@ -84,7 +85,7 @@ public class GUIUtil implements ActionListener, KeyListener {
     }
   }
 
-  void executeSignUp() {
+  private void executeSignUp() {
     panelErrorSignIn.setVisible(false);
     if (tfUserName.getText().equals("")) {
       showErrorPanel(0);
@@ -117,7 +118,7 @@ public class GUIUtil implements ActionListener, KeyListener {
     }
   }
 
-  public static void showErrorPanel(int panelNumber) {
+  private static void showErrorPanel(int panelNumber) {
     panelNoInput.setVisible(panelNumber == 0);
     panelErrorSignUpUsername.setVisible(panelNumber == 1);
     panelErrorSignUpUsernameValid.setVisible(panelNumber == 2);
@@ -146,22 +147,17 @@ public class GUIUtil implements ActionListener, KeyListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    Object btn = e.getSource();
-
-    if (btn == btnSignIn) {
+    if (e.getSource() == btnSignIn) {
       executeSignIn();
-    }
-    if (btn == btnSignUp) {
+    } else if (e.getSource() == btnSignUp) {
       executeSignUp();
-    }
-    if (btn == btnSkipAddingInfo) {
+    } else if (e.getSource() == btnSkipAddingInfo) {
       promptFirstMedicine();
     }
   }
 
   @Override
   public void keyTyped(KeyEvent e) {
-
   }
 
   @Override
@@ -172,7 +168,7 @@ public class GUIUtil implements ActionListener, KeyListener {
       }
     }
     if (isSignUpPage && (e.getSource().equals(tfUserName) || e.getSource().equals(tfPassword)
-        || e.getSource().equals(tfPasswordConfirm))) {
+            || e.getSource().equals(tfPasswordConfirm))) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         executeSignUp();
       }
@@ -181,6 +177,5 @@ public class GUIUtil implements ActionListener, KeyListener {
 
   @Override
   public void keyReleased(KeyEvent e) {
-
   }
 }

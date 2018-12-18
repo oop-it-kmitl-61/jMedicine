@@ -26,6 +26,7 @@ import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.LocationHelper;
 import core.Overview;
 import core.User;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -98,7 +99,6 @@ public class GUI {
   static boolean isSignInPage, isSignUpPage;
   private static Dimension windowSize, minSize;
   private static GUIUtil util;
-
 
   public GUI(Dimension windowSize) {
     GUI.util = new GUIUtil();
@@ -219,8 +219,8 @@ public class GUI {
     browser.setPermissionHandler(request -> PermissionStatus.GRANTED);
     // Load URL that query the hospital around the current position
     browser.loadURL(
-        "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
-            + ",12z");
+            "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
+                    + ",12z");
 
     // Add all sub panels into the main panel
     panelNearBy.add(panelTitle, BorderLayout.NORTH);
@@ -247,7 +247,7 @@ public class GUI {
       userFullName = "(ยังไม่ได้ตั้งชื่อ)";
     } else {
       userFullName = getUser().getUserPrefix() + getUser().getUserFirstName() + " " + getUser()
-          .getUserLastName();
+              .getUserLastName();
     }
 
     // JLabels
@@ -635,9 +635,9 @@ public class GUI {
       String weight = tfWeight.getText();
       String height = tfHeight.getText();
       if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height
-          .equals("")) {
+              .equals("")) {
         fireErrorDialog(
-            "คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
+                "คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
       } else {
         getUser().setUserPrefix(cbPrefix.getSelectedItem().toString());
         getUser().setUserFirstName(tfFName.getText());
@@ -670,12 +670,12 @@ public class GUI {
   private static void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
     buttons = new JButton[]{
-        makeLeftNavigationButton("ภาพรวม"),
-        makeLeftNavigationButton("ยาทั้งหมด"),
-        makeLeftNavigationButton("นัดแพทย์"),
-        makeLeftNavigationButton("แพทย์"),
-        makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
-        makeLeftNavigationButton("การตั้งค่า"),
+            makeLeftNavigationButton("ภาพรวม"),
+            makeLeftNavigationButton("ยาทั้งหมด"),
+            makeLeftNavigationButton("นัดแพทย์"),
+            makeLeftNavigationButton("แพทย์"),
+            makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
+            makeLeftNavigationButton("การตั้งค่า"),
     };
 
     int buttonY = 0;
@@ -941,7 +941,7 @@ public class GUI {
       String weight = tfWeight.getText();
       String height = tfHeight.getText();
       if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height
-          .equals("")) {
+              .equals("")) {
         fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน");
       } else {
         user.setUserPrefix(cbPrefix.getSelectedItem().toString());
@@ -995,7 +995,7 @@ public class GUI {
 
     // JLabels
     JLabel labelDescription = makeLabel(
-        "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนให้ทานยาก่อนเวลาที่ท่่านได้กำหนดไว้ 10 นาที");
+            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนให้ทานยาก่อนเวลาที่ท่่านได้กำหนดไว้ 10 นาที");
     JLabel labelMorning = makeBoldLabel("เช้า");
     JLabel labelAfternoon = makeBoldLabel("กลางวัน");
     JLabel labelEvening = makeBoldLabel("เย็น");
@@ -1053,8 +1053,8 @@ public class GUI {
     // Save Configured Time
     btnSave.addActionListener(e -> {
       getUser().setUserTime(
-          new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
-              tpBed.getText()});
+              new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
+                      tpBed.getText()});
       try {
         UserDB.updateUserTime();
         fireSuccessDialog("บันทึกเวลาสำเร็จ");
@@ -1128,10 +1128,10 @@ public class GUI {
     panelSub = new JPanel(new GridLayout(4, 1));
     panelSub.add(makeBoldLabel("ไอคอน success, error และ bin"));
     panelSub.add(makeLabel(
-        "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
+            "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
     panelSub.add(makeBoldLabel("ไอคอน warning และ spray"));
     panelSub.add(makeLabel(
-        "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
+            "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
     setPadding(panelSub, 10, 0, 20, 4);
     panelBody.add(panelSub);
 
