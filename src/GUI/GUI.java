@@ -1,35 +1,6 @@
 package GUI;
 
-import static GUI.GUIHelper.backTo;
-import static GUI.GUIHelper.fireConfirmDialog;
-import static GUI.GUIHelper.fireDBErrorDialog;
-import static GUI.GUIHelper.fireErrorDialog;
-import static GUI.GUIHelper.fireSuccessDialog;
-import static GUI.GUIHelper.getErrorPanel;
-import static GUI.GUIHelper.getLoadingPanel;
-import static GUI.GUIHelper.locale;
-import static GUI.GUIHelper.mainBlue;
-import static GUI.GUIHelper.makeBackButton;
-import static GUI.GUIHelper.makeBlueButton;
-import static GUI.GUIHelper.makeBoldLabel;
-import static GUI.GUIHelper.makeComboBox;
-import static GUI.GUIHelper.makeLabel;
-import static GUI.GUIHelper.makeLabelCenter;
-import static GUI.GUIHelper.makeLabelClickable;
-import static GUI.GUIHelper.makeLeftNavigationButton;
-import static GUI.GUIHelper.makeNumberField;
-import static GUI.GUIHelper.makePasswordField;
-import static GUI.GUIHelper.makeRedButton;
-import static GUI.GUIHelper.makeScrollPane;
-import static GUI.GUIHelper.makeSmallerLabel;
-import static GUI.GUIHelper.makeTextField;
-import static GUI.GUIHelper.makeTimePicker;
-import static GUI.GUIHelper.makeTitleLabel;
-import static GUI.GUIHelper.makeToggle;
-import static GUI.GUIHelper.newFlowLayout;
-import static GUI.GUIHelper.paintButton;
-import static GUI.GUIHelper.paintCurrentTabButton;
-import static GUI.GUIHelper.setPadding;
+import static GUI.GUIHelper.*;
 import static GUI.components.AppointmentUI.panelAllAppointments;
 import static GUI.components.DoctorUI.panelAllDoctors;
 import static GUI.components.MedicineUI.panelAllMedicines;
@@ -55,12 +26,16 @@ import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import core.LocationHelper;
 import core.Overview;
 import core.User;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Field;
@@ -93,7 +68,7 @@ import javax.swing.WindowConstants;
  * /components
  *
  * @author jMedicine
- * @version 0.9.0
+ * @version 1.0.0
  * @since 0.1.0
  */
 
@@ -119,7 +94,7 @@ public class GUI {
 
   public static JFrame frameWelcome, frameMain;
   public static JPanel panelRight, panelOverview, panelWelcome;
-  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpPassword, panelSettings;
+  static JPanel panelLeft, panelSignIn, panelLoading, panelNoInput, panelErrorSignIn, panelErrorSignUpUsername, panelErrorSignUpUsernameValid, panelErrorSignUpPassword, panelErrorSignUpPasswordLength, panelSettings;
   static JTextField tfUserName;
   static JPasswordField tfPassword, tfPasswordConfirm;
   static JButton buttons[], btnSignIn, btnSignUp, btnSkipAddingInfo;
@@ -127,12 +102,13 @@ public class GUI {
   private static Dimension windowSize, minSize;
   private static GUIUtil util;
 
-
   public GUI(Dimension windowSize) {
     GUI.util = new GUIUtil();
     GUI.windowSize = windowSize;
     GUI.minSize = new Dimension(800, 680);
     JOptionPane.setDefaultLocale(locale);
+    isSignInPage = true;
+    isSignUpPage = false;
     GUIHelper.setup();
   }
 
@@ -245,8 +221,8 @@ public class GUI {
     browser.setPermissionHandler(request -> PermissionStatus.GRANTED);
     // Load URL that query the hospital around the current position
     browser.loadURL(
-        "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
-            + ",12z");
+            "https://www.google.co.th/maps/search/โรงพยาบาล/@" + location[0] + "," + location[1]
+                    + ",12z");
 
     // Add all sub panels into the main panel
     panelNearBy.add(panelTitle, BorderLayout.NORTH);
@@ -273,7 +249,7 @@ public class GUI {
       userFullName = "(ยังไม่ได้ตั้งชื่อ)";
     } else {
       userFullName = getUser().getUserPrefix() + getUser().getUserFirstName() + " " + getUser()
-          .getUserLastName();
+              .getUserLastName();
     }
 
     // JLabels
@@ -298,10 +274,13 @@ public class GUI {
       public void mouseClicked(MouseEvent e) {
         setUser(null);
         backTo("ยังไม่ได้เข้าสู่ระบบ");
+        isSignInPage = true;
+        isSignUpPage = false;
       }
     });
     toggleNoti.addActionListener(e -> {
       String successMessage = "";
+
       if (toggleNoti.isSelected()) {
         getUser().setShowNotification(true);
         successMessage = "เปิดการแจ้งเตือนเรียบร้อยแล้ว";
@@ -309,11 +288,12 @@ public class GUI {
         getUser().setShowNotification(false);
         successMessage = "ปิดการแจ้งเตือนเรียบร้อยแล้ว";
       }
+
       try {
         updateUserData();
         fireSuccessDialog(successMessage);
-      } catch (SQLException e1) {
-        e1.printStackTrace();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
         fireDBErrorDialog();
       }
     });
@@ -359,7 +339,7 @@ public class GUI {
     panelBody.add(panelSub);
 
     panelSub = newFlowLayout();
-    panelSub.add(makeSmallerLabel("เวอร์ชั่น 0.9.0"));
+    panelSub.add(makeSmallerLabel("เวอร์ชั่น 1.0.0"));
     panelBody.add(panelSub);
 
     // Add all sub panels into the main panel
@@ -387,7 +367,9 @@ public class GUI {
     panelNoInput = getErrorPanel("กรุณากรอกข้อมูลลงในช่องว่าง");
     panelErrorSignIn = getErrorPanel("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง");
     panelErrorSignUpUsername = getErrorPanel("ชื่อผู้ใช้งานนี้เคยสมัครไปแล้ว");
+    panelErrorSignUpUsernameValid = getErrorPanel("ชื่อผู้ใช้งานไม่เป็นไปตามเงื่อนไข");
     panelErrorSignUpPassword = getErrorPanel("รหัสผ่านทั้งสองช่องไม่ตรงกัน");
+    panelErrorSignUpPasswordLength = getErrorPanel("รหัสผ่านไม่เป็นไปตามเงื่อนไข");
     panelWelcome = new JPanel(new CardLayout());
     panelSignIn = new JPanel(new GridBagLayout());
 
@@ -398,7 +380,9 @@ public class GUI {
     JLabel labelRegister = makeLabel("ยังไม่มีบัญชี? ลงทะเบียนที่นี่");
     JLabel labelSignIn = makeLabel("มีบัญชีอยู่แล้ว? เข้าสู่ระบบที่นี่");
     JLabel labelUsername = makeBoldLabel("Username");
+    JLabel labelUsernameHint = makeSmallerLabel("เป็นตัวอักษรภาษาอังกฤษหรือตัวเลข (4-32 ตัวอักษร)");
     JLabel labelPassword = makeBoldLabel("Password");
+    JLabel labelPasswordHint = makeSmallerLabel("ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
     JLabel labelPasswordConfirm = makeBoldLabel("กรอก Password อีกครั้ง");
 
     // JTextFields
@@ -412,7 +396,7 @@ public class GUI {
 
     // Styling
     setPadding(labelUsername, 0, 0, -16, 0);
-    setPadding(labelPassword, 0, 0, -10, 0);
+    setPadding(labelPassword, 0, 0, -16, 0);
     setPadding(labelPasswordConfirm, 0, 0, -10, 0);
     setPadding(labelRegister, 20, 60);
     setPadding(labelSignIn, 20, 60);
@@ -420,17 +404,23 @@ public class GUI {
     panelNoInput.setVisible(false);
     panelErrorSignIn.setVisible(false);
     panelErrorSignUpUsername.setVisible(false);
+    panelErrorSignUpUsernameValid.setVisible(false);
     panelErrorSignUpPassword.setVisible(false);
+    panelErrorSignUpPasswordLength.setVisible(false);
     labelPasswordConfirm.setVisible(false);
+    labelUsernameHint.setVisible(false);
+    labelPasswordHint.setVisible(false);
     tfPasswordConfirm.setVisible(false);
     btnSignUp.setVisible(false);
     labelSignIn.setVisible(false);
     makeLabelCenter(labelWelcome);
     makeLabelCenter(labelWelcomeSub);
+    labelUsernameHint.setForeground(Color.GRAY);
+    labelPasswordHint.setForeground(Color.GRAY);
 
     isSignInPage = true;
 
-    // Listeners
+    // MouseListener: Register Label
     labelRegister.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -444,8 +434,25 @@ public class GUI {
         labelSignIn.setVisible(true);
         labelWelcomeSub.setVisible(false);
         labelWelcome.setText("ลงทะเบียน");
+        panelLoading.setVisible(false);
+        panelNoInput.setVisible(false);
+        panelErrorSignUpUsername.setVisible(false);
+        panelErrorSignUpUsernameValid.setVisible(false);
+        panelErrorSignUpPassword.setVisible(false);
+        panelErrorSignUpPasswordLength.setVisible(false);
+        panelErrorSignIn.setVisible(false);
+        labelUsernameHint.setVisible(true);
+        labelPasswordHint.setVisible(true);
+        setPadding(labelUsername, 0, 0, -16, 0);
+        setPadding(labelUsernameHint, 0, 0, -8, 0);
+        setPadding(labelPassword, 20, 0, -16, 0);
+        setPadding(labelPasswordHint, 0, 0, -8, 0);
+        setPadding(labelPasswordConfirm, 20, 0, -10, 0);
+        setPadding(labelSignIn, 20, 0, 0, 60);
       }
     });
+
+    // MouseListener: Sign-In Label
     labelSignIn.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -459,6 +466,19 @@ public class GUI {
         labelSignIn.setVisible(false);
         labelWelcomeSub.setVisible(true);
         labelWelcome.setText("ยินดีต้อนรับ");
+        panelLoading.setVisible(false);
+        panelNoInput.setVisible(false);
+        panelErrorSignUpUsername.setVisible(false);
+        panelErrorSignUpUsernameValid.setVisible(false);
+        panelErrorSignUpPassword.setVisible(false);
+        panelErrorSignUpPasswordLength.setVisible(false);
+        panelErrorSignIn.setVisible(false);
+        labelUsernameHint.setVisible(false);
+        labelPasswordHint.setVisible(false);
+        setPadding(labelUsername, 0, 0, -16, 0);
+        setPadding(labelPassword, 0, 0, -16, 0);
+        setPadding(labelPasswordConfirm, 0, 0, -10, 0);
+        setPadding(labelSignIn, 20, 60);
       }
     });
 
@@ -471,7 +491,7 @@ public class GUI {
     panelSignIn.add(space, gbc);
     gbc.weightx = 0.0;
     gbc.weighty = 2;
-    gbc.gridwidth = 11;
+    gbc.gridwidth = 30;
     gbc.ipady = 8;
     gbc.gridx = 0;
     gbc.gridy = 1;
@@ -486,9 +506,13 @@ public class GUI {
     gbc.gridy++;
     panelSignIn.add(labelUsername, gbc);
     gbc.gridy++;
+    panelSignIn.add(labelUsernameHint, gbc);
+    gbc.gridy++;
     panelSignIn.add(tfUserName, gbc);
     gbc.gridy++;
     panelSignIn.add(labelPassword, gbc);
+    gbc.gridy++;
+    panelSignIn.add(labelPasswordHint, gbc);
     gbc.gridy++;
     panelSignIn.add(tfPassword, gbc);
     gbc.gridy++;
@@ -506,8 +530,12 @@ public class GUI {
     gbc.gridy++;
     panelSignIn.add(panelErrorSignUpUsername, gbc);
     gbc.gridy++;
+    panelSignIn.add(panelErrorSignUpUsernameValid, gbc);
+    gbc.gridy++;
     panelSignIn.add(panelErrorSignUpPassword, gbc);
     gbc.gridy++;
+    panelSignIn.add(panelErrorSignUpPasswordLength, gbc);
+    gbc.gridy += 80;
     panelSignIn.add(btnSignUp, gbc);
     gbc.gridy++;
     panelSignIn.add(btnSignIn, gbc);
@@ -518,7 +546,6 @@ public class GUI {
     space = new JLabel();
     gbc.weighty = 300;
     panelSignIn.add(space, gbc);
-
     panelWelcome.add(panelSignIn, "ยังไม่ได้เข้าสู่ระบบ");
 
     util.listeners();
@@ -614,10 +641,8 @@ public class GUI {
       String age = tfAge.getText();
       String weight = tfWeight.getText();
       String height = tfHeight.getText();
-      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height
-          .equals("")) {
-        fireErrorDialog(
-            "คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
+      if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height.equals("")) {
+        fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน หากไม่ต้องการเพิ่มข้อมูลส่วนตัว กรุณากดปุ่ม \"ข้ามขั้นตอนนี้\"");
       } else {
         getUser().setUserPrefix(cbPrefix.getSelectedItem().toString());
         getUser().setUserFirstName(tfFName.getText());
@@ -650,12 +675,12 @@ public class GUI {
   private static void makeLeftNavigation() {
     /* Creates GUI of the left navigation. */
     buttons = new JButton[]{
-        makeLeftNavigationButton("ภาพรวม"),
-        makeLeftNavigationButton("ยาทั้งหมด"),
-        makeLeftNavigationButton("นัดแพทย์"),
-        makeLeftNavigationButton("แพทย์"),
-        makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
-        makeLeftNavigationButton("การตั้งค่า"),
+            makeLeftNavigationButton("ภาพรวม"),
+            makeLeftNavigationButton("ยาทั้งหมด"),
+            makeLeftNavigationButton("นัดแพทย์"),
+            makeLeftNavigationButton("แพทย์"),
+            makeLeftNavigationButton("โรงพยาบาลใกล้เคียง"),
+            makeLeftNavigationButton("การตั้งค่า"),
     };
 
     int buttonY = 0;
@@ -709,7 +734,7 @@ public class GUI {
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขข้อมูลส่วนตัว", "การตั้งค่า");
     JButton btnEditPwd = makeBlueButton("เปลี่ยนรหัสผ่าน");
-    JButton btnRemoveAccount = makeRedButton("ลบบัญชีนี้");
+    JButton btnDeleteAccount = makeRedButton("ลบบัญชีนี้");
     JButton btnSave = makeBlueButton("บันทึก");
 
     // JTextFields
@@ -728,10 +753,6 @@ public class GUI {
     tfHeight.setText(String.valueOf(user.getUserHeight()));
     tfAge.setText(String.valueOf(user.getUserAge()));
 
-    // JPasswordFields
-    JPasswordField tfPassword = makePasswordField(20);
-    JPasswordField tfPasswordConfirm = makePasswordField(20);
-
     // JComboBoxes
     JComboBox cbPrefix = makeComboBox(getPrefixes());
     JComboBox cbGender = makeComboBox(getGenders());
@@ -742,10 +763,8 @@ public class GUI {
     // JLabels
     JLabel labelHeading1 = makeBoldLabel("ข้อมูลการเข้าใช้งาน");
     JLabel labelHeading2 = makeBoldLabel("ข้อมูลส่วนตัว");
-    JLabel labelUserName = makeLabel("Username");
     JLabel labelFName = makeLabel("ชื่อ");
     JLabel labelLName = makeLabel("นามสกุล");
-    JLabel labelEmail = makeLabel("อีเมล");
     JLabel labelAge = makeLabel("อายุ");
     JLabel labelAgeUnit = makeLabel("ปี");
     JLabel labelGender = makeLabel("เพศ");
@@ -773,7 +792,7 @@ public class GUI {
     // panelSub.add(labelUserName);
     // panelSub.add(tfUsername);
     panelSub.add(btnEditPwd);
-    panelSub.add(btnRemoveAccount);
+    panelSub.add(btnDeleteAccount);
     setPadding(panelSub, 10, 0, 8);
     panelBody.add(panelSub);
 
@@ -814,60 +833,78 @@ public class GUI {
     panelMain.add(panelBody, BorderLayout.CENTER);
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
-    // Password Changing Frame
-    JFrame passwordEditFrame = new JFrame("เปลี่ยนรหัสผ่าน");
-    JPanel panel = new JPanel(new BorderLayout());
+    // Sub-Frame: Password Changing
+    JFrame framePasswordEdit = new JFrame("เปลี่ยนรหัสผ่าน");
+    JPanel panelPasswordEditSub = new JPanel(new BorderLayout());
     JPanel panelPasswordEdit = new JPanel(new GridLayout(4, 2));
 
-    JPasswordField oldPasswordField = makePasswordField(20);
-    JPasswordField newPasswordField = makePasswordField(20);
-    JPasswordField confirmNewPasswordField = makePasswordField(20);
+    JPasswordField fieldOldPassword = makePasswordField(20);
+    JPasswordField fieldNewPassword = makePasswordField(20);
+    JPasswordField fieldConfirmPassword = makePasswordField(20);
+    JLabel labelOldPassword = makeLabel("รหัสผ่านปัจจุบัน");
+    JLabel labelNewPassword = makeLabel("รหัสผ่านใหม่");
+    JLabel labelConfirmPassword = makeLabel("ยืนยันรหัสผ่านใหม่");
+    JButton btnConfirmPasswordEdit = makeBlueButton("ยืนยัน");
 
-    JLabel oldPasswordLabel = makeLabel("รหัสผ่านปัจจุบัน");
-    JLabel newPasswordLabel = makeLabel("รหัสผ่านใหม่");
-    JLabel confirmNewPasswordLabel = makeLabel("ยืนยันรหัสผ่านใหม่");
+    setPadding(panelPasswordEditSub, 20);
+    panelPasswordEdit.add(labelOldPassword);
+    panelPasswordEdit.add(fieldOldPassword);
+    panelPasswordEdit.add(labelNewPassword);
+    panelPasswordEdit.add(fieldNewPassword);
+    panelPasswordEdit.add(labelConfirmPassword);
+    panelPasswordEdit.add(fieldConfirmPassword);
+    panelPasswordEditSub.add(panelPasswordEdit, BorderLayout.CENTER);
+    panelPasswordEditSub.add(btnConfirmPasswordEdit, BorderLayout.SOUTH);
 
-    JButton passwordConfirmButton = makeBlueButton("ยืนยัน");
+    framePasswordEdit.add(panelPasswordEditSub);
+    framePasswordEdit.setMinimumSize(new Dimension(480, 240));
+    framePasswordEdit.setSize(new Dimension(480, 270));
+    framePasswordEdit.setVisible(false);
+    framePasswordEdit.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    framePasswordEdit.setLocationRelativeTo(null);
 
-    setPadding(panel, 20);
+    // Sub-Frame: Delete Account Password Confirmation
+    JFrame frameDeleteAccount = new JFrame("ลบบัญชี");
+    JPanel panelDeleteAccountSub = new JPanel(new BorderLayout());
+    JPanel panelDeleteAccount = new JPanel(new GridLayout(3, 1));
 
-    panelPasswordEdit.add(oldPasswordLabel);
-    panelPasswordEdit.add(oldPasswordField);
-    panelPasswordEdit.add(newPasswordLabel);
-    panelPasswordEdit.add(newPasswordField);
-    panelPasswordEdit.add(confirmNewPasswordLabel);
-    panelPasswordEdit.add(confirmNewPasswordField);
+    JPasswordField fieldPassword = makePasswordField(20);
+    JLabel labelPassword = makeLabel("กรอกรหัสผ่านเพื่อยืนยันการลบบัญชี");
+    JButton btnConfirmDeleteAccount = makeBlueButton("ยืนยัน");
 
-    panel.add(panelPasswordEdit, BorderLayout.CENTER);
-    panel.add(passwordConfirmButton, BorderLayout.SOUTH);
+    setPadding(panelDeleteAccountSub, 20);
+    panelDeleteAccount.add(labelPassword);
+    panelDeleteAccount.add(fieldPassword);
+    panelDeleteAccountSub.add(panelDeleteAccount, BorderLayout.CENTER);
+    panelDeleteAccountSub.add(btnConfirmDeleteAccount, BorderLayout.SOUTH);
 
-    passwordEditFrame.add(panel);
-    passwordEditFrame.setMinimumSize(new Dimension(480, 240));
-    passwordEditFrame.setSize(new Dimension(480, 270));
-    passwordEditFrame.setVisible(false);
-    passwordEditFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    passwordEditFrame.setLocationRelativeTo(null);
+    frameDeleteAccount.add(panelDeleteAccountSub);
+    frameDeleteAccount.setMinimumSize(new Dimension(480, 210));
+    frameDeleteAccount.setSize(new Dimension(480, 240));
+    frameDeleteAccount.setVisible(false);
+    frameDeleteAccount.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    frameDeleteAccount.setLocationRelativeTo(null);
 
-    // Password Changing
+    // Action Listener: Password Changing
     btnEditPwd.addActionListener(e -> {
-      passwordEditFrame.setVisible(true);
+      framePasswordEdit.setVisible(true);
     });
 
-    passwordConfirmButton.addActionListener(ev -> {
+    btnConfirmPasswordEdit.addActionListener(ev -> {
       try {
-        Login.doSignIn(user.getUserName(), oldPasswordField.getPassword());
-        if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
+        Login.doSignIn(user.getUserName(), fieldOldPassword.getPassword());
+        if (!Arrays.equals(fieldNewPassword.getPassword(), fieldConfirmPassword.getPassword())) {
           fireErrorDialog("รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน");
-        } else if (newPasswordField.getPassword().length < 6) {
+        } else if (fieldNewPassword.getPassword().length < 6) {
           fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
-        } else if (Arrays.equals(oldPasswordField.getPassword(), newPasswordField.getPassword())) {
+        } else if (Arrays.equals(fieldOldPassword.getPassword(), fieldNewPassword.getPassword())) {
           fireErrorDialog("รหัสผ่านใหม่ไม่สามารถเป็นรหัสเดิมได้");
         } else {
-          updateUserPassword(newPasswordField.getPassword());
-          oldPasswordField.setText("");
-          newPasswordField.setText("");
-          confirmNewPasswordField.setText("");
-          passwordEditFrame.setVisible(false);
+          updateUserPassword(fieldNewPassword.getPassword());
+          fieldOldPassword.setText("");
+          fieldNewPassword.setText("");
+          fieldConfirmPassword.setText("");
+          framePasswordEdit.setVisible(false);
           fireSuccessDialog("รหัสผ่านถูกเปลี่ยนเรียบร้อย");
         }
       } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
@@ -875,23 +912,65 @@ public class GUI {
       }
     });
 
-    // Remove account
-    btnRemoveAccount.addActionListener(e -> {
-      int result = fireConfirmDialog(
-          "คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
-      if (result == JOptionPane.YES_OPTION) {
-        try {
-          deleteUser();
-          fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
-          backTo("ยังไม่ได้เข้าสู่ระบบ");
-        } catch (SQLException e1) {
-          e1.printStackTrace();
-          fireDBErrorDialog();
+    // ActionListener: Delete account
+    btnDeleteAccount.addActionListener(e -> {
+      frameDeleteAccount.setVisible(true);
+    });
+
+    btnConfirmDeleteAccount.addActionListener(e -> {
+      try {
+        Login.doSignIn(user.getUserName(), fieldPassword.getPassword());
+        frameDeleteAccount.setVisible(false);
+        int result = fireConfirmDialog(
+                "คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
+        if (result == JOptionPane.YES_OPTION) {
+          try {
+            deleteUser();
+            setUser(null);
+            fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
+            backTo("ยังไม่ได้เข้าสู่ระบบ");
+            isSignInPage = true;
+            isSignUpPage = false;
+          } catch (SQLException e1) {
+            e1.printStackTrace();
+            fireDBErrorDialog();
+          }
+        }
+      } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
+        fireErrorDialog("รหัสผ่านไม่ถูกต้อง");
+      }
+    });
+
+    fieldPassword.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+          try {
+            Login.doSignIn(getUser().getUserName(), fieldPassword.getPassword());
+            frameDeleteAccount.setVisible(false);
+            int result = fireConfirmDialog(
+                "คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
+            if (result == JOptionPane.YES_OPTION) {
+              try {
+                deleteUser();
+                setUser(null);
+                fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
+                backTo("ยังไม่ได้เข้าสู่ระบบ");
+                isSignInPage = true;
+                isSignUpPage = false;
+              } catch (SQLException e1) {
+                e1.printStackTrace();
+                fireDBErrorDialog();
+              }
+            }
+          } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
+            fireErrorDialog("รหัสผ่านไม่ถูกต้อง");
+          }
         }
       }
     });
 
-    // Update user information
+    // ActionListener: Update User Information
     btnSave.addActionListener(e -> {
       String fName = tfFName.getText();
       String lName = tfLName.getText();
@@ -899,7 +978,7 @@ public class GUI {
       String weight = tfWeight.getText();
       String height = tfHeight.getText();
       if (fName.equals("") || lName.equals("") || age.equals("") || weight.equals("") || height
-          .equals("")) {
+              .equals("")) {
         fireErrorDialog("คุณกรอกข้อมูลไม่ครบถ้วน");
       } else {
         user.setUserPrefix(cbPrefix.getSelectedItem().toString());
@@ -953,7 +1032,7 @@ public class GUI {
 
     // JLabels
     JLabel labelDescription = makeLabel(
-        "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนให้ทานยาก่อนเวลาที่ท่่านได้กำหนดไว้ 10 นาที");
+            "ตั้งค่าเวลาทานยาของคุณ ระบบจะทำการแจ้งเตือนให้ทานยาก่อนเวลาที่ท่่านได้กำหนดไว้ 10 นาที");
     JLabel labelMorning = makeBoldLabel("เช้า");
     JLabel labelAfternoon = makeBoldLabel("กลางวัน");
     JLabel labelEvening = makeBoldLabel("เย็น");
@@ -1011,8 +1090,8 @@ public class GUI {
     // Save Configured Time
     btnSave.addActionListener(e -> {
       getUser().setUserTime(
-          new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
-              tpBed.getText()});
+              new String[]{tpMorning.getText(), tpAfternoon.getText(), tpEvening.getText(),
+                      tpBed.getText()});
       try {
         UserDB.updateUserTime();
         fireSuccessDialog("บันทึกเวลาสำเร็จ");
@@ -1086,10 +1165,10 @@ public class GUI {
     panelSub = new JPanel(new GridLayout(4, 1));
     panelSub.add(makeBoldLabel("ไอคอน success, error และ bin"));
     panelSub.add(makeLabel(
-        "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
+            "by Smashicons https://www.flaticon.com/authors/smashicons (is licensed by Creative Commons BY 3.0)"));
     panelSub.add(makeBoldLabel("ไอคอน warning และ spray"));
     panelSub.add(makeLabel(
-        "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
+            "by freepik https://www.flaticon.com/authors/freepik (is licensed by Creative Commons BY 3.0)"));
     setPadding(panelSub, 10, 0, 20, 4);
     panelBody.add(panelSub);
 

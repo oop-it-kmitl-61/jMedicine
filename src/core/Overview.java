@@ -54,7 +54,7 @@ import notification.NotificationFactory;
  * All methods about rendering overview components is here
  *
  * @author jMedicine
- * @version 0.9.0
+ * @version 0.9.1
  * @since 0.7.12
  */
 
@@ -65,6 +65,7 @@ public class Overview {
 
   private void initTreeMap() {
     overviewItem = new TreeMap<>();
+    overviewCount = 0;
   }
 
   private void appendMedicine(String time, Medicine medicine) {
@@ -88,14 +89,14 @@ public class Overview {
     ArrayList<Appointment> userAppointments = null;
     try {
       userAppointments = AppointmentDB.getAllAppointment(getUser().getUserId());
-    } catch (SQLException | ParseException e) {
-      e.printStackTrace();
+    } catch (NullPointerException | SQLException | ParseException ignored) {
     }
     // Filters only upcoming appointments
     for (Appointment app : userAppointments) {
       LocalDate appDate = LocalDate.parse(app.getDate().toString());
       LocalTime appTime = LocalTime.parse(app.getTimeStop());
       if ((today.equals(appDate) && now.isBefore(appTime)) || today.plusDays(1).equals(appDate)) {
+        overviewCount++;
         panelMain.add(getTimePanel("app", true));
         JPanel panelSub = newFlowLayout();
         panelSub.add(getAppPanel(app));
@@ -129,7 +130,7 @@ public class Overview {
 
     // Filters only active medicines && not skipped
     for (Medicine medicine : userMedicines) {
-      LocalDateTime currentLastTaken = medicine.getLastTaken().toLocalDateTime();
+      //LocalDateTime currentLastTaken = medicine.getLastTaken().toLocalDateTime();
       if (medicine.getMedRemaining() > 0 && medicine.getMedEXP().after(new Date())) {
         if (medicine.getMedTime().contains("เช้า")) {
           boolean willBeAdded = true;
@@ -248,8 +249,6 @@ public class Overview {
         }
       }
     }
-
-    overviewCount = 0;
 
     for (String key : overviewItem.keySet()) {
       overviewCount++;
@@ -414,6 +413,8 @@ public class Overview {
     JLabel labelSuccessPic = getSuccessIcon();
     JLabel labelSuccess = makeLabel(" ");
 
+    JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+
     panelSuccess.add(labelSuccessPic);
     panelSuccess.add(labelSuccess);
 
@@ -498,13 +499,15 @@ public class Overview {
         panelSuccess.setVisible(true);
         reloadMedicines();
 
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-          @Override
-          public void run() {
-            panelLoopInfo.setVisible(false);
-          }
-        }, 3*1000);
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//          @Override
+//          public void run() {
+//            panelLoopInfo.setVisible(false);
+//            btnAte.setVisible(false);
+//            btnSkip.setVisible(false);
+//          }
+//        }, 3*1000);
 
       } catch (SQLException e1) {
         e1.printStackTrace();
@@ -522,7 +525,13 @@ public class Overview {
         }
         try {
           MedicineDB.updateMedicine(medicine);
-          panelLoopInfo.setVisible(false);
+          labelMedName.setText(medicine.getMedName() + " (ข้ามแล้ว)");
+          labelMedName.setForeground(Color.GRAY);
+          labelAmount.setForeground(Color.GRAY);
+          separator.setVisible(false);
+          panelBtn.setVisible(false);
+          btnAte.setVisible(false);
+          btnSkip.setVisible(false);
           reloadMedicines();
         } catch (SQLException e1) {
           e1.printStackTrace();
@@ -540,7 +549,7 @@ public class Overview {
 
     panelBtn.add(btnAte);
     panelBtn.add(btnSkip);
-    panelCard.add(new JSeparator(SwingConstants.HORIZONTAL));
+    panelCard.add(separator);
     panelCard.add(panelBtn);
     panelCard.add(panelSuccess);
 

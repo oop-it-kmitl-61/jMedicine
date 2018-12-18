@@ -20,6 +20,7 @@ sourceSets {
         resources {
             srcDir 'src'
             include 'META-INF/'
+            include 'darwin/'
         }
     }
 

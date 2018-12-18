@@ -1,22 +1,7 @@
 package GUI;
 
-import static GUI.GUI.btnSignIn;
-import static GUI.GUI.btnSignUp;
-import static GUI.GUI.btnSkipAddingInfo;
-import static GUI.GUI.isSignInPage;
-import static GUI.GUI.isSignUpPage;
-import static GUI.GUI.main;
-import static GUI.GUI.panelErrorSignIn;
-import static GUI.GUI.panelErrorSignUpPassword;
-import static GUI.GUI.panelErrorSignUpUsername;
-import static GUI.GUI.panelFirstInfo;
-import static GUI.GUI.panelLoading;
-import static GUI.GUI.panelNoInput;
-import static GUI.GUI.panelWelcome;
-import static GUI.GUI.promptFirstMedicine;
-import static GUI.GUI.tfPassword;
-import static GUI.GUI.tfPasswordConfirm;
-import static GUI.GUI.tfUserName;
+import static GUI.GUI.*;
+import static GUI.GUIHelper.fireDBErrorDialog;
 import static api.Login.doSignIn;
 import static api.Login.doSignUp;
 import static core.Core.getUser;
@@ -24,6 +9,7 @@ import static core.Core.setUser;
 
 import api.LoginException;
 import core.User;
+
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,17 +20,18 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import javax.swing.SwingWorker;
 
+import org.postgresql.util.PSQLException;
+
 
 /**
  * An utility class for GUI.java
  *
  * @author jMedicine
- * @version 0.7.17
+ * @version 1.0.0
  * @since 0.7.0
  */
 
 public class GUIUtil implements ActionListener, KeyListener {
-
 
   public void listeners() {
     btnSignIn.addActionListener(this);
@@ -53,7 +40,7 @@ public class GUIUtil implements ActionListener, KeyListener {
     tfPassword.addKeyListener(this);
   }
 
-  void executeSignIn() {
+  private void executeSignIn() {
     panelErrorSignUpUsername.setVisible(false);
     panelErrorSignUpPassword.setVisible(false);
     if (tfUserName.getText().equals("") || tfPassword.getPassword().equals("")) {
@@ -75,6 +62,7 @@ public class GUIUtil implements ActionListener, KeyListener {
             panelErrorSignIn.setVisible(true);
           } catch (NoSuchAlgorithmException | SQLException ex) {
             ex.printStackTrace();
+            fireDBErrorDialog();
           }
           return null;
         }
@@ -97,67 +85,81 @@ public class GUIUtil implements ActionListener, KeyListener {
     }
   }
 
-  void executeSignUp() {
+  private void executeSignUp() {
     panelErrorSignIn.setVisible(false);
     if (tfUserName.getText().equals("")) {
-      panelNoInput.setVisible(true);
-      panelErrorSignUpUsername.setVisible(false);
-      panelErrorSignUpPassword.setVisible(false);
+      showErrorPanel(0);
+    } else if (tfUserName.getText().length() < 4 || tfUserName.getText().length() > 32 || !isValidUsername(tfUserName.getText())) {
+      showErrorPanel(2);
     } else if (!Arrays.equals(tfPassword.getPassword(), tfPasswordConfirm.getPassword())) {
-      panelNoInput.setVisible(false);
-      panelErrorSignUpUsername.setVisible(false);
-      panelErrorSignUpPassword.setVisible(true);
+      showErrorPanel(3);
+    } else if (tfPassword.getPassword().length < 6) {
+      showErrorPanel(4);
     } else {
       panelLoading.setVisible(true);
+      showErrorPanel(-1);
       SwingWorker<Integer, String> swingWorker = new SwingWorker<Integer, String>() {
         @Override
         protected Integer doInBackground() throws Exception {
           try {
             doSignUp(new User(tfUserName.getText()), tfPassword.getPassword());
+            executeSignIn();
           } catch (LoginException ex) {
-            panelErrorSignUpUsername.setVisible(true);
+            showErrorPanel(1);
+            panelLoading.setVisible(false);
+          } catch (NoSuchAlgorithmException | SQLException ex) {
+            fireDBErrorDialog();
           }
           return null;
-        }
-
-        @Override
-        protected void done() {
-          executeSignIn();
         }
       };
       swingWorker.execute();
     }
   }
 
+  private static void showErrorPanel(int panelNumber) {
+    panelNoInput.setVisible(panelNumber == 0);
+    panelErrorSignUpUsername.setVisible(panelNumber == 1);
+    panelErrorSignUpUsernameValid.setVisible(panelNumber == 2);
+    panelErrorSignUpPassword.setVisible(panelNumber == 3);
+    panelErrorSignUpPasswordLength.setVisible(panelNumber == 4);
+  }
+
+  private boolean isValidUsername(String username) {
+    for (int i = 0; i < username.length(); i++) {
+      if (!((username.charAt(i) >= 'A' && username.charAt(i) <= 'Z') ||
+              (username.charAt(i) >= 'a' && username.charAt(i) <= 'z') ||
+              (username.charAt(i) >= '0' && username.charAt(i) <= '9'))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   @Override
   public void actionPerformed(ActionEvent e) {
-    Object btn = e.getSource();
-
-    if (btn == btnSignIn) {
+    if (e.getSource() == btnSignIn) {
       executeSignIn();
-    }
-    if (btn == btnSignUp) {
+    } else if (e.getSource() == btnSignUp) {
       executeSignUp();
-    }
-    if (btn == btnSkipAddingInfo) {
+    } else if (e.getSource() == btnSkipAddingInfo) {
       promptFirstMedicine();
     }
   }
 
   @Override
   public void keyTyped(KeyEvent e) {
-
   }
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if (isSignInPage && (e.getSource() == tfUserName || e.getSource() == tfPassword)) {
+    if (isSignInPage && (e.getSource().equals(tfUserName) || e.getSource().equals(tfPassword))) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         executeSignIn();
       }
     }
-    if (isSignUpPage && (e.getSource() == tfUserName || e.getSource() == tfPassword
-        || e.getSource() == tfPasswordConfirm)) {
+    if (isSignUpPage && (e.getSource().equals(tfUserName) || e.getSource().equals(tfPassword) || e.getSource().equals(tfPasswordConfirm))) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         executeSignUp();
       }
@@ -166,6 +168,5 @@ public class GUIUtil implements ActionListener, KeyListener {
 
   @Override
   public void keyReleased(KeyEvent e) {
-
   }
 }
