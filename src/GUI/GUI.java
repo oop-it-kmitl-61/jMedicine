@@ -721,7 +721,7 @@ public class GUI {
     // JButtons
     JButton btnBack = makeBackButton("แก้ไขข้อมูลส่วนตัว", "การตั้งค่า");
     JButton btnEditPwd = makeBlueButton("เปลี่ยนรหัสผ่าน");
-    JButton btnRemoveAccount = makeRedButton("ลบบัญชีนี้");
+    JButton btnDeleteAccount = makeRedButton("ลบบัญชีนี้");
     JButton btnSave = makeBlueButton("บันทึก");
 
     // JTextFields
@@ -779,7 +779,7 @@ public class GUI {
     // panelSub.add(labelUserName);
     // panelSub.add(tfUsername);
     panelSub.add(btnEditPwd);
-    panelSub.add(btnRemoveAccount);
+    panelSub.add(btnDeleteAccount);
     setPadding(panelSub, 10, 0, 8);
     panelBody.add(panelSub);
 
@@ -821,59 +821,77 @@ public class GUI {
     panelMain.add(btnSave, BorderLayout.SOUTH);
 
     // Password Changing Frame
-    JFrame passwordEditFrame = new JFrame("เปลี่ยนรหัสผ่าน");
-    JPanel panel = new JPanel(new BorderLayout());
+    JFrame framePasswordEdit = new JFrame("เปลี่ยนรหัสผ่าน");
+    JPanel panelPasswordEditSub = new JPanel(new BorderLayout());
     JPanel panelPasswordEdit = new JPanel(new GridLayout(4, 2));
 
-    JPasswordField oldPasswordField = makePasswordField(20);
-    JPasswordField newPasswordField = makePasswordField(20);
-    JPasswordField confirmNewPasswordField = makePasswordField(20);
+    JPasswordField fieldOldPassword = makePasswordField(20);
+    JPasswordField fieldNewPassword = makePasswordField(20);
+    JPasswordField fieldConfirmPassword = makePasswordField(20);
+    JLabel labelOldPassword = makeLabel("รหัสผ่านปัจจุบัน");
+    JLabel labelNewPassword = makeLabel("รหัสผ่านใหม่");
+    JLabel labelConfirmPassword = makeLabel("ยืนยันรหัสผ่านใหม่");
+    JButton btnConfirmPasswordEdit = makeBlueButton("ยืนยัน");
 
-    JLabel oldPasswordLabel = makeLabel("รหัสผ่านปัจจุบัน");
-    JLabel newPasswordLabel = makeLabel("รหัสผ่านใหม่");
-    JLabel confirmNewPasswordLabel = makeLabel("ยืนยันรหัสผ่านใหม่");
+    setPadding(panelPasswordEditSub, 20);
+    panelPasswordEdit.add(labelOldPassword);
+    panelPasswordEdit.add(fieldOldPassword);
+    panelPasswordEdit.add(labelNewPassword);
+    panelPasswordEdit.add(fieldNewPassword);
+    panelPasswordEdit.add(labelConfirmPassword);
+    panelPasswordEdit.add(fieldConfirmPassword);
+    panelPasswordEditSub.add(panelPasswordEdit, BorderLayout.CENTER);
+    panelPasswordEditSub.add(btnConfirmPasswordEdit, BorderLayout.SOUTH);
 
-    JButton passwordConfirmButton = makeBlueButton("ยืนยัน");
+    framePasswordEdit.add(panelPasswordEditSub);
+    framePasswordEdit.setMinimumSize(new Dimension(480, 240));
+    framePasswordEdit.setSize(new Dimension(480, 270));
+    framePasswordEdit.setVisible(false);
+    framePasswordEdit.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    framePasswordEdit.setLocationRelativeTo(null);
 
-    setPadding(panel, 20);
+    // Delete Account Password Confirmation Frame
+    JFrame frameDeleteAccount = new JFrame("ลบบัญชี");
+    JPanel panelDeleteAccountSub = new JPanel(new BorderLayout());
+    JPanel panelDeleteAccount = new JPanel(new GridLayout(3, 1));
 
-    panelPasswordEdit.add(oldPasswordLabel);
-    panelPasswordEdit.add(oldPasswordField);
-    panelPasswordEdit.add(newPasswordLabel);
-    panelPasswordEdit.add(newPasswordField);
-    panelPasswordEdit.add(confirmNewPasswordLabel);
-    panelPasswordEdit.add(confirmNewPasswordField);
+    JPasswordField fieldPassword = makePasswordField(20);
+    JLabel labelPassword = makeLabel("กรอกรหัสผ่านเพื่อยืนยันการลบบัญชี");
+    JButton btnConfirmDeleteAccount = makeBlueButton("ยืนยัน");
 
-    panel.add(panelPasswordEdit, BorderLayout.CENTER);
-    panel.add(passwordConfirmButton, BorderLayout.SOUTH);
+    setPadding(panelDeleteAccountSub, 20);
+    panelDeleteAccount.add(labelPassword);
+    panelDeleteAccount.add(fieldPassword);
+    panelDeleteAccountSub.add(panelDeleteAccount, BorderLayout.CENTER);
+    panelDeleteAccountSub.add(btnConfirmDeleteAccount, BorderLayout.SOUTH);
 
-    passwordEditFrame.add(panel);
-    passwordEditFrame.setMinimumSize(new Dimension(480, 240));
-    passwordEditFrame.setSize(new Dimension(480, 270));
-    passwordEditFrame.setVisible(false);
-    passwordEditFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    passwordEditFrame.setLocationRelativeTo(null);
+    frameDeleteAccount.add(panelDeleteAccountSub);
+    frameDeleteAccount.setMinimumSize(new Dimension(480, 210));
+    frameDeleteAccount.setSize(new Dimension(480, 240));
+    frameDeleteAccount.setVisible(false);
+    frameDeleteAccount.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    frameDeleteAccount.setLocationRelativeTo(null);
 
     // Password Changing
     btnEditPwd.addActionListener(e -> {
-      passwordEditFrame.setVisible(true);
+      framePasswordEdit.setVisible(true);
     });
 
-    passwordConfirmButton.addActionListener(ev -> {
+    btnConfirmPasswordEdit.addActionListener(ev -> {
       try {
-        Login.doSignIn(user.getUserName(), oldPasswordField.getPassword());
-        if (!Arrays.equals(newPasswordField.getPassword(), confirmNewPasswordField.getPassword())) {
+        Login.doSignIn(user.getUserName(), fieldOldPassword.getPassword());
+        if (!Arrays.equals(fieldNewPassword.getPassword(), fieldConfirmPassword.getPassword())) {
           fireErrorDialog("รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน");
-        } else if (newPasswordField.getPassword().length < 6) {
+        } else if (fieldNewPassword.getPassword().length < 6) {
           fireErrorDialog("รหัสผ่านใหม่ต้องมีความยาวตั้งแต่ 6 ตัวอักษรขึ้นไป");
-        } else if (Arrays.equals(oldPasswordField.getPassword(), newPasswordField.getPassword())) {
+        } else if (Arrays.equals(fieldOldPassword.getPassword(), fieldNewPassword.getPassword())) {
           fireErrorDialog("รหัสผ่านใหม่ไม่สามารถเป็นรหัสเดิมได้");
         } else {
-          updateUserPassword(newPasswordField.getPassword());
-          oldPasswordField.setText("");
-          newPasswordField.setText("");
-          confirmNewPasswordField.setText("");
-          passwordEditFrame.setVisible(false);
+          updateUserPassword(fieldNewPassword.getPassword());
+          fieldOldPassword.setText("");
+          fieldNewPassword.setText("");
+          fieldConfirmPassword.setText("");
+          framePasswordEdit.setVisible(false);
           fireSuccessDialog("รหัสผ่านถูกเปลี่ยนเรียบร้อย");
         }
       } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
@@ -881,19 +899,29 @@ public class GUI {
       }
     });
 
-    // Remove account
-    btnRemoveAccount.addActionListener(e -> {
-      int result = fireConfirmDialog(
-          "คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
-      if (result == JOptionPane.YES_OPTION) {
-        try {
-          deleteUser();
-          fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
-          backTo("ยังไม่ได้เข้าสู่ระบบ");
-        } catch (SQLException e1) {
-          e1.printStackTrace();
-          fireDBErrorDialog();
+    // Delete account
+    btnDeleteAccount.addActionListener(e -> {
+      frameDeleteAccount.setVisible(true);
+    });
+
+    btnConfirmDeleteAccount.addActionListener(e -> {
+      try {
+        Login.doSignIn(user.getUserName(), fieldPassword.getPassword());
+        frameDeleteAccount.setVisible(false);
+        int result = fireConfirmDialog(
+                "คุณต้องการลบบัญชีนี้จริง ๆ ใช่หรือไม่ คุณไม่สามารถกู้คืนบัญชีนี้กลับมาได้อีก");
+        if (result == JOptionPane.YES_OPTION) {
+          try {
+            deleteUser();
+            fireSuccessDialog("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
+            backTo("ยังไม่ได้เข้าสู่ระบบ");
+          } catch (SQLException e1) {
+            e1.printStackTrace();
+            fireDBErrorDialog();
+          }
         }
+      } catch (NoSuchAlgorithmException | SQLException | LoginException | ParseException ex) {
+        fireErrorDialog("รหัสผ่านไม่ถูกต้อง");
       }
     });
 
