@@ -109,7 +109,7 @@ public class GUIHelper {
       beep("warning");
       Icon icon = new ImageIcon(ImageIO.read(new File(imgPath + "/system/error.png")));
       JOptionPane.showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE, icon);
-    } catch (IOException ex) {
+    } catch (IOException ignored) {
       JOptionPane.showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
     }
   }
@@ -121,7 +121,7 @@ public class GUIHelper {
       beep("warning");
       Icon icon = new ImageIcon(ImageIO.read(new File(imgPath + "/system/error.png")));
       JOptionPane.showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE, icon);
-    } catch (IOException ex) {
+    } catch (IOException ignored) {
       JOptionPane.showMessageDialog(null, labelMessage, "ผิดพลาด", JOptionPane.INFORMATION_MESSAGE);
     }
   }
@@ -133,7 +133,7 @@ public class GUIHelper {
       beep("success");
       Icon icon = new ImageIcon(ImageIO.read(new File(imgSuccessSrc)));
       JOptionPane.showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE, icon);
-    } catch (IOException ex) {
+    } catch (IOException ignored) {
       JOptionPane.showMessageDialog(null, labelMessage, "สำเร็จ", JOptionPane.INFORMATION_MESSAGE);
     }
   }
@@ -145,7 +145,7 @@ public class GUIHelper {
       beep("warning");
       Icon icon = new ImageIcon(ImageIO.read(new File(imgWarningSrc)));
       JOptionPane.showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE, icon);
-    } catch (IOException ex) {
+    } catch (IOException ignored) {
       JOptionPane.showMessageDialog(null, labelMessage, "คำชี้แจง", JOptionPane.INFORMATION_MESSAGE);
     }
   }
@@ -160,7 +160,7 @@ public class GUIHelper {
       beep("warning");
       Icon icon = new ImageIcon(ImageIO.read(new File(GUIHelper.imgWarningSrc)));
       dialogResult = JOptionPane.showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, icon);
-    } catch (IOException ex) {
+    } catch (IOException ignored) {
       dialogResult = JOptionPane.showConfirmDialog(null, labelMessage, "ยืนยันการทำรายการ", JOptionPane.YES_NO_OPTION);
     }
     return dialogResult;
@@ -170,8 +170,7 @@ public class GUIHelper {
     JLabel labelPic = makeLabel(" ");
     try {
       labelPic.setIcon(new ImageIcon(ImageIO.read(new File(imgSuccessSrc))));
-    } catch (IOException ex) {
-      ex.printStackTrace();
+    } catch (IOException ignored) {
     }
     return labelPic;
   }
@@ -184,8 +183,7 @@ public class GUIHelper {
       Clip clip = AudioSystem.getClip();
       clip.open(audioIn);
       clip.start();
-    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
-      ex.printStackTrace();
+    } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ignored) {
     }
   }
 
@@ -417,8 +415,7 @@ public class GUIHelper {
     JButton btnNew = new JButton(btnName);
     try {
       btnNew.setIcon(new ImageIcon(ImageIO.read(new File(imgPath + "/system/add.png"))));
-    } catch (IOException ex) {
-      ex.printStackTrace();
+    } catch (IOException ignored) {
     }
     btnNew.setAlignmentX(Component.LEFT_ALIGNMENT);
     btnNew.setHorizontalAlignment(SwingConstants.LEFT);
@@ -444,8 +441,7 @@ public class GUIHelper {
 
     try {
       button.setIcon(new ImageIcon(ImageIO.read(new File(imgPath + "/system/back.png"))));
-    } catch (IOException ex) {
-      ex.printStackTrace();
+    } catch (IOException ignored) {
     }
 
     button.setOpaque(false);
@@ -463,8 +459,7 @@ public class GUIHelper {
 
     try {
       button.setIcon(new ImageIcon(ImageIO.read(new File(imgPath + "/system/remove.png"))));
-    } catch (IOException ex) {
-      ex.printStackTrace();
+    } catch (IOException ignored) {
     }
 
     button.setBackground(MaterialColors.RED_900);
