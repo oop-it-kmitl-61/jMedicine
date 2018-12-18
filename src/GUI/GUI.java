@@ -1,35 +1,6 @@
 package GUI;
 
-import static GUI.GUIHelper.backTo;
-import static GUI.GUIHelper.fireConfirmDialog;
-import static GUI.GUIHelper.fireDBErrorDialog;
-import static GUI.GUIHelper.fireErrorDialog;
-import static GUI.GUIHelper.fireSuccessDialog;
-import static GUI.GUIHelper.getErrorPanel;
-import static GUI.GUIHelper.getLoadingPanel;
-import static GUI.GUIHelper.locale;
-import static GUI.GUIHelper.mainBlue;
-import static GUI.GUIHelper.makeBackButton;
-import static GUI.GUIHelper.makeBlueButton;
-import static GUI.GUIHelper.makeBoldLabel;
-import static GUI.GUIHelper.makeComboBox;
-import static GUI.GUIHelper.makeLabel;
-import static GUI.GUIHelper.makeLabelCenter;
-import static GUI.GUIHelper.makeLabelClickable;
-import static GUI.GUIHelper.makeLeftNavigationButton;
-import static GUI.GUIHelper.makeNumberField;
-import static GUI.GUIHelper.makePasswordField;
-import static GUI.GUIHelper.makeRedButton;
-import static GUI.GUIHelper.makeScrollPane;
-import static GUI.GUIHelper.makeSmallerLabel;
-import static GUI.GUIHelper.makeTextField;
-import static GUI.GUIHelper.makeTimePicker;
-import static GUI.GUIHelper.makeTitleLabel;
-import static GUI.GUIHelper.makeToggle;
-import static GUI.GUIHelper.newFlowLayout;
-import static GUI.GUIHelper.paintButton;
-import static GUI.GUIHelper.paintCurrentTabButton;
-import static GUI.GUIHelper.setPadding;
+import static GUI.GUIHelper.*;
 import static GUI.components.AppointmentUI.panelAllAppointments;
 import static GUI.components.DoctorUI.panelAllDoctors;
 import static GUI.components.MedicineUI.panelAllMedicines;
@@ -419,7 +390,7 @@ public class GUI {
 
     // Styling
     setPadding(labelUsername, 0, 0, -16, 0);
-    setPadding(labelPassword, 0, 0, -10, 0);
+    setPadding(labelPassword, 0, 0, -16, 0);
     setPadding(labelPasswordConfirm, 0, 0, -10, 0);
     setPadding(labelRegister, 20, 60);
     setPadding(labelSignIn, 20, 60);
@@ -497,7 +468,7 @@ public class GUI {
         labelUsernameHint.setVisible(false);
         labelPasswordHint.setVisible(false);
         setPadding(labelUsername, 0, 0, -16, 0);
-        setPadding(labelPassword, 0, 0, -10, 0);
+        setPadding(labelPassword, 0, 0, -16, 0);
         setPadding(labelPasswordConfirm, 0, 0, -10, 0);
         setPadding(labelSignIn, 20, 60);
       }
